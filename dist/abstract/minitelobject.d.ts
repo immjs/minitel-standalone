@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { EventEmitter } from 'node:events';
+import { EventEmitter } from 'events';
 import type { Minitel } from '../components/minitel.js';
 import { RichCharGrid } from '../richchargrid.js';
 import { MinitelObjectAttributes } from '../types.js';
