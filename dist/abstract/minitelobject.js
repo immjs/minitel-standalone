@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MinitelObject = void 0;
-const events_1 = require("events");
+const node_events_1 = require("node:events");
 const richchar_js_1 = require("../richchar.js");
 const utils_js_1 = require("../utils.js");
 const locationdescriptor_js_1 = require("../locationdescriptor.js");
-class MinitelObject extends events_1.EventEmitter {
+class MinitelObject extends node_events_1.EventEmitter {
     constructor(children, attributes, minitel) {
         super();
         this.keepElmDesc = false;

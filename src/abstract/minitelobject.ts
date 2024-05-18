@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import type { Minitel } from '../components/minitel.js';
 import { RichChar } from '../richchar.js';
 import { RichCharGrid } from '../richchargrid.js';

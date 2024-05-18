@@ -1,6 +1,6 @@
 {
   "name": "minitel-standalone",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A standalone package for minitel components",
   "main": "dist/index.js",
   "scripts": {
@@ -23,7 +23,6 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "events": "^3.3.0",
     "word-wrap": "^1.2.5"
   }
 }
