@@ -63,12 +63,12 @@ class Input extends minitelobject_js_1.MinitelObject {
                 if (/^[a-zA-Z0-9,\.';\-\:?!"#$%&\(\)\[\]<>@+=*/ ]$/g.test(key)) {
                     this.value += key;
                     if (this.attributes.onChange)
-                        this.attributes.onChange(this.value);
+                        this.attributes.onChange(this);
                 }
                 else if (key === '\x13\x47') {
                     this.value = this.value.slice(0, -1);
                     if (this.attributes.onChange)
-                        this.attributes.onChange(this.value);
+                        this.attributes.onChange(this);
                 }
                 this.minitel.queueImmediateRenderToStream();
         }

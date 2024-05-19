@@ -2,7 +2,7 @@ import { MinitelObject } from '../abstract/minitelobject.js';
 import { RichChar } from '../richchar.js';
 import { RichCharGrid } from '../richchargrid.js';
 import { MinitelObjectAttributes } from '../types.js';
-import { alignInvrt, inheritedProps } from '../utils.js';
+import { alignInvrt } from '../utils.js';
 import { TextNode } from '../abstract/textnode.js';
 import type { Minitel } from './minitel.js';
 import { Span } from './span.js';

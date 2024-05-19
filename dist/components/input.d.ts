@@ -21,5 +21,5 @@ export declare class Input extends MinitelObject<InputAttributes, {
 export interface InputAttributes extends FocusableAttributes {
     type: 'text' | 'password';
     multiline: boolean;
-    onChange: (value: string) => void;
+    onChange: (value: Input) => void;
 }

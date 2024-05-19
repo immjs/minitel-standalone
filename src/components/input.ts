@@ -38,74 +38,74 @@ export class Input
         let currentLine: string;
         switch (key) {
             case '\x1b\x5b\x41': // up
-            if (this.attributes.multiline) {
-                this.focusCursorAt[0] -= 1;
-                this.focusCursorAt[0] = Math.max(this.focusCursorAt[0], 0);
-                
-                currentLine = this.value.split('\n')[this.focusCursorAt[0]];
-                this.focusCursorAt[1] = Math.min(
-                    this.lastFocusCursorX,
-                    currentLine.length,
-                );
-                
-                this.minitel.queueImmediateRenderToStream();
-            }
-            break;
-            case '\x1b\x5b\x42': // down
-            if (this.attributes.multiline) {
-                this.focusCursorAt[0] += 1;
-                this.focusCursorAt[0] = Math.min(
-                    this.focusCursorAt[1],
-                    this.value.split('\n').length,
-                );
-                
-                currentLine = this.value.split('\n')[this.focusCursorAt[0]];
-                this.focusCursorAt[1] = Math.min(
-                    this.lastFocusCursorX,
-                    currentLine.length,
-                );
-                
-                this.minitel.queueImmediateRenderToStream();
-            }
-            break;
+                if (this.attributes.multiline) {
+                    this.focusCursorAt[0] -= 1;
+                    this.focusCursorAt[0] = Math.max(this.focusCursorAt[0], 0);
+                    
+                    currentLine = this.value.split('\n')[this.focusCursorAt[0]];
+                    this.focusCursorAt[1] = Math.min(
+                        this.lastFocusCursorX,
+                        currentLine.length,
+                    );
+                    
+                    this.minitel.queueImmediateRenderToStream();
+                }
+                break;
+                case '\x1b\x5b\x42': // down
+                    if (this.attributes.multiline) {
+                        this.focusCursorAt[0] += 1;
+                        this.focusCursorAt[0] = Math.min(
+                            this.focusCursorAt[1],
+                            this.value.split('\n').length,
+                        );
+                        
+                        currentLine = this.value.split('\n')[this.focusCursorAt[0]];
+                        this.focusCursorAt[1] = Math.min(
+                            this.lastFocusCursorX,
+                            currentLine.length,
+                        );
+                        
+                        this.minitel.queueImmediateRenderToStream();
+                    }
+                    break;
             case '\x1b\x5b\x43': // right
-            this.focusCursorAt[1] += 1;
-            
-            currentLine = this.value.split('\n')[this.focusCursorAt[0]];
-            if (this.focusCursorAt[1] > currentLine.length) {
-                this.focusCursorAt[0] += 1;
-                this.focusCursorAt[0] = Math.min(
-                    this.focusCursorAt[0],
-                    this.value.split('\n').length,
-                );
-                this.focusCursorAt[1] = 0;
-            }
-            this.lastFocusCursorX = this.focusCursorAt[1];
-            
-            this.minitel.queueImmediateRenderToStream();
-            break;
-            case '\x1b\x5b\x44': // left
-            this.focusCursorAt[1] -= 1;
-            
-            if (this.focusCursorAt[1] < 0) {
-                this.focusCursorAt[0] -= 1;
-                this.focusCursorAt[0] = Math.max(this.focusCursorAt[0], 0);
+                this.focusCursorAt[1] += 1;
+                
                 currentLine = this.value.split('\n')[this.focusCursorAt[0]];
-                this.focusCursorAt[1] = currentLine.length;
-            }
-            this.lastFocusCursorX = this.focusCursorAt[1];
-            
-            this.minitel.queueImmediateRenderToStream();
-            break;
+                if (this.focusCursorAt[1] > currentLine.length) {
+                    this.focusCursorAt[0] += 1;
+                    this.focusCursorAt[0] = Math.min(
+                        this.focusCursorAt[0],
+                        this.value.split('\n').length,
+                    );
+                    this.focusCursorAt[1] = 0;
+                }
+                this.lastFocusCursorX = this.focusCursorAt[1];
+                
+                this.minitel.queueImmediateRenderToStream();
+                break;
+            case '\x1b\x5b\x44': // left
+                this.focusCursorAt[1] -= 1;
+                
+                if (this.focusCursorAt[1] < 0) {
+                    this.focusCursorAt[0] -= 1;
+                    this.focusCursorAt[0] = Math.max(this.focusCursorAt[0], 0);
+                    currentLine = this.value.split('\n')[this.focusCursorAt[0]];
+                    this.focusCursorAt[1] = currentLine.length;
+                }
+                this.lastFocusCursorX = this.focusCursorAt[1];
+                
+                this.minitel.queueImmediateRenderToStream();
+                break;
             default:
-        if (/^[a-zA-Z0-9,\.';\-\:?!"#$%&\(\)\[\]<>@+=*/ ]$/g.test(key)) {
-            this.value += key;
-            if (this.attributes.onChange) this.attributes.onChange(this.value);
-        } else if (key === '\x13\x47') {
-            this.value = this.value.slice(0, -1);
-            if (this.attributes.onChange) this.attributes.onChange(this.value);
-        }
-        this.minitel.queueImmediateRenderToStream();
+                if (/^[a-zA-Z0-9,\.';\-\:?!"#$%&\(\)\[\]<>@+=*/ ]$/g.test(key)) {
+                    this.value += key;
+                    if (this.attributes.onChange) this.attributes.onChange(this);
+                } else if (key === '\x13\x47') {
+                    this.value = this.value.slice(0, -1);
+                    if (this.attributes.onChange) this.attributes.onChange(this);
+                }
+                this.minitel.queueImmediateRenderToStream();
     }
 }
 unmount() {
@@ -128,5 +128,5 @@ render(attributes: InputAttributes, inheritMe: Partial<InputAttributes>) {
 export interface InputAttributes extends FocusableAttributes {
     type: 'text' | 'password';
     multiline: boolean;
-    onChange: (value: string) => void;
+    onChange: (value: Input) => void;
 }
