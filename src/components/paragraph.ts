@@ -5,9 +5,10 @@ import { MinitelObjectAttributes } from '../types.js';
 import { alignInvrt, inheritedProps } from '../utils.js';
 import { TextNode } from '../abstract/textnode.js';
 import type { Minitel } from './minitel.js';
+import { Span } from './span.js';
 
 export class Paragraph extends MinitelObject {
-    children: TextNode[];
+    children: (TextNode | Span)[];
     constructor(children: TextNode[], attributes: Partial<MinitelObjectAttributes>, minitel: Minitel) {
         super([], attributes, minitel);
 

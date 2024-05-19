@@ -7,3 +7,4 @@ export * from './components/scrollable.js';
 export * from './components/xjoin.js';
 export * from './components/yjoin.js';
 export * from './components/zjoin.js';
+export * from './components/span.js';

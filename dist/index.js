@@ -23,3 +23,4 @@ __exportStar(require("./components/scrollable.js"), exports);
 __exportStar(require("./components/xjoin.js"), exports);
 __exportStar(require("./components/yjoin.js"), exports);
 __exportStar(require("./components/zjoin.js"), exports);
+__exportStar(require("./components/span.js"), exports);
