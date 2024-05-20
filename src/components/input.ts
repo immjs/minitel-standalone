@@ -25,7 +25,7 @@ export class Input
     disabled = false;
     keepElmDesc = true as const;
     cursorActuallyAt = [0, 0] as [number, number];
-    scrollInternal = [0, 0] as [number, number];
+    scrollDelta = [0, 0] as [number, number];
     lastFocusCursorX = 0;
     constructor(
         children: [],
@@ -101,7 +101,6 @@ export class Input
                 break;
             default:
                 if (/^[a-zA-Z0-9,\.';\-\:?!"#$%&\(\)\[\]<>@+=*/\x0d ]$/g.test(key)) {
-                    this.cursorActuallyAt[1] += 1;
                     this.lastFocusCursorX = this.cursorActuallyAt[1];
 
                     const lines = this.value.split('\n');
@@ -115,6 +114,8 @@ export class Input
                         this.lastFocusCursorX = 0;
                         this.cursorActuallyAt[1] = 0;
                         this.cursorActuallyAt[0] += 1;
+                    } else {
+                        this.cursorActuallyAt[1] += 1;
                     }
 
                     if (this.attributes.onChange) this.attributes.onChange(this);
@@ -161,33 +162,33 @@ export class Input
             result.mergeY(RichCharGrid.fromLine(line, attributes).setWidth(concreteWidth, alignInvrt[attributes.textAlign], fillChar));
         }
         if (attributes.height != null) {
-            if (this.scrollInternal[0] > this.cursorActuallyAt[0]) {
-                this.scrollInternal[0] = this.cursorActuallyAt[0];
+            if (this.scrollDelta[0] > this.cursorActuallyAt[0]) {
+                this.scrollDelta[0] = this.cursorActuallyAt[0];
             }
-            if (this.scrollInternal[0] + attributes.height < this.cursorActuallyAt[0]) {
-                this.scrollInternal[0] = this.cursorActuallyAt[0] - attributes.height;
+            if (this.scrollDelta[0] + attributes.height < this.cursorActuallyAt[0]) {
+                this.scrollDelta[0] = this.cursorActuallyAt[0] - attributes.height;
             }
-            this.scrollInternal[0] = Math.min(Math.max(this.scrollInternal[0], 0), lines.length);
+            this.scrollDelta[0] = Math.min(Math.max(this.scrollDelta[0], 0), lines.length);
 
-            result.setHeight(this.scrollInternal[0] + attributes.height, 'end', fillChar);
+            result.setHeight(this.scrollDelta[0] + attributes.height, 'end', fillChar);
             result.setHeight(attributes.height, 'start', fillChar);
         }
         if (attributes.width != null) {
-            if (this.scrollInternal[1] > this.cursorActuallyAt[1] - 4) {
-                this.scrollInternal[1] = this.cursorActuallyAt[1] - 4;
+            if (this.scrollDelta[1] > this.cursorActuallyAt[1] - 4) {
+                this.scrollDelta[1] = this.cursorActuallyAt[1] - 4;
             }
-            if (this.scrollInternal[1] + attributes.width < this.cursorActuallyAt[1] + 2) {
-                this.scrollInternal[1] = this.cursorActuallyAt[1] - attributes.width + 2;
+            if (this.scrollDelta[1] + attributes.width < this.cursorActuallyAt[1]) {
+                this.scrollDelta[1] = this.cursorActuallyAt[1] - attributes.width;
             }
-            this.scrollInternal[1] = Math.min(Math.max(this.scrollInternal[1], 0), lines[this.cursorActuallyAt[0]].length);
+            this.scrollDelta[1] = Math.min(Math.max(this.scrollDelta[1], 0), lines[this.cursorActuallyAt[0]].length);
 
-            result.setWidth(this.scrollInternal[1] + attributes.width, 'end', fillChar);
+            result.setWidth(this.scrollDelta[1] + attributes.width, 'end', fillChar);
             result.setWidth(attributes.width, 'start', fillChar);
         }
         return result;
     }
     get focusCursorAt() {
-        return [this.cursorActuallyAt[0] - this.scrollInternal[0], this.cursorActuallyAt[1] - this.scrollInternal[1]];
+        return [this.cursorActuallyAt[0] - this.scrollDelta[0], this.cursorActuallyAt[1] - this.scrollDelta[1]];
     }
 }
 

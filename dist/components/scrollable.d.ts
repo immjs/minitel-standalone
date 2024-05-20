@@ -11,8 +11,7 @@ export declare class Scrollable extends Container<ScrollableAttributes, {
     focused: boolean;
     disabled: boolean;
     keepElmDesc: true;
-    scrollDeltaX: number;
-    scrollDeltaY: number;
+    scrollDelta: number[];
     artificialBlink: NodeJS.Timeout | null;
     blinkShown: boolean;
     blink(): void;

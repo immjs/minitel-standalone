@@ -28,8 +28,7 @@ class Scrollable extends container_js_1.Container {
         this.focused = false;
         this.disabled = false;
         this.keepElmDesc = true;
-        this.scrollDeltaX = 0;
-        this.scrollDeltaY = 0;
+        this.scrollDelta = [0, 0];
         this.artificialBlink = null;
         this.blinkShown = true;
         this.blink();
@@ -38,19 +37,19 @@ class Scrollable extends container_js_1.Container {
     keyEventListener(str) {
         switch (str) {
             case '\x1b\x5b\x41': // up
-                this.scrollDeltaY -= 1;
+                this.scrollDelta[0] -= 1;
                 this.minitel.queueImmediateRenderToStream();
                 break;
             case '\x1b\x5b\x42': // down
-                this.scrollDeltaY += 1;
+                this.scrollDelta[0] += 1;
                 this.minitel.queueImmediateRenderToStream();
                 break;
             case '\x1b\x5b\x43': // right
-                this.scrollDeltaX += 1;
+                this.scrollDelta[1] += 1;
                 this.minitel.queueImmediateRenderToStream();
                 break;
             case '\x1b\x5b\x44': // left
-                this.scrollDeltaX -= 1;
+                this.scrollDelta[1] -= 1;
                 this.minitel.queueImmediateRenderToStream();
                 break;
         }
@@ -115,25 +114,25 @@ class Scrollable extends container_js_1.Container {
             ? attributes.width - 1
             : attributes.width; // Area available for scroll for bottom scroll bar
         const scrollbarSizeX = attributes.width && Math.max(Math.floor(maxScrollSizeX * maxScrollSizeX / originalWidth), 1);
-        this.scrollDeltaX = Math.max(0, Math.min(this.scrollDeltaX, (originalWidth - maxScrollSizeX) || 0));
+        this.scrollDelta[1] = Math.max(0, Math.min(this.scrollDelta[1], (originalWidth - maxScrollSizeX) || 0));
         const maxScrollSizeY = attributes.overflowX !== 'hidden' && !autoedX && attributes.height != null
             ? attributes.height - 1
             : attributes.height; // Area available for scroll for right scroll bar\
         const scrollbarSizeY = attributes.height && Math.max(Math.floor(maxScrollSizeY * maxScrollSizeY / originalHeight), 1);
-        this.scrollDeltaY = Math.max(0, Math.min(this.scrollDeltaY, (originalHeight - maxScrollSizeY) || 0));
+        this.scrollDelta[0] = Math.max(0, Math.min(this.scrollDelta[0], (originalHeight - maxScrollSizeY) || 0));
         if (attributes.height != null) {
-            finalRender.setHeight(originalHeight - this.scrollDeltaY, 'start', fillChar);
+            finalRender.setHeight(originalHeight - this.scrollDelta[0], 'start', fillChar);
             // console.log(originalHeight - this.scrollDeltaY, finalRender.toString());
             finalRender.setHeight(maxScrollSizeY, 'end', fillChar);
         }
         if (attributes.width != null) {
-            finalRender.setWidth(originalWidth - this.scrollDeltaX, 'start', fillChar);
+            finalRender.setWidth(originalWidth - this.scrollDelta[1], 'start', fillChar);
             finalRender.setWidth(maxScrollSizeX, 'end', fillChar);
         }
         const scrollChar = new richchar_js_1.RichChar('\x7f', Object.assign(Object.assign({}, attributes), { fg: this.blinkShown ? attributes.scrollbarColor : attributes.scrollbarBackColor }));
         const scrollBackChar = new richchar_js_1.RichChar('\x7f', Object.assign(Object.assign({}, attributes), { fg: attributes.scrollbarBackColor }));
         if (attributes.overflowY !== 'hidden' && !autoedY && attributes.height != null) {
-            const percentageScrolled = this.scrollDeltaY / (originalHeight - maxScrollSizeY);
+            const percentageScrolled = this.scrollDelta[0] / (originalHeight - maxScrollSizeY);
             const scrollbarOffset = Math.floor((maxScrollSizeY - scrollbarSizeY) * percentageScrolled);
             let rightScrollbar;
             if (originalHeight - maxScrollSizeY === 0 && attributes.overflowY === 'pad') {
@@ -147,7 +146,7 @@ class Scrollable extends container_js_1.Container {
             finalRender.mergeX(rightScrollbar);
         }
         if (attributes.overflowX !== 'hidden' && !autoedX && attributes.width != null) {
-            const percentageScrolled = this.scrollDeltaX / (originalWidth - maxScrollSizeX);
+            const percentageScrolled = this.scrollDelta[1] / (originalWidth - maxScrollSizeX);
             const scrollbarOffset = Math.floor((maxScrollSizeX - scrollbarSizeX) * percentageScrolled);
             let bottomScrollbar;
             if (originalWidth - maxScrollSizeX === 0 && attributes.overflowX === 'pad') {

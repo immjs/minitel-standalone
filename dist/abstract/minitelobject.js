@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MinitelObject = void 0;
 const node_events_1 = require("node:events");
 const richchar_js_1 = require("../richchar.js");
+const richchargrid_js_1 = require("../richchargrid.js");
 const utils_js_1 = require("../utils.js");
 const locationdescriptor_js_1 = require("../locationdescriptor.js");
 class MinitelObject extends node_events_1.EventEmitter {
@@ -39,11 +40,18 @@ class MinitelObject extends node_events_1.EventEmitter {
         const pad = utils_js_1.padding.normalise(attributes.pad);
         attributes.width = attributes.width != null ? utils_js_1.padding.exludeX(attributes.width, pad) : null;
         attributes.height = attributes.height != null ? utils_js_1.padding.exludeY(attributes.height, pad) : null;
-        const result = this.render(attributes, (0, utils_js_1.inheritedProps)(Object.assign(Object.assign(Object.assign({}, inheritedAttributes), this.attributes), forcedAttributes)));
+        const fillChar = new richchar_js_1.RichChar(attributes.fillChar, attributes).noSize();
+        let result;
+        if (attributes.visible) {
+            result = this.render(attributes, (0, utils_js_1.inheritedProps)(Object.assign(Object.assign(Object.assign({}, inheritedAttributes), this.attributes), forcedAttributes)));
+        }
+        else {
+            result = richchargrid_js_1.RichCharGrid.fill(attributes.width || 0, attributes.height || 0, fillChar);
+        }
         // Descriptor before pad, is this the right choice?
         if (this.keepElmDesc)
             result.locationDescriptors.add(this, new locationdescriptor_js_1.LocationDescriptor(0, 0, result.width, result.height));
-        result.pad(pad, new richchar_js_1.RichChar(attributes.fillChar, attributes).noSize());
+        result.pad(pad, fillChar);
         return result;
     }
     focusables() {
@@ -74,4 +82,5 @@ MinitelObject.defaultAttributes = {
     wrap: 'clip',
     flexGrow: 0,
     pad: 0,
+    visible: true,
 };

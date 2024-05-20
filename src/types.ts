@@ -22,6 +22,7 @@ export interface MinitelObjectAttributes extends Partial<CharAttributes> {
     wrap: 'clip' | 'word-wrap' | 'word-break';
     flexGrow: number | boolean;
     pad: Padding;
+    visible: boolean;
 }
 export interface RenderLinesAttributes extends MinitelObjectAttributes {
     forcedIndent?: number;

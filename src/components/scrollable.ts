@@ -18,8 +18,7 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
     focused = false;
     disabled = false;
     keepElmDesc: true = true;
-    scrollDeltaX = 0;
-    scrollDeltaY = 0;
+    scrollDelta = [0, 0];
     artificialBlink: NodeJS.Timeout | null = null;
     blinkShown = true;
     blink() {
@@ -53,19 +52,19 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
     keyEventListener(str: string) {
         switch (str) {
             case '\x1b\x5b\x41': // up
-                this.scrollDeltaY -= 1;
+                this.scrollDelta[0] -= 1;
                 this.minitel.queueImmediateRenderToStream();
                 break;
             case '\x1b\x5b\x42': // down
-                this.scrollDeltaY += 1;
+                this.scrollDelta[0] += 1;
                 this.minitel.queueImmediateRenderToStream();
                 break;
             case '\x1b\x5b\x43': // right
-                this.scrollDeltaX += 1;
+                this.scrollDelta[1] += 1;
                 this.minitel.queueImmediateRenderToStream();
                 break;
             case '\x1b\x5b\x44': // left
-                this.scrollDeltaX -= 1;
+                this.scrollDelta[1] -= 1;
                 this.minitel.queueImmediateRenderToStream();
                 break;
         }
@@ -145,7 +144,7 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
 
         const scrollbarSizeX = attributes.width && Math.max(Math.floor(maxScrollSizeX! * maxScrollSizeX! / originalWidth), 1);
 
-        this.scrollDeltaX = Math.max(0, Math.min(this.scrollDeltaX, (originalWidth - maxScrollSizeX!) || 0));
+        this.scrollDelta[1] = Math.max(0, Math.min(this.scrollDelta[1], (originalWidth - maxScrollSizeX!) || 0));
 
 
         const maxScrollSizeY = attributes.overflowX !== 'hidden' && !autoedX && attributes.height != null
@@ -154,15 +153,15 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
 
         const scrollbarSizeY = attributes.height && Math.max(Math.floor(maxScrollSizeY! * maxScrollSizeY! / originalHeight), 1);
 
-        this.scrollDeltaY = Math.max(0, Math.min(this.scrollDeltaY, (originalHeight - maxScrollSizeY!) || 0));
+        this.scrollDelta[0] = Math.max(0, Math.min(this.scrollDelta[0], (originalHeight - maxScrollSizeY!) || 0));
 
         if (attributes.height != null) {
-            finalRender.setHeight(originalHeight - this.scrollDeltaY, 'start', fillChar);
+            finalRender.setHeight(originalHeight - this.scrollDelta[0], 'start', fillChar);
             // console.log(originalHeight - this.scrollDeltaY, finalRender.toString());
             finalRender.setHeight(maxScrollSizeY!, 'end', fillChar);
         }
         if (attributes.width != null) {
-            finalRender.setWidth(originalWidth - this.scrollDeltaX, 'start', fillChar);
+            finalRender.setWidth(originalWidth - this.scrollDelta[1], 'start', fillChar);
             finalRender.setWidth(maxScrollSizeX!, 'end', fillChar);
         }
 
@@ -173,7 +172,7 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
         const scrollBackChar = new RichChar('\x7f', { ...attributes, fg: attributes.scrollbarBackColor });
 
         if (attributes.overflowY !== 'hidden' && !autoedY && attributes.height != null) {
-            const percentageScrolled = this.scrollDeltaY / (originalHeight - maxScrollSizeY!);
+            const percentageScrolled = this.scrollDelta[0] / (originalHeight - maxScrollSizeY!);
             const scrollbarOffset = Math.floor((maxScrollSizeY! - scrollbarSizeY!) * percentageScrolled);
 
             let rightScrollbar: RichCharGrid;
@@ -189,7 +188,7 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
             finalRender.mergeX(rightScrollbar);
         }
         if (attributes.overflowX !== 'hidden' && !autoedX && attributes.width != null) {
-            const percentageScrolled = this.scrollDeltaX / (originalWidth - maxScrollSizeX!);
+            const percentageScrolled = this.scrollDelta[1] / (originalWidth - maxScrollSizeX!);
             const scrollbarOffset = Math.floor((maxScrollSizeX! - scrollbarSizeX!) * percentageScrolled);
 
             let bottomScrollbar: RichCharGrid;

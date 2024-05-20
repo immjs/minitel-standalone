@@ -21,6 +21,7 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
         wrap: 'clip',
         flexGrow: 0,
         pad: 0,
+        visible: true,
     };
     defaultAttributes: T = MinitelObject.defaultAttributes as T;
     constructor(children: MinitelObject[], attributes: Partial<T>, minitel: Minitel) {
@@ -61,16 +62,23 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
         attributes.width = attributes.width != null ? padding.exludeX(attributes.width, pad) : null;
         attributes.height = attributes.height != null ? padding.exludeY(attributes.height, pad) : null;
 
-        const result = this.render(attributes, inheritedProps({
-            ...inheritedAttributes,
-            ...this.attributes,
-            ...forcedAttributes,
-        }));
+        const fillChar = new RichChar(attributes.fillChar, attributes).noSize();
+        
+        let result;
+        if (attributes.visible) {
+            result = this.render(attributes, inheritedProps({
+                ...inheritedAttributes,
+                ...this.attributes,
+                ...forcedAttributes,
+            }));
+        } else {
+            result = RichCharGrid.fill(attributes.width || 0, attributes.height || 0, fillChar);
+        }
 
         // Descriptor before pad, is this the right choice?
         if (this.keepElmDesc) result.locationDescriptors.add(this, new LocationDescriptor(0, 0, result.width, result.height));
 
-        result.pad(pad, new RichChar(attributes.fillChar, attributes).noSize());
+        result.pad(pad, fillChar);
 
         return result;
     }
