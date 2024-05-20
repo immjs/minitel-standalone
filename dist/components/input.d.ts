@@ -11,12 +11,15 @@ export declare class Input extends MinitelObject<InputAttributes, {
     focused: boolean;
     disabled: boolean;
     keepElmDesc: true;
-    focusCursorAt: [number, number];
+    cursorActuallyAt: [number, number];
+    scrollInternal: [number, number];
     lastFocusCursorX: number;
     constructor(children: [], attributes: Partial<InputAttributes>, minitel: Minitel);
+    constrainCursor(): void;
     keyEventListener(key: string): void;
     unmount(): void;
     render(attributes: InputAttributes, inheritMe: Partial<InputAttributes>): RichCharGrid;
+    get focusCursorAt(): number[];
 }
 export interface InputAttributes extends FocusableAttributes {
     type: 'text' | 'password';

@@ -5,7 +5,7 @@ export interface Focusable extends MinitelObject<FocusableAttributes, {
 }> {
     focused: boolean;
     disabled: boolean;
-    focusCursorAt?: [number, number];
+    cursorActuallyAt?: [number, number];
     keepElmDesc: true;
 }
 export interface FocusableAttributes extends MinitelObjectAttributes {
