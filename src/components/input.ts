@@ -120,7 +120,13 @@ export class Input
                     if (this.attributes.onChange) this.attributes.onChange(this);
                 } else if (key === '\x13\x47') {
                     if (this.cursorActuallyAt[0] !== 0 || this.cursorActuallyAt[1] !== 0) {
-                        this.cursorActuallyAt[1] -= 1;
+                        if (this.cursorActuallyAt[1] === 0) {
+                            const lines = this.value.split('\n');
+                            this.cursorActuallyAt[0] -= 1;
+                            this.cursorActuallyAt[1] = lines[this.cursorActuallyAt[0]].length;
+                        } else {
+                            this.cursorActuallyAt[1] -= 1;
+                        }
                         this.lastFocusCursorX = this.cursorActuallyAt[1];
                         const lines = this.value.split('\n');
     

@@ -88,7 +88,14 @@ class Input extends minitelobject_js_1.MinitelObject {
                 }
                 else if (key === '\x13\x47') {
                     if (this.cursorActuallyAt[0] !== 0 || this.cursorActuallyAt[1] !== 0) {
-                        this.cursorActuallyAt[1] -= 1;
+                        if (this.cursorActuallyAt[1] === 0) {
+                            const lines = this.value.split('\n');
+                            this.cursorActuallyAt[0] -= 1;
+                            this.cursorActuallyAt[1] = lines[this.cursorActuallyAt[0]].length;
+                        }
+                        else {
+                            this.cursorActuallyAt[1] -= 1;
+                        }
                         this.lastFocusCursorX = this.cursorActuallyAt[1];
                         const lines = this.value.split('\n');
                         let cumulPosition = lines.filter((_, i) => i < this.cursorActuallyAt[0] - 1).reduce((p, v) => p + v.length + 1, 0);
