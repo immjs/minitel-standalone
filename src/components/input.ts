@@ -2,6 +2,7 @@ import { Focusable, FocusableAttributes } from '../abstract/focusable.js';
 import { MinitelObject } from '../abstract/minitelobject.js';
 import { RichChar } from '../richchar.js';
 import { RichCharGrid } from '../richchargrid.js';
+import { alignInvrt } from '../utils.js';
 import type { Minitel } from './minitel.js';
 
 export class Input
@@ -105,15 +106,16 @@ export class Input
 
                     const lines = this.value.split('\n');
 
-                    let cumulPosition = lines.filter((_, i) => i < this.cursorActuallyAt[0] - 1).reduce((p, v) => p + v.length + 1, 0);
+                    let cumulPosition = lines.filter((_, i) => i < this.cursorActuallyAt[0]).reduce((p, v) => p + v.length + 1, 0);
                     cumulPosition += this.cursorActuallyAt[1];
                     const chars = this.value.split('');
                     chars.splice(cumulPosition, 0, key === '\x0d' ? '\n' : key);
+                    this.value = chars.join('');
                     if (key === '\x0d') {
-                        this.lastFocusCursorX = this.cursorActuallyAt[1] = 0;
+                        this.lastFocusCursorX = 0;
+                        this.cursorActuallyAt[1] = 0;
                         this.cursorActuallyAt[0] += 1;
                     }
-                    this.value = chars.join('');
 
                     if (this.attributes.onChange) this.attributes.onChange(this);
                 } else if (key === '\x13\x47') {
@@ -150,7 +152,7 @@ export class Input
         const result = new RichCharGrid([]);
         const concreteWidth = Math.max(...lines.map((v) => v.length));
         for (let line of lines) {
-            result.mergeY(RichCharGrid.fromLine(line, attributes).setWidth(concreteWidth, attributes.textAlign, fillChar));
+            result.mergeY(RichCharGrid.fromLine(line, attributes).setWidth(concreteWidth, alignInvrt[attributes.textAlign], fillChar));
         }
         if (attributes.height != null) {
             if (this.scrollInternal[0] > this.cursorActuallyAt[0]) {

@@ -4,6 +4,7 @@ exports.Input = void 0;
 const minitelobject_js_1 = require("../abstract/minitelobject.js");
 const richchar_js_1 = require("../richchar.js");
 const richchargrid_js_1 = require("../richchargrid.js");
+const utils_js_1 = require("../utils.js");
 class Input extends minitelobject_js_1.MinitelObject {
     constructor(children, attributes, minitel) {
         super(children, attributes, minitel);
@@ -72,15 +73,16 @@ class Input extends minitelobject_js_1.MinitelObject {
                     this.cursorActuallyAt[1] += 1;
                     this.lastFocusCursorX = this.cursorActuallyAt[1];
                     const lines = this.value.split('\n');
-                    let cumulPosition = lines.filter((_, i) => i < this.cursorActuallyAt[0] - 1).reduce((p, v) => p + v.length + 1, 0);
+                    let cumulPosition = lines.filter((_, i) => i < this.cursorActuallyAt[0]).reduce((p, v) => p + v.length + 1, 0);
                     cumulPosition += this.cursorActuallyAt[1];
                     const chars = this.value.split('');
                     chars.splice(cumulPosition, 0, key === '\x0d' ? '\n' : key);
+                    this.value = chars.join('');
                     if (key === '\x0d') {
-                        this.lastFocusCursorX = this.cursorActuallyAt[1] = 0;
+                        this.lastFocusCursorX = 0;
+                        this.cursorActuallyAt[1] = 0;
                         this.cursorActuallyAt[0] += 1;
                     }
-                    this.value = chars.join('');
                     if (this.attributes.onChange)
                         this.attributes.onChange(this);
                 }
@@ -115,7 +117,7 @@ class Input extends minitelobject_js_1.MinitelObject {
         const result = new richchargrid_js_1.RichCharGrid([]);
         const concreteWidth = Math.max(...lines.map((v) => v.length));
         for (let line of lines) {
-            result.mergeY(richchargrid_js_1.RichCharGrid.fromLine(line, attributes).setWidth(concreteWidth, attributes.textAlign, fillChar));
+            result.mergeY(richchargrid_js_1.RichCharGrid.fromLine(line, attributes).setWidth(concreteWidth, utils_js_1.alignInvrt[attributes.textAlign], fillChar));
         }
         if (attributes.height != null) {
             if (this.scrollInternal[0] > this.cursorActuallyAt[0]) {
