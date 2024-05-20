@@ -115,7 +115,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
 
         this.handleFocus();
 
-        const outputString = ['\x14'];
+        const outputString = ['\x14\x1e'];
 
         let lastAttributes: Readonly<CharAttributes> = Minitel.defaultScreenAttributes;
         let skippedACharCounter = 0;

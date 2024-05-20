@@ -78,7 +78,7 @@ class Minitel extends container_js_1.Container {
         renderGrid.setHeight(24 + +this.settings.statusBar, 'start', new richchar_js_1.RichChar(' '));
         renderGrid.setWidth(40, 'start', new richchar_js_1.RichChar(' '));
         this.handleFocus();
-        const outputString = ['\x14'];
+        const outputString = ['\x14\x1e'];
         let lastAttributes = Minitel.defaultScreenAttributes;
         let skippedACharCounter = 0;
         let lastChar = null;
