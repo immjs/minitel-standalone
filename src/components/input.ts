@@ -130,7 +130,7 @@ export class Input
                         this.lastFocusCursorX = this.cursorActuallyAt[1];
                         const lines = this.value.split('\n');
     
-                        let cumulPosition = lines.filter((_, i) => i < this.cursorActuallyAt[0] - 1).reduce((p, v) => p + v.length + 1, 0);
+                        let cumulPosition = lines.filter((_, i) => i < this.cursorActuallyAt[0]).reduce((p, v) => p + v.length + 1, 0);
                         cumulPosition += this.cursorActuallyAt[1];
 
                         const chars = this.value.split('');
