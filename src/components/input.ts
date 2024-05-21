@@ -100,9 +100,7 @@ export class Input
                 this.minitel.queueImmediateRenderToStream();
                 break;
             default:
-                if (/^[a-zA-Z0-9,\.';\-\:?!"#$%&\(\)\[\]<>@+=*/\x0d ]$/g.test(key)) {
-                    this.lastFocusCursorX = this.cursorActuallyAt[1];
-
+                if (/^[a-zA-Z0-9,\.';\-\:?!"#$%&\(\)\[\]<>@+=*/ ]$/g.test(key) || (key === '\x0d' && !this.attributes.multiline)) {
                     const lines = this.value.split('\n');
 
                     let cumulPosition = lines.filter((_, i) => i < this.cursorActuallyAt[0]).reduce((p, v) => p + v.length + 1, 0);
@@ -111,12 +109,12 @@ export class Input
                     chars.splice(cumulPosition, 0, key === '\x0d' ? '\n' : key);
                     this.value = chars.join('');
                     if (key === '\x0d') {
-                        this.lastFocusCursorX = 0;
                         this.cursorActuallyAt[1] = 0;
                         this.cursorActuallyAt[0] += 1;
                     } else {
                         this.cursorActuallyAt[1] += 1;
                     }
+                    this.lastFocusCursorX = this.cursorActuallyAt[1];
 
                     if (this.attributes.onChange) this.attributes.onChange(this);
                 } else if (key === '\x13\x47') {
