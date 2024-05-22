@@ -69,7 +69,7 @@ class Input extends minitelobject_js_1.MinitelObject {
                 this.minitel.queueImmediateRenderToStream();
                 break;
             default:
-                if (/^[a-zA-Z0-9,\.';\-\:?!"#$%&\(\)\[\]<>@+=*/ ]$/g.test(key) || (key === '\x0d' && !this.attributes.multiline)) {
+                if (/^[a-zA-Z0-9,\.';\-\:?!"#$%&\(\)\[\]<>@+=*/ ]$/g.test(key) || (key === '\x0d' && this.attributes.multiline)) {
                     const lines = this.value.split('\n');
                     let cumulPosition = lines.filter((_, i) => i < this.cursorActuallyAt[0]).reduce((p, v) => p + v.length + 1, 0);
                     cumulPosition += this.cursorActuallyAt[1];
@@ -131,21 +131,21 @@ class Input extends minitelobject_js_1.MinitelObject {
             if (this.scrollDelta[0] > this.cursorActuallyAt[0]) {
                 this.scrollDelta[0] = this.cursorActuallyAt[0];
             }
-            if (this.scrollDelta[0] + attributes.height < this.cursorActuallyAt[0]) {
-                this.scrollDelta[0] = this.cursorActuallyAt[0] - attributes.height;
+            if (this.scrollDelta[0] < this.cursorActuallyAt[0] - attributes.height + 1) {
+                this.scrollDelta[0] = this.cursorActuallyAt[0] - attributes.height + 1;
             }
             this.scrollDelta[0] = Math.min(Math.max(this.scrollDelta[0], 0), lines.length);
             result.setHeight(this.scrollDelta[0] + attributes.height, 'end', fillChar);
             result.setHeight(attributes.height, 'start', fillChar);
         }
         if (attributes.width != null) {
-            if (this.scrollDelta[1] > this.cursorActuallyAt[1] - 4) {
-                this.scrollDelta[1] = this.cursorActuallyAt[1] - 4;
+            if (this.cursorActuallyAt[1] < this.scrollDelta[1]) {
+                this.scrollDelta[1] = this.cursorActuallyAt[1];
             }
-            if (this.scrollDelta[1] + attributes.width < this.cursorActuallyAt[1]) {
-                this.scrollDelta[1] = this.cursorActuallyAt[1] - attributes.width;
+            if (this.scrollDelta[1] < this.cursorActuallyAt[1] - attributes.width + 4) {
+                this.scrollDelta[1] = this.cursorActuallyAt[1] - attributes.width + 4;
             }
-            this.scrollDelta[1] = Math.min(Math.max(this.scrollDelta[1], 0), lines[this.cursorActuallyAt[0]].length);
+            this.scrollDelta[1] = Math.max(Math.min(this.scrollDelta[1], lines[this.cursorActuallyAt[0]].length), 0);
             result.setWidth(this.scrollDelta[1] + attributes.width, 'end', fillChar);
             result.setWidth(attributes.width, 'start', fillChar);
         }

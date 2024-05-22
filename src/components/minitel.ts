@@ -177,9 +177,9 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
 
         if (this.focusedObj) {
             const locationDescriptor = renderGrid.locationDescriptors.get(this.focusedObj);
-            if (locationDescriptor && 'focusCursorAt' in this.focusedObj && this.focusedObj.cursorActuallyAt != null) {
+            if (locationDescriptor && 'focusCursorAt' in this.focusedObj && this.focusedObj.focusCursorAt != null) {
                 const { x, y, w, h } = locationDescriptor;
-                const [cursorDeltaY, cursorDeltaX] = this.focusedObj.cursorActuallyAt;
+                const [cursorDeltaY, cursorDeltaX] = this.focusedObj.focusCursorAt;
 
                 outputString.push(this.toCursorMove(
                     Math.min(y + cursorDeltaY, y + h - 1),

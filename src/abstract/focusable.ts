@@ -4,7 +4,7 @@ import { MinitelObject } from './minitelobject.js';
 export interface Focusable extends MinitelObject<FocusableAttributes, { key: [string] }> {
     focused: boolean;
     disabled: boolean;
-    cursorActuallyAt?: [number, number];
+    focusCursorAt?: [number, number];
     keepElmDesc: true;
 }
 
