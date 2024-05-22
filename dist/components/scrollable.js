@@ -26,33 +26,48 @@ class Scrollable extends container_js_1.Container {
         super(children, attributes, minitel);
         this.defaultAttributes = Scrollable.defaultAttributes;
         this.focused = false;
-        this.disabled = false;
         this.keepElmDesc = true;
+        this.prevScrollDelta = null;
         this.scrollDelta = [0, 0];
         this.artificialBlink = null;
         this.blinkShown = true;
         this.blink();
         this.on('key', this.keyEventListener);
     }
+    pushPrevScrollDelta() {
+        this.prevScrollDelta = [this.scrollDelta[0], this.scrollDelta[1]];
+    }
+    popPrevScrollDelta(callback) {
+        if (this.prevScrollDelta == null)
+            return;
+        if (this.prevScrollDelta[0] !== this.scrollDelta[0] || this.prevScrollDelta[1] !== this.scrollDelta[1]) {
+            callback([this.scrollDelta[0], this.scrollDelta[1]]);
+        }
+        this.prevScrollDelta = null;
+    }
     keyEventListener(str) {
+        if (!(['\x1b\x5b\x41', '\x1b\x5b\x42', '\x1b\x5b\x43', '\x1b\x5b\x44'].includes(str)))
+            return;
+        this.pushPrevScrollDelta();
         switch (str) {
             case '\x1b\x5b\x41': // up
-                this.scrollDelta[0] -= 1;
-                this.minitel.queueImmediateRenderToStream();
+                if (this.attributes.overflowY !== 'hidden' && !this.disabled)
+                    this.scrollDelta[0] -= 1;
                 break;
             case '\x1b\x5b\x42': // down
-                this.scrollDelta[0] += 1;
-                this.minitel.queueImmediateRenderToStream();
+                if (this.attributes.overflowY !== 'hidden' && !this.disabled)
+                    this.scrollDelta[0] += 1;
                 break;
             case '\x1b\x5b\x43': // right
-                this.scrollDelta[1] += 1;
-                this.minitel.queueImmediateRenderToStream();
+                if (this.attributes.overflowX !== 'hidden' && !this.disabled)
+                    this.scrollDelta[1] += 1;
                 break;
             case '\x1b\x5b\x44': // left
-                this.scrollDelta[1] -= 1;
-                this.minitel.queueImmediateRenderToStream();
+                if (this.attributes.overflowX !== 'hidden' && !this.disabled)
+                    this.scrollDelta[1] -= 1;
                 break;
         }
+        this.minitel.queueImmediateRenderToStream();
     }
     unmount() {
         this.off('key', this.keyEventListener);
@@ -110,12 +125,12 @@ class Scrollable extends container_js_1.Container {
         const finalRender = render; // Source: Trust me bro
         const originalWidth = finalRender.width;
         const originalHeight = finalRender.height;
-        const maxScrollSizeX = attributes.overflowY !== 'hidden' && !autoedY && attributes.width != null
+        const maxScrollSizeX = attributes.overflowY !== 'hidden' && attributes.overflowY !== 'noscrollbar' && !autoedY && attributes.width != null
             ? attributes.width - 1
             : attributes.width; // Area available for scroll for bottom scroll bar
         const scrollbarSizeX = attributes.width && Math.max(Math.floor(maxScrollSizeX * maxScrollSizeX / originalWidth), 1);
         this.scrollDelta[1] = Math.max(0, Math.min(this.scrollDelta[1], (originalWidth - maxScrollSizeX) || 0));
-        const maxScrollSizeY = attributes.overflowX !== 'hidden' && !autoedX && attributes.height != null
+        const maxScrollSizeY = attributes.overflowX !== 'hidden' && attributes.overflowX !== 'noscrollbar' && !autoedX && attributes.height != null
             ? attributes.height - 1
             : attributes.height; // Area available for scroll for right scroll bar\
         const scrollbarSizeY = attributes.height && Math.max(Math.floor(maxScrollSizeY * maxScrollSizeY / originalHeight), 1);
@@ -131,7 +146,7 @@ class Scrollable extends container_js_1.Container {
         }
         const scrollChar = new richchar_js_1.RichChar('\x7f', Object.assign(Object.assign({}, attributes), { fg: this.blinkShown ? attributes.scrollbarColor : attributes.scrollbarBackColor }));
         const scrollBackChar = new richchar_js_1.RichChar('\x7f', Object.assign(Object.assign({}, attributes), { fg: attributes.scrollbarBackColor }));
-        if (attributes.overflowY !== 'hidden' && !autoedY && attributes.height != null) {
+        if (attributes.overflowY !== 'hidden' && attributes.overflowY !== 'noscrollbar' && !autoedY && attributes.height != null) {
             const percentageScrolled = this.scrollDelta[0] / (originalHeight - maxScrollSizeY);
             const scrollbarOffset = Math.floor((maxScrollSizeY - scrollbarSizeY) * percentageScrolled);
             let rightScrollbar;
@@ -145,7 +160,7 @@ class Scrollable extends container_js_1.Container {
             }
             finalRender.mergeX(rightScrollbar);
         }
-        if (attributes.overflowX !== 'hidden' && !autoedX && attributes.width != null) {
+        if (attributes.overflowX !== 'hidden' && attributes.overflowX !== 'noscrollbar' && !autoedX && attributes.width != null) {
             const percentageScrolled = this.scrollDelta[1] / (originalWidth - maxScrollSizeX);
             const scrollbarOffset = Math.floor((maxScrollSizeX - scrollbarSizeX) * percentageScrolled);
             let bottomScrollbar;
@@ -160,8 +175,12 @@ class Scrollable extends container_js_1.Container {
             finalRender.mergeY(bottomScrollbar);
         }
         // if (this.focused) this.blink();
+        this.popPrevScrollDelta(attributes.onScroll);
         return finalRender;
+    }
+    get disabled() {
+        return this.attributes.disabled || false;
     }
 }
 exports.Scrollable = Scrollable;
-Scrollable.defaultAttributes = Object.assign(Object.assign({}, container_js_1.Container.defaultAttributes), { overflowX: 'hidden', overflowY: 'auto', autofocus: false, scrollbarBackColor: 5, scrollbarColor: 7, blinkPeriod: 500 });
+Scrollable.defaultAttributes = Object.assign(Object.assign({}, container_js_1.Container.defaultAttributes), { overflowX: 'hidden', overflowY: 'auto', autofocus: false, disabled: false, scrollbarBackColor: 5, scrollbarColor: 7, blinkPeriod: 500, onScroll: () => { } });

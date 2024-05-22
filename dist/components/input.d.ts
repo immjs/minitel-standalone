@@ -9,7 +9,6 @@ export declare class Input extends MinitelObject<InputAttributes, {
     defaultAttributes: InputAttributes;
     value: string;
     focused: boolean;
-    disabled: boolean;
     keepElmDesc: true;
     cursorActuallyAt: [number, number];
     scrollDelta: [number, number];
@@ -20,9 +19,12 @@ export declare class Input extends MinitelObject<InputAttributes, {
     unmount(): void;
     render(attributes: InputAttributes, inheritMe: Partial<InputAttributes>): RichCharGrid;
     get focusCursorAt(): [number, number];
+    get disabled(): boolean;
 }
 export interface InputAttributes extends FocusableAttributes {
     type: 'text' | 'password';
     multiline: boolean;
-    onChange: (value: Input) => void;
+    forceDelta?: [number, number];
+    onScroll: (scrollDelta: [number, number]) => void;
+    onChange: (value: string, elm: Input) => void;
 }

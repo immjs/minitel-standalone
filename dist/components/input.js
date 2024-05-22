@@ -11,7 +11,6 @@ class Input extends minitelobject_js_1.MinitelObject {
         this.defaultAttributes = Input.defaultAttributes;
         this.value = '';
         this.focused = false;
-        this.disabled = false;
         this.keepElmDesc = true;
         this.cursorActuallyAt = [0, 0];
         this.scrollDelta = [0, 0];
@@ -85,7 +84,7 @@ class Input extends minitelobject_js_1.MinitelObject {
                     }
                     this.lastFocusCursorX = this.cursorActuallyAt[1];
                     if (this.attributes.onChange)
-                        this.attributes.onChange(this);
+                        this.attributes.onChange(this.value, this);
                 }
                 else if (key === '\x13\x47') {
                     if (this.cursorActuallyAt[0] !== 0 || this.cursorActuallyAt[1] !== 0) {
@@ -106,7 +105,7 @@ class Input extends minitelobject_js_1.MinitelObject {
                         this.value = chars.join('');
                     }
                     if (this.attributes.onChange)
-                        this.attributes.onChange(this);
+                        this.attributes.onChange(this.value, this);
                 }
                 this.constrainCursor();
                 this.minitel.queueImmediateRenderToStream();
@@ -127,6 +126,7 @@ class Input extends minitelobject_js_1.MinitelObject {
         for (let line of lines) {
             result.mergeY(richchargrid_js_1.RichCharGrid.fromLine(line, attributes).setWidth(concreteWidth, utils_js_1.alignInvrt[attributes.textAlign], fillChar));
         }
+        const oldScrollDelta = [this.scrollDelta[0], this.scrollDelta[1]];
         if (attributes.height != null) {
             if (this.scrollDelta[0] > this.cursorActuallyAt[0]) {
                 this.scrollDelta[0] = this.cursorActuallyAt[0];
@@ -134,13 +134,13 @@ class Input extends minitelobject_js_1.MinitelObject {
             if (this.scrollDelta[0] < this.cursorActuallyAt[0] - attributes.height + 1) {
                 this.scrollDelta[0] = this.cursorActuallyAt[0] - attributes.height + 1;
             }
-            this.scrollDelta[0] = Math.min(Math.max(this.scrollDelta[0], 0), lines.length);
+            this.scrollDelta[0] = Math.max(this.scrollDelta[0], 0);
             result.setHeight(this.scrollDelta[0] + attributes.height, 'end', fillChar);
             result.setHeight(attributes.height, 'start', fillChar);
         }
         if (attributes.width != null) {
-            if (this.cursorActuallyAt[1] < this.scrollDelta[1]) {
-                this.scrollDelta[1] = this.cursorActuallyAt[1];
+            if (this.cursorActuallyAt[1] - 4 < this.scrollDelta[1]) {
+                this.scrollDelta[1] = this.cursorActuallyAt[1] - 4;
             }
             if (this.scrollDelta[1] < this.cursorActuallyAt[1] - attributes.width + 1) {
                 this.scrollDelta[1] = this.cursorActuallyAt[1] - attributes.width + 1;
@@ -149,11 +149,17 @@ class Input extends minitelobject_js_1.MinitelObject {
             result.setWidth(this.scrollDelta[1] + attributes.width, 'end', fillChar);
             result.setWidth(attributes.width, 'start', fillChar);
         }
+        if (oldScrollDelta[0] !== this.scrollDelta[0] || oldScrollDelta[1] !== this.scrollDelta[1]) {
+            attributes.onScroll([...this.scrollDelta]);
+        }
         return result;
     }
     get focusCursorAt() {
         return [this.cursorActuallyAt[0] - this.scrollDelta[0], this.cursorActuallyAt[1] - this.scrollDelta[1]];
     }
+    get disabled() {
+        return this.attributes.disabled || false;
+    }
 }
 exports.Input = Input;
-Input.defaultAttributes = Object.assign(Object.assign({}, minitelobject_js_1.MinitelObject.defaultAttributes), { fillChar: '.', width: 8, height: 1, type: 'text', autofocus: false, multiline: false, onChange: () => { } });
+Input.defaultAttributes = Object.assign(Object.assign({}, minitelobject_js_1.MinitelObject.defaultAttributes), { fillChar: '.', width: 8, height: 1, type: 'text', autofocus: false, disabled: false, multiline: false, onChange: () => { }, onScroll: () => { } });

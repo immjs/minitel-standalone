@@ -64,14 +64,12 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
 
         const fillChar = new RichChar(attributes.fillChar, attributes).noSize();
         
-        let result;
-        if (attributes.visible) {
-            result = this.render(attributes, inheritedProps({
-                ...inheritedAttributes,
-                ...this.attributes,
-                ...forcedAttributes,
-            }));
-        } else {
+        let result = this.render(attributes, inheritedProps({
+            ...inheritedAttributes,
+            ...this.attributes,
+            ...forcedAttributes,
+        }));
+        if (!attributes.visible) {
             result = RichCharGrid.fill(attributes.width || 0, attributes.height || 0, fillChar);
         }
 

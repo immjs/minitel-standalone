@@ -41,11 +41,8 @@ class MinitelObject extends node_events_1.EventEmitter {
         attributes.width = attributes.width != null ? utils_js_1.padding.exludeX(attributes.width, pad) : null;
         attributes.height = attributes.height != null ? utils_js_1.padding.exludeY(attributes.height, pad) : null;
         const fillChar = new richchar_js_1.RichChar(attributes.fillChar, attributes).noSize();
-        let result;
-        if (attributes.visible) {
-            result = this.render(attributes, (0, utils_js_1.inheritedProps)(Object.assign(Object.assign(Object.assign({}, inheritedAttributes), this.attributes), forcedAttributes)));
-        }
-        else {
+        let result = this.render(attributes, (0, utils_js_1.inheritedProps)(Object.assign(Object.assign(Object.assign({}, inheritedAttributes), this.attributes), forcedAttributes)));
+        if (!attributes.visible) {
             result = richchargrid_js_1.RichCharGrid.fill(attributes.width || 0, attributes.height || 0, fillChar);
         }
         // Descriptor before pad, is this the right choice?
