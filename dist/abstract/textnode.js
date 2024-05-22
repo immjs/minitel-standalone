@@ -21,10 +21,10 @@ class TextNode extends minitelobject_js_1.MinitelObject {
             const actualWidth = Math.floor(width / xScalingFactor);
             switch (attributes.wrap) {
                 case 'word-break':
-                    text = (0, word_wrap_1.default)(text, { width: actualWidth, cut: true });
+                    text = (0, word_wrap_1.default)(text, { indent: '', width: actualWidth, cut: true });
                     break;
                 case 'word-wrap':
-                    text = (0, word_wrap_1.default)(text, { width: actualWidth });
+                    text = (0, word_wrap_1.default)(text, { indent: '', width: actualWidth });
                     break;
                 case 'clip':
                     text = text.split('\n').map((v) => v.slice(0, actualWidth)).join('\n');
@@ -49,10 +49,10 @@ class TextNode extends minitelobject_js_1.MinitelObject {
             const actualWidth = Math.floor(width / xScalingFactor);
             switch (attributes.wrap) {
                 case 'word-break':
-                    text = (0, word_wrap_1.default)(text, { width: actualWidth, cut: true });
+                    text = (0, word_wrap_1.default)(text, { indent: '', width: actualWidth, cut: true });
                     break;
                 case 'word-wrap':
-                    text = (0, word_wrap_1.default)(text, { width: actualWidth });
+                    text = (0, word_wrap_1.default)(text, { indent: '', width: actualWidth });
                     break;
                 case 'clip':
                     text = text.split('\n').map((v) => v.slice(0, actualWidth)).join('\n');
