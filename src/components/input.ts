@@ -175,10 +175,10 @@ export class Input
             if (this.cursorActuallyAt[1] < this.scrollDelta[1]) {
                 this.scrollDelta[1] = this.cursorActuallyAt[1];
             }
-            if (this.scrollDelta[1] < this.cursorActuallyAt[1] - attributes.width + 4) {
-                this.scrollDelta[1] = this.cursorActuallyAt[1] - attributes.width + 4;
+            if (this.scrollDelta[1] < this.cursorActuallyAt[1] - attributes.width + 1) {
+                this.scrollDelta[1] = this.cursorActuallyAt[1] - attributes.width + 1;
             }
-            this.scrollDelta[1] = Math.max(Math.min(this.scrollDelta[1], lines[this.cursorActuallyAt[0]].length), 0);
+            this.scrollDelta[1] = Math.max(this.scrollDelta[1], 0);
 
             result.setWidth(this.scrollDelta[1] + attributes.width, 'end', fillChar);
             result.setWidth(attributes.width, 'start', fillChar);
