@@ -6,10 +6,12 @@ const richchargrid_js_1 = require("../richchargrid.js");
 const singleton_js_1 = require("../singleton.js");
 const richchar_js_1 = require("../richchar.js");
 const inputConstants_js_1 = require("../inputConstants.js");
+const invalidrender_js_1 = require("../abstract/invalidrender.js");
 class Minitel extends container_js_1.Container {
     constructor(stream, settings) {
         const that = null;
         super([], {}, that);
+        this.renderInvalidated = false;
         this.focusedObj = null;
         this.lastImmediate = null;
         this.minitel = this;
@@ -70,11 +72,26 @@ class Minitel extends container_js_1.Container {
             }
         });
     }
+    invalidateRender() {
+        this.renderInvalidated = true;
+    }
     renderString() {
-        const renderGrid = this.renderWrapper({}, {
-            width: 40,
-            height: 24 + +this.settings.statusBar,
-        });
+        this.renderInvalidated = false;
+        let renderGrid;
+        try {
+            renderGrid = this.renderWrapper({}, {
+                width: 40,
+                height: 24 + +this.settings.statusBar,
+            });
+        }
+        catch (err) {
+            if (err instanceof invalidrender_js_1.InvalidRender) {
+                return this.renderString();
+            }
+            else {
+                throw err;
+            }
+        }
         renderGrid.setHeight(24 + +this.settings.statusBar, 'start', new richchar_js_1.RichChar(' '));
         renderGrid.setWidth(40, 'start', new richchar_js_1.RichChar(' '));
         this.handleFocus();

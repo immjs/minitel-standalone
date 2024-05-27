@@ -9,13 +9,49 @@ class Input extends minitelobject_js_1.MinitelObject {
     constructor(children, attributes, minitel) {
         super(children, attributes, minitel);
         this.defaultAttributes = Input.defaultAttributes;
-        this.value = '';
-        this.focused = false;
+        this._value = '';
+        this._focused = false;
         this.keepElmDesc = true;
-        this.cursorActuallyAt = [0, 0];
-        this.scrollDelta = [0, 0];
+        this._cursorActuallyAt = [0, 0];
+        this._scrollDelta = [0, 0];
         this.lastFocusCursorX = 0;
         this.on('key', this.keyEventListener);
+    }
+    set value(newValue) {
+        this._value = newValue;
+        this.minitel.invalidateRender();
+    }
+    get value() {
+        return this._value;
+    }
+    set cursorActuallyAt(newPos) {
+        this._cursorActuallyAt = [newPos[0], newPos[1]];
+        this.minitel.invalidateRender();
+    }
+    get cursorActuallyAt() {
+        return this._cursorActuallyAt;
+    }
+    set scrollDelta(newDelta) {
+        this._scrollDelta = [newDelta[0], newDelta[1]];
+        this.minitel.invalidateRender();
+    }
+    get scrollDelta() {
+        return this._scrollDelta;
+    }
+    set focused(val) {
+        if (val) {
+            if (this.minitel.focusedObj)
+                this.minitel.focusedObj.focused = false;
+            this.minitel.invalidateRender();
+            this._focused = true;
+        }
+        else {
+            this.minitel.invalidateRender();
+            this._focused = false;
+        }
+    }
+    get focused() {
+        return this._focused;
     }
     constrainCursor() {
         this.cursorActuallyAt[0] = Math.min(this.cursorActuallyAt[0], this.value.split('\n').length - 1);

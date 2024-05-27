@@ -7,13 +7,21 @@ export declare class Input extends MinitelObject<InputAttributes, {
 }> implements Focusable {
     static defaultAttributes: InputAttributes;
     defaultAttributes: InputAttributes;
-    value: string;
-    focused: boolean;
+    _value: string;
+    _focused: boolean;
     keepElmDesc: true;
-    cursorActuallyAt: [number, number];
-    scrollDelta: [number, number];
+    _cursorActuallyAt: [number, number];
+    _scrollDelta: [number, number];
     lastFocusCursorX: number;
     constructor(children: [], attributes: Partial<InputAttributes>, minitel: Minitel);
+    set value(newValue: string);
+    get value(): string;
+    set cursorActuallyAt(newPos: [number, number]);
+    get cursorActuallyAt(): [number, number];
+    set scrollDelta(newDelta: [number, number]);
+    get scrollDelta(): [number, number];
+    set focused(val: boolean);
+    get focused(): boolean;
     constrainCursor(): void;
     keyEventListener(key: string): void;
     unmount(): void;

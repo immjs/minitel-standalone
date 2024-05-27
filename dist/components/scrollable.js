@@ -10,6 +10,24 @@ class Scrollable extends container_js_1.Container {
             clearTimeout(this.artificialBlink);
         this.artificialBlink = setTimeout(this.blinkHandler.bind(this), this.attributes.blinkPeriod || Scrollable.defaultAttributes.blinkPeriod);
     }
+    get scrollDelta() {
+        return this._scrollDelta;
+    }
+    set focused(val) {
+        if (val) {
+            if (this.minitel.focusedObj)
+                this.minitel.focusedObj.focused = false;
+            this.minitel.invalidateRender();
+            this._focused = true;
+        }
+        else {
+            this.minitel.invalidateRender();
+            this._focused = false;
+        }
+    }
+    get focused() {
+        return this._focused;
+    }
     blinkHandler() {
         if (this.focused || !this.blinkShown) {
             if (this.focused) {
@@ -25,10 +43,10 @@ class Scrollable extends container_js_1.Container {
     constructor(children = [], attributes, minitel) {
         super(children, attributes, minitel);
         this.defaultAttributes = Scrollable.defaultAttributes;
-        this.focused = false;
+        this._focused = false;
         this.keepElmDesc = true;
         this.prevScrollDelta = null;
-        this.scrollDelta = [0, 0];
+        this._scrollDelta = [0, 0];
         this.artificialBlink = null;
         this.blinkShown = true;
         this.blink();

@@ -17,10 +17,10 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
         onScroll: () => {},
     };
     defaultAttributes = Scrollable.defaultAttributes;
-    focused = false;
+    _focused = false;
     keepElmDesc: true = true;
     private prevScrollDelta: [number, number] | null = null;
-    scrollDelta: [number, number] = [0, 0];
+    _scrollDelta: [number, number] = [0, 0];
     private artificialBlink: NodeJS.Timeout | null = null;
     blinkShown = true;
     blink() {
@@ -30,6 +30,22 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
             this.blinkHandler.bind(this),
             this.attributes.blinkPeriod || Scrollable.defaultAttributes.blinkPeriod,
         );
+    }
+    get scrollDelta() {
+        return this._scrollDelta;
+    }
+    set focused(val) {
+        if (val) {
+            if (this.minitel.focusedObj) this.minitel.focusedObj.focused = false;
+            this.minitel.invalidateRender();
+            this._focused = true;
+        } else {
+            this.minitel.invalidateRender();
+            this._focused = false;
+        }
+    }
+    get focused() {
+        return this._focused;
     }
     blinkHandler() {
         if (this.focused || !this.blinkShown) {

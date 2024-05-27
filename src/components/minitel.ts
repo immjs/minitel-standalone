@@ -9,6 +9,7 @@ import { RichChar } from '../richchar.js';
 // import React from 'react';
 import { Focusable } from '../abstract/focusable.js';
 import { expectNextChars } from '../inputConstants.js';
+import { InvalidRender } from '../abstract/invalidrender.js';
 
 export interface MinitelSettings {
     statusBar: boolean;
@@ -27,6 +28,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
         noBlink: true,
         invert: false,
     };
+    renderInvalidated: boolean = false;
     stream: Duplex;
     previousRender: RichCharGrid;
     // _rootContainer?: FiberRoot;
@@ -104,11 +106,24 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
             }
         });
     }
+    invalidateRender(): void {
+        this.renderInvalidated = true;
+    }
     renderString(): string {
-        const renderGrid = this.renderWrapper({}, {
-            width: 40,
-            height: 24 + +this.settings.statusBar,
-        });
+        this.renderInvalidated = false;
+        let renderGrid;
+        try {
+            renderGrid = this.renderWrapper({}, {
+                width: 40,
+                height: 24 + +this.settings.statusBar,
+            });
+        } catch (err) {
+            if (err instanceof InvalidRender) {
+                return this.renderString();
+            } else {
+                throw err;
+            }
+        }
 
         renderGrid.setHeight(24 + +this.settings.statusBar, 'start', new RichChar(' '));
         renderGrid.setWidth(40, 'start', new RichChar(' '));

@@ -6,6 +6,7 @@ const richchar_js_1 = require("../richchar.js");
 const richchargrid_js_1 = require("../richchargrid.js");
 const utils_js_1 = require("../utils.js");
 const locationdescriptor_js_1 = require("../locationdescriptor.js");
+const invalidrender_js_1 = require("./invalidrender.js");
 class MinitelObject extends node_events_1.EventEmitter {
     constructor(children, attributes, minitel) {
         super();
@@ -16,7 +17,13 @@ class MinitelObject extends node_events_1.EventEmitter {
         for (let child of children) {
             this.appendChild(child);
         }
-        this.attributes = attributes;
+        this.attributes = new Proxy(attributes, {
+            set: (function (target, prop, val) {
+                target[prop] = val;
+                this.minitel.invalidateRender();
+                return true;
+            }).bind(this),
+        });
     }
     appendChild(child) {
         child.parent = this;
@@ -42,6 +49,9 @@ class MinitelObject extends node_events_1.EventEmitter {
         attributes.height = attributes.height != null ? utils_js_1.padding.exludeY(attributes.height, pad) : null;
         const fillChar = new richchar_js_1.RichChar(attributes.fillChar, attributes).noSize();
         let result = this.render(attributes, (0, utils_js_1.inheritedProps)(Object.assign(Object.assign(Object.assign({}, inheritedAttributes), this.attributes), forcedAttributes)));
+        if (this.minitel.renderInvalidated) {
+            throw new invalidrender_js_1.InvalidRender();
+        }
         if (!attributes.visible) {
             result = richchargrid_js_1.RichCharGrid.fill(attributes.width || 0, attributes.height || 0, fillChar);
         }

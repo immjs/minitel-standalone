@@ -23,11 +23,11 @@ export class Input
         onScroll: () => {},
     };
     defaultAttributes = Input.defaultAttributes;
-    value = '';
-    focused = false;
+    _value = '';
+    _focused = false;
     keepElmDesc = true as const;
-    cursorActuallyAt = [0, 0] as [number, number];
-    scrollDelta = [0, 0] as [number, number];
+    _cursorActuallyAt = [0, 0] as [number, number];
+    _scrollDelta = [0, 0] as [number, number];
     lastFocusCursorX = 0;
     constructor(
         children: [],
@@ -37,6 +37,40 @@ export class Input
         super(children, attributes, minitel);
         
         this.on('key', this.keyEventListener);
+    }
+    set value(newValue: string) {
+        this._value = newValue;
+        this.minitel.invalidateRender();
+    }
+    get value() {
+        return this._value;
+    }
+    set cursorActuallyAt(newPos: [number, number]) {
+        this._cursorActuallyAt = [newPos[0], newPos[1]];
+        this.minitel.invalidateRender();
+    }
+    get cursorActuallyAt() {
+        return this._cursorActuallyAt;
+    }
+    set scrollDelta(newDelta: [number, number]) {
+        this._scrollDelta = [newDelta[0], newDelta[1]];
+        this.minitel.invalidateRender();
+    }
+    get scrollDelta() {
+        return this._scrollDelta;
+    }
+    set focused(val) {
+        if (val) {
+            if (this.minitel.focusedObj) this.minitel.focusedObj.focused = false;
+            this.minitel.invalidateRender();
+            this._focused = true;
+        } else {
+            this.minitel.invalidateRender();
+            this._focused = false;
+        }
+    }
+    get focused() {
+        return this._focused;
     }
     constrainCursor() {
         this.cursorActuallyAt[0] = Math.min(

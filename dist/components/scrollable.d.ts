@@ -7,13 +7,16 @@ export declare class Scrollable extends Container<ScrollableAttributes, {
 }> implements Focusable {
     static defaultAttributes: ScrollableAttributes;
     defaultAttributes: ScrollableAttributes;
-    focused: boolean;
+    _focused: boolean;
     keepElmDesc: true;
     private prevScrollDelta;
-    scrollDelta: [number, number];
+    _scrollDelta: [number, number];
     private artificialBlink;
     blinkShown: boolean;
     blink(): void;
+    get scrollDelta(): [number, number];
+    set focused(val: boolean);
+    get focused(): boolean;
     blinkHandler(): void;
     constructor(children: never[] | undefined, attributes: Partial<ScrollableAttributes>, minitel: Minitel);
     pushPrevScrollDelta(): void;

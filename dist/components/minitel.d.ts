@@ -15,12 +15,14 @@ export declare class Minitel extends Container<ContainerAttributes, {
     key: [string];
 }> {
     static defaultScreenAttributes: CharAttributes;
+    renderInvalidated: boolean;
     stream: Duplex;
     previousRender: RichCharGrid;
     settings: MinitelSettings;
     focusedObj: Focusable | null;
     lastImmediate: NodeJS.Immediate | null;
     constructor(stream: Duplex, settings: Partial<MinitelSettings>);
+    invalidateRender(): void;
     renderString(): string;
     toCursorMove(y: number, x: number): string;
     handleFocus(): void;

@@ -6,6 +6,7 @@ import { MinitelObjectAttributes } from '../types.js';
 import { inheritedProps, padding } from '../utils.js';
 import { Focusable } from './focusable.js';
 import { LocationDescriptor } from '../locationdescriptor.js';
+import { InvalidRender } from './invalidrender.js';
 
 export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttributes, U extends Record<string, any[]> = Record<string, any[]>> extends EventEmitter<U> {
     children: MinitelObject[];
@@ -31,7 +32,13 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
         for (let child of children) {
             this.appendChild(child);
         }
-        this.attributes = attributes;
+        this.attributes = new Proxy(attributes, {
+            set: (function (this: MinitelObject, target: Record<string | symbol, any>, prop: string | symbol, val: any) {
+                target[prop] = val;
+                this.minitel.invalidateRender();
+                return true;
+            }).bind(this),
+        }) as Partial<T>;
     }
     appendChild(child: MinitelObject) {
         child.parent = this;
@@ -69,6 +76,9 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
             ...this.attributes,
             ...forcedAttributes,
         }));
+        if (this.minitel.renderInvalidated) {
+            throw new InvalidRender();
+        }
         if (!attributes.visible) {
             result = RichCharGrid.fill(attributes.width || 0, attributes.height || 0, fillChar);
         }
