@@ -28,6 +28,7 @@ export class Input
     keepElmDesc = true as const;
     _cursorActuallyAt = [0, 0] as [number, number];
     _scrollDelta = [0, 0] as [number, number];
+    oldScrollDelta = [0, 0] as [number, number];
     lastFocusCursorX = 0;
     constructor(
         children: [],
@@ -195,7 +196,6 @@ export class Input
         for (let line of lines) {
             result.mergeY(RichCharGrid.fromLine(line, attributes).setWidth(concreteWidth, alignInvrt[attributes.textAlign], fillChar));
         }
-        const oldScrollDelta = [this.scrollDelta[0], this.scrollDelta[1]];
         if (attributes.height != null) {
             if (this.scrollDelta[0] > this.cursorActuallyAt[0]) {
                 this.scrollDelta[0] = this.cursorActuallyAt[0];
@@ -220,7 +220,7 @@ export class Input
             result.setWidth(this.scrollDelta[1] + attributes.width, 'end', fillChar);
             result.setWidth(attributes.width, 'start', fillChar);
         }
-        if (oldScrollDelta[0] !== this.scrollDelta[0] || oldScrollDelta[1] !== this.scrollDelta[1]) {
+        if (this.oldScrollDelta[0] !== this.scrollDelta[0] || this.oldScrollDelta[1] !== this.scrollDelta[1]) {
             attributes.onScroll([...this.scrollDelta]);
         }
         

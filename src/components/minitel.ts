@@ -86,7 +86,11 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
             for (let char of str) {
                 howManyToExpect = Math.max(0, howManyToExpect - 1);
                 acc += char;
-                howManyToExpect = Math.max(0, howManyToExpect + (expectNextChars[acc] || 0));
+                if (char === '\x04') {
+                    howManyToExpect = 0;
+                } else {
+                    howManyToExpect = Math.max(0, howManyToExpect + (expectNextChars[acc] || 0));
+                }
                 if (howManyToExpect === 0) {
                     let prev: LLNode | undefined = undefined;
                     let current = this.rxQueue.tail;
