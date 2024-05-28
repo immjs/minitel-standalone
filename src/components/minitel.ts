@@ -10,6 +10,7 @@ import { RichChar } from '../richchar.js';
 import { Focusable } from '../abstract/focusable.js';
 import { expectNextChars } from '../inputConstants.js';
 import { InvalidRender } from '../abstract/invalidrender.js';
+import { LLNode, LinkedList } from '../abstract/linked_list.js';
 
 export interface MinitelSettings {
     statusBar: boolean;
@@ -35,6 +36,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
     settings: MinitelSettings;
     focusedObj: Focusable | null = null;
     lastImmediate: NodeJS.Immediate | null = null;
+    rxQueue: LinkedList;
     constructor(stream: Duplex, settings: Partial<MinitelSettings>) {
         const that = null as unknown as Minitel;
         super([], {}, that);
@@ -49,31 +51,31 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
         };
         this.stream = stream;
         this.previousRender = RichCharGrid.fill(40, 24 + +this.settings.statusBar, new RichChar(' '));
-        // TBD.
-        // this.rxQueue = new FifoQueue();
+
+        this.rxQueue = new LinkedList();
 
         // Take care of localEcho
-        this.stream.write([
+        this.queueCommand([
             '\x1b\x3b',
             this.settings.localEcho ? '\x61' : '\x60',
             '\x58',
             '\x52',
-        ].join(''));
+        ].join(''), '\x1b\x3b\x63');
 
         // Take care of extendedMode
-        this.stream.write([
+        this.queueCommand([
             '\x1b\x3b',
             this.settings.extendedMode ? '\x69' : '\x6A',
             '\x59',
             '\x41',
-        ].join(''));
+        ].join(''), '\x1b\x3b\x73\x59');
 
         // Set capitalization
-        this.stream.write([
+        this.queueCommand([
             '\x1b\x3a',
             this.settings.defaultCase === 'upper' ? '\x69' : '\x6A',
             '\x45',
-        ].join(''));
+        ].join(''), '\x1b\x3a\x73');
 
         this.stream.write('\x1f\x40\x41\x18\x0c'); // Clear status; clear screen
 
@@ -86,6 +88,26 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
                 acc += char;
                 howManyToExpect = Math.max(0, howManyToExpect + (expectNextChars[acc] || 0));
                 if (howManyToExpect === 0) {
+                    let prev: LLNode | undefined = undefined;
+                    let current = this.rxQueue.tail;
+                    while (current) {
+                        if (current.expected instanceof RegExp) {
+                            if (current.expected.test(acc)) {
+                                break;
+                            }
+                        } else {
+                            if (acc.startsWith(current.expected)) {
+                                break;
+                            }
+                        }
+                        prev = current;
+                        current = current.next;
+                    }
+                    if (current) {
+                        this.rxQueue.removeNodeAfter(prev);
+                        current.callback(acc);
+                    }
+
                     this.emit('key', acc);
                     if (acc.match(/^([a-zA-Z0-9,\.';\-\:?!"#$%&\(\)\[\]<>@+=*/ ]|\x0d|\x13\x47|\x1b\x5b[\x41\x42\x43\x44])$/g)) {
                         const focusedObj = this.focusedObj;
@@ -263,6 +285,16 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
     renderToStream() {
         // this.stream.write('\x0c');
         this.stream.write(this.renderString());
+    }
+    queueCommand(command: string, expected: string | RegExp, callback: ((_arg0: string) => any) = ((_arg0: string) => {})) {
+        const newNode = new LLNode(expected, callback);
+
+        this.rxQueue.append(newNode);
+
+        this.stream.write(command);
+    }
+    queueCommandAsync(command: string, expected: string | RegExp) {
+        return new Promise<string>((r) => this.queueCommand(command, expected, r));
     }
     // useKeyboard(callback: (key: string) => void) {
     //     React.useEffect(() => {

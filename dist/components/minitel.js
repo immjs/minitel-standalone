@@ -7,6 +7,7 @@ const singleton_js_1 = require("../singleton.js");
 const richchar_js_1 = require("../richchar.js");
 const inputConstants_js_1 = require("../inputConstants.js");
 const invalidrender_js_1 = require("../abstract/invalidrender.js");
+const linked_list_js_1 = require("../abstract/linked_list.js");
 class Minitel extends container_js_1.Container {
     constructor(stream, settings) {
         const that = null;
@@ -19,28 +20,27 @@ class Minitel extends container_js_1.Container {
         this.settings = Object.assign({ statusBar: false, localEcho: false, extendedMode: true, defaultCase: 'upper' }, settings);
         this.stream = stream;
         this.previousRender = richchargrid_js_1.RichCharGrid.fill(40, 24 + +this.settings.statusBar, new richchar_js_1.RichChar(' '));
-        // TBD.
-        // this.rxQueue = new FifoQueue();
+        this.rxQueue = new linked_list_js_1.LinkedList();
         // Take care of localEcho
-        this.stream.write([
+        this.queueCommand([
             '\x1b\x3b',
             this.settings.localEcho ? '\x61' : '\x60',
             '\x58',
             '\x52',
-        ].join(''));
+        ].join(''), '\x1b\x3b\x63');
         // Take care of extendedMode
-        this.stream.write([
+        this.queueCommand([
             '\x1b\x3b',
             this.settings.extendedMode ? '\x69' : '\x6A',
             '\x59',
             '\x41',
-        ].join(''));
+        ].join(''), '\x1b\x3b\x73\x59');
         // Set capitalization
-        this.stream.write([
+        this.queueCommand([
             '\x1b\x3a',
             this.settings.defaultCase === 'upper' ? '\x69' : '\x6A',
             '\x45',
-        ].join(''));
+        ].join(''), '\x1b\x3a\x73');
         this.stream.write('\x1f\x40\x41\x18\x0c'); // Clear status; clear screen
         let acc = '';
         let howManyToExpect = 0;
@@ -51,6 +51,26 @@ class Minitel extends container_js_1.Container {
                 acc += char;
                 howManyToExpect = Math.max(0, howManyToExpect + (inputConstants_js_1.expectNextChars[acc] || 0));
                 if (howManyToExpect === 0) {
+                    let prev = undefined;
+                    let current = this.rxQueue.tail;
+                    while (current) {
+                        if (current.expected instanceof RegExp) {
+                            if (current.expected.test(acc)) {
+                                break;
+                            }
+                        }
+                        else {
+                            if (acc.startsWith(current.expected)) {
+                                break;
+                            }
+                        }
+                        prev = current;
+                        current = current.next;
+                    }
+                    if (current) {
+                        this.rxQueue.removeNodeAfter(prev);
+                        current.callback(acc);
+                    }
                     this.emit('key', acc);
                     if (acc.match(/^([a-zA-Z0-9,\.';\-\:?!"#$%&\(\)\[\]<>@+=*/ ]|\x0d|\x13\x47|\x1b\x5b[\x41\x42\x43\x44])$/g)) {
                         const focusedObj = this.focusedObj;
@@ -202,6 +222,14 @@ class Minitel extends container_js_1.Container {
     renderToStream() {
         // this.stream.write('\x0c');
         this.stream.write(this.renderString());
+    }
+    queueCommand(command, expected, callback = ((_arg0) => { })) {
+        const newNode = new linked_list_js_1.LLNode(expected, callback);
+        this.rxQueue.append(newNode);
+        this.stream.write(command);
+    }
+    queueCommandAsync(command, expected) {
+        return new Promise((r) => this.queueCommand(command, expected, r));
     }
 }
 exports.Minitel = Minitel;

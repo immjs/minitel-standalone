@@ -39,3 +39,9 @@ export const padding = {
         return height;
     },
 };
+
+export function toBitArray(char: string): number[] {
+    const int = char.charCodeAt(0).toString(2);
+
+    return int.padStart(8, '0').split('').map((v) => parseInt(v));
+}

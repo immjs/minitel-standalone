@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.padding = exports.inheritedProps = exports.alignInvrt = void 0;
+exports.toBitArray = exports.padding = exports.inheritedProps = exports.alignInvrt = void 0;
 exports.alignInvrt = {
     start: 'end',
     middle: 'middle',
@@ -41,3 +41,8 @@ exports.padding = {
         return height;
     },
 };
+function toBitArray(char) {
+    const int = char.charCodeAt(0).toString(2);
+    return int.padStart(8, '0').split('').map((v) => parseInt(v));
+}
+exports.toBitArray = toBitArray;

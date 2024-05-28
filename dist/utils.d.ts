@@ -6,3 +6,4 @@ export declare const padding: {
     exludeX(width: number, pad: FullPadding): number;
     exludeY(height: number, pad: FullPadding): number;
 };
+export declare function toBitArray(char: string): number[];

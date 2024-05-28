@@ -5,6 +5,7 @@ import { Container, ContainerAttributes } from './container.js';
 import { RichCharGrid } from '../richchargrid.js';
 import { CharAttributes } from '../types.js';
 import { Focusable } from '../abstract/focusable.js';
+import { LinkedList } from '../abstract/linked_list.js';
 export interface MinitelSettings {
     statusBar: boolean;
     localEcho: boolean;
@@ -21,6 +22,7 @@ export declare class Minitel extends Container<ContainerAttributes, {
     settings: MinitelSettings;
     focusedObj: Focusable | null;
     lastImmediate: NodeJS.Immediate | null;
+    rxQueue: LinkedList;
     constructor(stream: Duplex, settings: Partial<MinitelSettings>);
     invalidateRender(): void;
     renderString(): string;
@@ -29,4 +31,6 @@ export declare class Minitel extends Container<ContainerAttributes, {
     focusDelta(delta: 1 | -1): Focusable | undefined;
     queueImmediateRenderToStream(): void;
     renderToStream(): void;
+    queueCommand(command: string, expected: string | RegExp, callback?: ((_arg0: string) => any)): void;
+    queueCommandAsync(command: string, expected: string | RegExp): Promise<string>;
 }
