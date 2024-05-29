@@ -49,7 +49,12 @@ class Minitel extends container_js_1.Container {
             for (let char of str) {
                 howManyToExpect = Math.max(0, howManyToExpect - 1);
                 acc += char;
-                howManyToExpect = Math.max(0, howManyToExpect + (inputConstants_js_1.expectNextChars[acc] || 0));
+                if (char === '\x04') {
+                    howManyToExpect = 0;
+                }
+                else {
+                    howManyToExpect = Math.max(0, howManyToExpect + (inputConstants_js_1.expectNextChars[acc] || 0));
+                }
                 if (howManyToExpect === 0) {
                     let prev = undefined;
                     let current = this.rxQueue.tail;
@@ -66,10 +71,13 @@ class Minitel extends container_js_1.Container {
                         }
                         prev = current;
                         current = current.next;
+                        debugger;
                     }
                     if (current) {
                         this.rxQueue.removeNodeAfter(prev);
                         current.callback(acc);
+                        acc = '';
+                        continue;
                     }
                     this.emit('key', acc);
                     if (acc.match(/^([a-zA-Z0-9,\.';\-\:?!"#$%&\(\)\[\]<>@+=*/ ]|\x0d|\x13\x47|\x1b\x5b[\x41\x42\x43\x44])$/g)) {

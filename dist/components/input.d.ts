@@ -12,6 +12,7 @@ export declare class Input extends MinitelObject<InputAttributes, {
     keepElmDesc: true;
     _cursorActuallyAt: [number, number];
     _scrollDelta: [number, number];
+    oldScrollDelta: [number, number];
     lastFocusCursorX: number;
     constructor(children: [], attributes: Partial<InputAttributes>, minitel: Minitel);
     set value(newValue: string);

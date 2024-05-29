@@ -106,10 +106,13 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
                         }
                         prev = current;
                         current = current.next;
+                        debugger;
                     }
                     if (current) {
                         this.rxQueue.removeNodeAfter(prev);
                         current.callback(acc);
+                        acc = '';
+                        continue;
                     }
 
                     this.emit('key', acc);

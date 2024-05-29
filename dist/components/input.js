@@ -14,6 +14,7 @@ class Input extends minitelobject_js_1.MinitelObject {
         this.keepElmDesc = true;
         this._cursorActuallyAt = [0, 0];
         this._scrollDelta = [0, 0];
+        this.oldScrollDelta = [0, 0];
         this.lastFocusCursorX = 0;
         this.on('key', this.keyEventListener);
     }
@@ -162,7 +163,6 @@ class Input extends minitelobject_js_1.MinitelObject {
         for (let line of lines) {
             result.mergeY(richchargrid_js_1.RichCharGrid.fromLine(line, attributes).setWidth(concreteWidth, utils_js_1.alignInvrt[attributes.textAlign], fillChar));
         }
-        const oldScrollDelta = [this.scrollDelta[0], this.scrollDelta[1]];
         if (attributes.height != null) {
             if (this.scrollDelta[0] > this.cursorActuallyAt[0]) {
                 this.scrollDelta[0] = this.cursorActuallyAt[0];
@@ -185,7 +185,7 @@ class Input extends minitelobject_js_1.MinitelObject {
             result.setWidth(this.scrollDelta[1] + attributes.width, 'end', fillChar);
             result.setWidth(attributes.width, 'start', fillChar);
         }
-        if (oldScrollDelta[0] !== this.scrollDelta[0] || oldScrollDelta[1] !== this.scrollDelta[1]) {
+        if (this.oldScrollDelta[0] !== this.scrollDelta[0] || this.oldScrollDelta[1] !== this.scrollDelta[1]) {
             attributes.onScroll([...this.scrollDelta]);
         }
         return result;
