@@ -21,23 +21,27 @@ export class RichChar<T> {
             doubleWidth: attributes.doubleWidth ?? false,
             noBlink: attributes.noBlink ?? true,
             invert: attributes.invert ?? false,
+            charset: attributes.charset ?? 0,
         };
     }
     static getAttributesApplier(attributes: Partial<CharAttributes>, previousAttributes: CharAttributes) {
         const result = [];
-        const offsets: Record<keyof Omit<CharAttributes, 'doubleHeight' | 'doubleWidth'>, number> = {
+        const offsets: Record<keyof Omit<CharAttributes, 'doubleHeight' | 'doubleWidth'>, number | number[]> = {
             noBlink: 0x48,
             fg: 0x40,
             bg: 0x50,
             underline: 0x59,
             invert: 0x5C,
+            charset: [0x0f, 0x0e, 0x19],
         };
         let attribute: keyof Omit<CharAttributes, 'doubleHeight' | 'doubleWidth'>;
         for (attribute in offsets) {
             if (attribute in attributes) {
+                const relevantOffset = offsets[attribute];
                 result.push(`\x1b${String.fromCharCode(
-                    Number(attributes[attribute])
-                    + offsets[attribute]
+                    typeof relevantOffset === 'number'
+                    ?   Number(attributes[attribute]) + relevantOffset
+                    :   relevantOffset[Number(attributes[attribute])]
                 )}`);
             }
         }

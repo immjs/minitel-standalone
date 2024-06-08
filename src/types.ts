@@ -12,9 +12,11 @@ export interface CharAttributes {
     doubleWidth: boolean;
     noBlink: boolean;
     invert: boolean;
+    charset: number;
 }
+export type ApplicableCharAttributes = Omit<CharAttributes, 'charset'>;
 export type Align = 'start' | 'middle' | 'end';
-export interface MinitelObjectAttributes extends Partial<CharAttributes> {
+export interface MinitelObjectAttributes extends Partial<ApplicableCharAttributes> {
     fillChar: string;
     width: number | null;
     height: number | null;

@@ -41,6 +41,9 @@ class Minitel extends container_js_1.Container {
             this.settings.defaultCase === 'upper' ? '\x69' : '\x6A',
             '\x45',
         ].join(''), '\x1b\x3a\x73');
+        this.queueCommand('\x1b\x39\x7b', /^\x01.{3}\x04$/, (function (result) {
+            this.model = result.slice(1, 4);
+        }).bind(this));
         this.stream.write('\x1f\x40\x41\x18\x0c'); // Clear status; clear screen
         let acc = '';
         let howManyToExpect = 0;
@@ -141,7 +144,7 @@ class Minitel extends container_js_1.Container {
                     && (char.char != null
                         || (renderGrid.grid[+lineIdx + char.delta[0]][+charIdx + char.delta[1]].isEqual(this.previousRender.grid[+lineIdx + char.delta[0]][+charIdx + char.delta[1]])))) {
                     skippedACharCounter += 1;
-                    lastAttributes = Object.assign({ fg: 7, doubleWidth: false, doubleHeight: false, noBlink: true, invert: false }, richchar_js_1.RichChar.getDelimited(prevChar.attributes));
+                    lastAttributes = Object.assign({ fg: 7, doubleWidth: false, doubleHeight: false, noBlink: true, invert: false, charset: 0 }, richchar_js_1.RichChar.getDelimited(prevChar.attributes));
                 }
                 else {
                     if (skippedACharCounter !== 0) {
@@ -239,6 +242,30 @@ class Minitel extends container_js_1.Container {
     queueCommandAsync(command, expected) {
         return new Promise((r) => this.queueCommand(command, expected, r));
     }
+    get colors() {
+        if (this.model === 'Bs0') {
+            return [
+                [0, 0, 0], // |0         |Black  |0%        |
+                [255, 0, 0], // |1         |Red    |50%       |
+                [0, 255, 0], // |2         |Green  |70%       |
+                [255, 255, 0], // |3         |Yellow |90%       |
+                [0, 0, 255], // |4         |Blue   |40%       |
+                [255, 0, 255], // |5         |Magenta|60%       |
+                [0, 255, 255], // |6         |Cyan   |80%       |
+                [255, 255, 255], // |7         |White  |100%      |
+            ];
+        }
+        return [
+            [0, 0, 0],
+            [127, 127, 127],
+            [179, 179, 179],
+            [229, 229, 229],
+            [102, 102, 102],
+            [153, 153, 153],
+            [204, 204, 204],
+            [255, 255, 255],
+        ];
+    }
 }
 exports.Minitel = Minitel;
 Minitel.defaultScreenAttributes = {
@@ -249,4 +276,5 @@ Minitel.defaultScreenAttributes = {
     doubleHeight: false,
     noBlink: true,
     invert: false,
+    charset: 0,
 };

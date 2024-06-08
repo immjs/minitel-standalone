@@ -23,6 +23,7 @@ export declare class Minitel extends Container<ContainerAttributes, {
     focusedObj: Focusable | null;
     lastImmediate: NodeJS.Immediate | null;
     rxQueue: LinkedList;
+    model: string | undefined;
     constructor(stream: Duplex, settings: Partial<MinitelSettings>);
     invalidateRender(): void;
     renderString(): string;
@@ -33,4 +34,5 @@ export declare class Minitel extends Container<ContainerAttributes, {
     renderToStream(): void;
     queueCommand(command: string, expected: string | RegExp, callback?: ((_arg0: string) => any)): void;
     queueCommandAsync(command: string, expected: string | RegExp): Promise<string>;
+    get colors(): number[][];
 }

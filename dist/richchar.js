@@ -10,7 +10,7 @@ class RichChar {
         };
     }
     static normalizeAttributes(attributes) {
-        var _a, _b, _c, _d, _e, _f, _g;
+        var _a, _b, _c, _d, _e, _f, _g, _h;
         return {
             fg: (_a = attributes.fg) !== null && _a !== void 0 ? _a : 7,
             bg: (_b = attributes.bg) !== null && _b !== void 0 ? _b : 0,
@@ -19,6 +19,7 @@ class RichChar {
             doubleWidth: (_e = attributes.doubleWidth) !== null && _e !== void 0 ? _e : false,
             noBlink: (_f = attributes.noBlink) !== null && _f !== void 0 ? _f : true,
             invert: (_g = attributes.invert) !== null && _g !== void 0 ? _g : false,
+            charset: (_h = attributes.charset) !== null && _h !== void 0 ? _h : 0,
         };
     }
     static getAttributesApplier(attributes, previousAttributes) {
@@ -30,12 +31,15 @@ class RichChar {
             bg: 0x50,
             underline: 0x59,
             invert: 0x5C,
+            charset: [0x0f, 0x0e, 0x19],
         };
         let attribute;
         for (attribute in offsets) {
             if (attribute in attributes) {
-                result.push(`\x1b${String.fromCharCode(Number(attributes[attribute])
-                    + offsets[attribute])}`);
+                const relevantOffset = offsets[attribute];
+                result.push(`\x1b${String.fromCharCode(typeof relevantOffset === 'number'
+                    ? Number(attributes[attribute]) + relevantOffset
+                    : relevantOffset[Number(attributes[attribute])])}`);
             }
         }
         if ('doubleHeight' in attributes || 'doubleWidth' in attributes) {

@@ -28,6 +28,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
         doubleHeight: false,
         noBlink: true,
         invert: false,
+        charset: 0,
     };
     renderInvalidated: boolean = false;
     stream: Duplex;
@@ -37,6 +38,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
     focusedObj: Focusable | null = null;
     lastImmediate: NodeJS.Immediate | null = null;
     rxQueue: LinkedList;
+    model: string | undefined;
     constructor(stream: Duplex, settings: Partial<MinitelSettings>) {
         const that = null as unknown as Minitel;
         super([], {}, that);
@@ -76,6 +78,11 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
             this.settings.defaultCase === 'upper' ? '\x69' : '\x6A',
             '\x45',
         ].join(''), '\x1b\x3a\x73');
+
+
+        this.queueCommand('\x1b\x39\x7b', /^\x01.{3}\x04$/, (function (this: Minitel, result: string) {
+            this.model = result.slice(1, 4);
+        }).bind(this));
 
         this.stream.write('\x1f\x40\x41\x18\x0c'); // Clear status; clear screen
 
@@ -195,6 +202,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
                         doubleHeight: false,
                         noBlink: true,
                         invert: false,
+                        charset: 0,
                         ...RichChar.getDelimited(prevChar.attributes),
                     };
                 } else {
@@ -302,6 +310,30 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
     }
     queueCommandAsync(command: string, expected: string | RegExp) {
         return new Promise<string>((r) => this.queueCommand(command, expected, r));
+    }
+    get colors() {
+        if (this.model === 'Bs0') {
+            return [
+                [0, 0, 0],          // |0         |Black  |0%        |
+                [255, 0, 0],        // |1         |Red    |50%       |
+                [0, 255, 0],        // |2         |Green  |70%       |
+                [255, 255, 0],      // |3         |Yellow |90%       |
+                [0, 0, 255],        // |4         |Blue   |40%       |
+                [255, 0, 255],      // |5         |Magenta|60%       |
+                [0, 255, 255],      // |6         |Cyan   |80%       |
+                [255, 255, 255],    // |7         |White  |100%      |
+            ];
+        }
+        return [
+            [0, 0, 0],
+            [127, 127, 127],
+            [179, 179, 179],
+            [229, 229, 229],
+            [102, 102, 102],
+            [153, 153, 153],
+            [204, 204, 204],
+            [255, 255, 255],
+        ];
     }
     // useKeyboard(callback: (key: string) => void) {
     //     React.useEffect(() => {
