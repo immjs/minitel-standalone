@@ -34,8 +34,9 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
         }
         this.attributes = new Proxy(attributes, {
             set: (function (this: MinitelObject, target: Record<string | symbol, any>, prop: string | symbol, val: any) {
+                const oldTP = target[prop];
                 target[prop] = val;
-                this.minitel.invalidateRender();
+                if (val !== oldTP) this.minitel.invalidateRender();
                 return true;
             }).bind(this),
         }) as Partial<T>;

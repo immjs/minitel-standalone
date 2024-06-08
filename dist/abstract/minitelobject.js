@@ -19,8 +19,10 @@ class MinitelObject extends node_events_1.EventEmitter {
         }
         this.attributes = new Proxy(attributes, {
             set: (function (target, prop, val) {
+                const oldTP = target[prop];
                 target[prop] = val;
-                this.minitel.invalidateRender();
+                if (val !== oldTP)
+                    this.minitel.invalidateRender();
                 return true;
             }).bind(this),
         });

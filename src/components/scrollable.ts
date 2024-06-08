@@ -35,12 +35,11 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
         return this._scrollDelta;
     }
     set focused(val) {
+        if (this._focused !== val) this.minitel.invalidateRender();
         if (val) {
             if (this.minitel.focusedObj) this.minitel.focusedObj.focused = false;
-            this.minitel.invalidateRender();
             this._focused = true;
         } else {
-            this.minitel.invalidateRender();
             this._focused = false;
         }
     }

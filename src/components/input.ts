@@ -40,33 +40,35 @@ export class Input
         this.on('key', this.keyEventListener);
     }
     set value(newValue: string) {
+        const oldValue = this._value;
         this._value = newValue;
-        this.minitel.invalidateRender();
+        if (newValue !== oldValue) this.minitel.invalidateRender();
     }
     get value() {
         return this._value;
     }
     set cursorActuallyAt(newPos: [number, number]) {
+        const oldValue = this._cursorActuallyAt;
         this._cursorActuallyAt = [newPos[0], newPos[1]];
-        this.minitel.invalidateRender();
+        if (oldValue[0] !== newPos[0] || oldValue[1] !== newPos[1]) this.minitel.invalidateRender();
     }
     get cursorActuallyAt() {
         return this._cursorActuallyAt;
     }
     set scrollDelta(newDelta: [number, number]) {
+        const oldDelta = [this._scrollDelta[0], this._scrollDelta[1]];
         this._scrollDelta = [newDelta[0], newDelta[1]];
-        this.minitel.invalidateRender();
+        if (oldDelta[0] !== newDelta[0] || oldDelta[1] !== newDelta[1]) this.minitel.invalidateRender();
     }
     get scrollDelta() {
         return this._scrollDelta;
     }
     set focused(val) {
+        if (this._focused !== val) this.minitel.invalidateRender();
         if (val) {
             if (this.minitel.focusedObj) this.minitel.focusedObj.focused = false;
-            this.minitel.invalidateRender();
             this._focused = true;
         } else {
-            this.minitel.invalidateRender();
             this._focused = false;
         }
     }
@@ -222,6 +224,7 @@ export class Input
         }
         if (this.oldScrollDelta[0] !== this.scrollDelta[0] || this.oldScrollDelta[1] !== this.scrollDelta[1]) {
             attributes.onScroll([...this.scrollDelta]);
+            this.oldScrollDelta = [this.scrollDelta[0], this.scrollDelta[1]];
         }
         
         return result;
