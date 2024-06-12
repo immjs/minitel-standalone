@@ -4,7 +4,11 @@ export declare class RichChar<T> {
     delta: T extends null ? [number, number] : undefined;
     actualChar: T extends null ? RichChar<string> : undefined;
     char: T;
-    static getDelimited(attributes: CharAttributes): Pick<CharAttributes, 'bg' | 'underline' | 'charset'>;
+    static getDelimited(attributes: CharAttributes, charset: number): {
+        underline: boolean;
+        charset: number;
+        bg?: number | undefined;
+    };
     static normalizeAttributes(attributes: Partial<CharAttributes>): CharAttributes;
     static getAttributesApplier(attributes: Partial<CharAttributes>, previousAttributes: CharAttributes): string;
     attributesDiff(attributes: CharAttributes): CharAttributes;

@@ -3,12 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RichChar = void 0;
 class RichChar {
     // skip: boolean;
-    static getDelimited(attributes) {
-        return {
-            bg: attributes.bg,
-            underline: attributes.underline,
-            charset: attributes.charset,
-        };
+    static getDelimited(attributes, charset) {
+        return Object.assign(Object.assign({}, (charset !== 1 ? { bg: attributes.bg } : {})), { underline: attributes.underline, charset: attributes.charset });
     }
     static normalizeAttributes(attributes) {
         var _a, _b, _c, _d, _e, _f, _g, _h;

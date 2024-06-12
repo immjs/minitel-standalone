@@ -164,7 +164,7 @@ class Minitel extends container_js_1.Container {
                     && (char.char != null
                         || (renderGrid.grid[+lineIdx + char.delta[0]][+charIdx + char.delta[1]].isEqual(this.previousRender.grid[+lineIdx + char.delta[0]][+charIdx + char.delta[1]])))) {
                     skippedACharCounter += 1;
-                    lastAttributes = Object.assign({ fg: 7, doubleWidth: false, doubleHeight: false, noBlink: true, invert: false }, richchar_js_1.RichChar.getDelimited(prevChar.attributes));
+                    lastAttributes = Object.assign({ fg: 7, bg: 0, doubleWidth: false, doubleHeight: false, noBlink: true, invert: false }, richchar_js_1.RichChar.getDelimited(prevChar.attributes, lastAttributes.charset));
                 }
                 else {
                     if (skippedACharCounter !== 0) {
@@ -184,7 +184,7 @@ class Minitel extends container_js_1.Container {
                 outputString.push('\x0b');
             if (+lineIdx === 0 && this.settings.statusBar)
                 outputString.push('\x1f\x41\x41');
-            lastAttributes = Object.assign(Object.assign({}, lastAttributes), richchar_js_1.RichChar.getDelimited(Minitel.defaultScreenAttributes));
+            lastAttributes = Object.assign(Object.assign({}, lastAttributes), richchar_js_1.RichChar.getDelimited(Minitel.defaultScreenAttributes, lastAttributes.charset));
         }
         this.previousRender = renderGrid.copy();
         if (this.focusedObj) {

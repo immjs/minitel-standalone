@@ -6,9 +6,9 @@ export class RichChar<T> {
     actualChar: T extends null ? RichChar<string> : undefined;
     char: T;
     // skip: boolean;
-    static getDelimited(attributes: CharAttributes): Pick<CharAttributes, 'bg' | 'underline' | 'charset'> {
+    static getDelimited(attributes: CharAttributes, charset: number) {
         return {
-            bg: attributes.bg,
+            ...(charset !== 1 ? { bg: attributes.bg } : {}),
             underline: attributes.underline,
             charset: attributes.charset,
         }

@@ -212,11 +212,12 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
                     skippedACharCounter += 1;
                     lastAttributes = {
                         fg: 7,
+                        bg: 0,
                         doubleWidth: false,
                         doubleHeight: false,
                         noBlink: true,
                         invert: false,
-                        ...RichChar.getDelimited(prevChar.attributes),
+                        ...RichChar.getDelimited(prevChar.attributes, lastAttributes.charset),
                     };
                 } else {
                     if (skippedACharCounter !== 0) {
@@ -236,7 +237,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
             }
             if (lastAttributes.doubleHeight) outputString.push('\x0b');
             if (+lineIdx === 0 && this.settings.statusBar) outputString.push('\x1f\x41\x41');
-            lastAttributes = { ...lastAttributes, ...RichChar.getDelimited(Minitel.defaultScreenAttributes) };
+            lastAttributes = { ...lastAttributes, ...RichChar.getDelimited(Minitel.defaultScreenAttributes, lastAttributes.charset) };
         }
         this.previousRender = renderGrid.copy();
 
