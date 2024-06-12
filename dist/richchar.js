@@ -7,6 +7,7 @@ class RichChar {
         return {
             bg: attributes.bg,
             underline: attributes.underline,
+            charset: attributes.charset,
         };
     }
     static normalizeAttributes(attributes) {

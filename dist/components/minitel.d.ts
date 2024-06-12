@@ -14,6 +14,7 @@ export interface MinitelSettings {
 }
 export declare class Minitel extends Container<ContainerAttributes, {
     key: [string];
+    frame: [];
 }> {
     static defaultScreenAttributes: CharAttributes;
     renderInvalidated: boolean;
@@ -22,9 +23,12 @@ export declare class Minitel extends Container<ContainerAttributes, {
     settings: MinitelSettings;
     focusedObj: Focusable | null;
     lastImmediate: NodeJS.Immediate | null;
+    speed: number | undefined;
     rxQueue: LinkedList;
     model: string | undefined;
+    private tillReady;
     constructor(stream: Duplex, settings: Partial<MinitelSettings>);
+    readyAsync(): Promise<void>;
     invalidateRender(): void;
     renderString(): string;
     toCursorMove(y: number, x: number): string;
@@ -34,5 +38,6 @@ export declare class Minitel extends Container<ContainerAttributes, {
     renderToStream(): void;
     queueCommand(command: string, expected: string | RegExp, callback?: ((_arg0: string) => any)): void;
     queueCommandAsync(command: string, expected: string | RegExp): Promise<string>;
+    requestAnimationFrame(callback: () => any): void;
     get colors(): number[][];
 }

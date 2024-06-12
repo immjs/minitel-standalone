@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Minitel = void 0;
 const container_js_1 = require("./container.js");
@@ -15,6 +24,7 @@ class Minitel extends container_js_1.Container {
         this.renderInvalidated = false;
         this.focusedObj = null;
         this.lastImmediate = null;
+        this.tillReady = [];
         this.minitel = this;
         this.children = new singleton_js_1.SingletonArray();
         this.settings = Object.assign({ statusBar: false, localEcho: false, extendedMode: true, defaultCase: 'upper' }, settings);
@@ -41,9 +51,14 @@ class Minitel extends container_js_1.Container {
             this.settings.defaultCase === 'upper' ? '\x69' : '\x6A',
             '\x45',
         ].join(''), '\x1b\x3a\x73');
-        this.queueCommand('\x1b\x39\x7b', /^\x01.{3}\x04$/, (function (result) {
+        this.tillReady.push(this.queueCommandAsync('\x1b\x39\x7b', /^\x01.{3}\x04$/)
+            .then((function (result) {
             this.model = result.slice(1, 4);
-        }).bind(this));
+        }).bind(this)));
+        this.tillReady.push(this.queueCommandAsync('\x1b\x39\x74', '\x1b\x3a\x75')
+            .then((function (result) {
+            this.speed = { '\x52': 300, '\x64': 1200, '\x76': 4800, '\x7f': 9600 }[result[3]];
+        }).bind(this)));
         this.stream.write('\x1f\x40\x41\x18\x0c'); // Clear status; clear screen
         let acc = '';
         let howManyToExpect = 0;
@@ -103,6 +118,11 @@ class Minitel extends container_js_1.Container {
             }
         });
     }
+    readyAsync() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Promise.all(this.tillReady);
+        });
+    }
     invalidateRender() {
         this.renderInvalidated = true;
     }
@@ -144,7 +164,7 @@ class Minitel extends container_js_1.Container {
                     && (char.char != null
                         || (renderGrid.grid[+lineIdx + char.delta[0]][+charIdx + char.delta[1]].isEqual(this.previousRender.grid[+lineIdx + char.delta[0]][+charIdx + char.delta[1]])))) {
                     skippedACharCounter += 1;
-                    lastAttributes = Object.assign({ fg: 7, doubleWidth: false, doubleHeight: false, noBlink: true, invert: false, charset: 0 }, richchar_js_1.RichChar.getDelimited(prevChar.attributes));
+                    lastAttributes = Object.assign({ fg: 7, doubleWidth: false, doubleHeight: false, noBlink: true, invert: false }, richchar_js_1.RichChar.getDelimited(prevChar.attributes));
                 }
                 else {
                     if (skippedACharCounter !== 0) {
@@ -176,11 +196,11 @@ class Minitel extends container_js_1.Container {
                 outputString.push('\x11');
             }
         }
-        // if i get bullied in prépa, it will be because of this
-        let preOptimized = outputString.join('\x80');
-        preOptimized = preOptimized.replace(/(.)(\x80\1){2,62}/g, (v) => `${v[0]}\x12${String.fromCharCode((v.length + 1) / 2 + 63)}`);
+        // parcoursuop forbid me from going to prépa. RIP :')
+        let preOptimized = outputString.filter((v) => v !== '').join('€');
+        preOptimized = preOptimized.replace(/(.)(€\1){2,62}/g, (v) => `${v[0]}\x12${String.fromCharCode((v.length + 1) / 2 + 63)}`);
         // console.log(JSON.stringify(preOptimized));
-        return preOptimized.split('\x80').join('');
+        return preOptimized.split('€').join('');
     }
     toCursorMove(y, x) {
         return [
@@ -232,7 +252,9 @@ class Minitel extends container_js_1.Container {
     }
     renderToStream() {
         // this.stream.write('\x0c');
-        this.stream.write(this.renderString());
+        const renderMe = this.renderString();
+        this.stream.write(renderMe);
+        setTimeout((function () { this.emit('frame'); }).bind(this), renderMe.length * (8000 / (this.speed || 300)));
     }
     queueCommand(command, expected, callback = ((_arg0) => { })) {
         const newNode = new linked_list_js_1.LLNode(expected, callback);
@@ -241,6 +263,9 @@ class Minitel extends container_js_1.Container {
     }
     queueCommandAsync(command, expected) {
         return new Promise((r) => this.queueCommand(command, expected, r));
+    }
+    requestAnimationFrame(callback) {
+        this.once('frame', () => callback());
     }
     get colors() {
         if (this.model === 'Bs0') {

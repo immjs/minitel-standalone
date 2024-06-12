@@ -19,7 +19,7 @@ export interface MinitelSettings {
     defaultCase: 'upper' | 'lower';
 }
 
-export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
+export class Minitel extends Container<ContainerAttributes, { key: [string], frame: [] }> {
     static defaultScreenAttributes: CharAttributes = {
         fg: 7,
         bg: 0,
@@ -37,8 +37,10 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
     settings: MinitelSettings;
     focusedObj: Focusable | null = null;
     lastImmediate: NodeJS.Immediate | null = null;
+    speed: number | undefined;
     rxQueue: LinkedList;
     model: string | undefined;
+    private tillReady: Promise<void>[] = [];
     constructor(stream: Duplex, settings: Partial<MinitelSettings>) {
         const that = null as unknown as Minitel;
         super([], {}, that);
@@ -79,10 +81,19 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
             '\x45',
         ].join(''), '\x1b\x3a\x73');
 
+        this.tillReady.push(
+            this.queueCommandAsync('\x1b\x39\x7b', /^\x01.{3}\x04$/)
+                .then((function (this: Minitel, result: string) {
+                    this.model = result.slice(1, 4);
+                }).bind(this)),
+        );
 
-        this.queueCommand('\x1b\x39\x7b', /^\x01.{3}\x04$/, (function (this: Minitel, result: string) {
-            this.model = result.slice(1, 4);
-        }).bind(this));
+        this.tillReady.push(
+            this.queueCommandAsync('\x1b\x39\x74', '\x1b\x3a\x75')
+                .then((function (this: Minitel, result: string) {
+                    this.speed = { '\x52': 300, '\x64': 1200, '\x76': 4800, '\x7f': 9600 }[result[3]]!;
+                }).bind(this)),
+        );
 
         this.stream.write('\x1f\x40\x41\x18\x0c'); // Clear status; clear screen
 
@@ -141,6 +152,9 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
                 }
             }
         });
+    }
+    async readyAsync() {
+        await Promise.all(this.tillReady);
     }
     invalidateRender(): void {
         this.renderInvalidated = true;
@@ -202,7 +216,6 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
                         doubleHeight: false,
                         noBlink: true,
                         invert: false,
-                        charset: 0,
                         ...RichChar.getDelimited(prevChar.attributes),
                     };
                 } else {
@@ -240,15 +253,15 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
                 outputString.push('\x11');
             }
         }
-        // if i get bullied in prépa, it will be because of this
-        let preOptimized = outputString.join('\x80');
+        // parcoursuop forbid me from going to prépa. RIP :')
+        let preOptimized = outputString.filter((v) => v !== '').join('€');
         preOptimized = preOptimized.replace(
-            /(.)(\x80\1){2,62}/g,
+            /(.)(€\1){2,62}/g,
             (v) => `${v[0]}\x12${String.fromCharCode((v.length + 1) / 2 + 63)}`,
         );
 
         // console.log(JSON.stringify(preOptimized));
-        return preOptimized.split('\x80').join('');
+        return preOptimized.split('€').join('');
     }
     toCursorMove(y: number, x: number) {
         return [
@@ -299,7 +312,9 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
     }
     renderToStream() {
         // this.stream.write('\x0c');
-        this.stream.write(this.renderString());
+        const renderMe = this.renderString();
+        this.stream.write(renderMe);
+        setTimeout((function (this: Minitel) { this.emit('frame') }).bind(this), renderMe.length * (8000 / (this.speed || 300)));
     }
     queueCommand(command: string, expected: string | RegExp, callback: ((_arg0: string) => any) = ((_arg0: string) => {})) {
         const newNode = new LLNode(expected, callback);
@@ -310,6 +325,9 @@ export class Minitel extends Container<ContainerAttributes, { key: [string] }> {
     }
     queueCommandAsync(command: string, expected: string | RegExp) {
         return new Promise<string>((r) => this.queueCommand(command, expected, r));
+    }
+    requestAnimationFrame(callback: () => any) {
+        this.once('frame', () => callback());
     }
     get colors() {
         if (this.model === 'Bs0') {

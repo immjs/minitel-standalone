@@ -6,10 +6,11 @@ export class RichChar<T> {
     actualChar: T extends null ? RichChar<string> : undefined;
     char: T;
     // skip: boolean;
-    static getDelimited(attributes: CharAttributes): Pick<CharAttributes, 'bg' | 'underline'> {
+    static getDelimited(attributes: CharAttributes): Pick<CharAttributes, 'bg' | 'underline' | 'charset'> {
         return {
             bg: attributes.bg,
             underline: attributes.underline,
+            charset: attributes.charset,
         }
     }
     static normalizeAttributes(attributes: Partial<CharAttributes>): CharAttributes {
