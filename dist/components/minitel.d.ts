@@ -14,7 +14,7 @@ export interface MinitelSettings {
 }
 export declare class Minitel extends Container<ContainerAttributes, {
     key: [string];
-    frame: [];
+    frame: [boolean];
 }> {
     static defaultScreenAttributes: CharAttributes;
     renderInvalidated: boolean;
@@ -38,6 +38,6 @@ export declare class Minitel extends Container<ContainerAttributes, {
     renderToStream(): void;
     queueCommand(command: string, expected: string | RegExp, callback?: ((_arg0: string) => any)): void;
     queueCommandAsync(command: string, expected: string | RegExp): Promise<string>;
-    requestAnimationFrame(callback: () => any): void;
+    requestAnimationFrame(callback: (isArtificial: boolean) => any): void;
     get colors(): number[][];
 }

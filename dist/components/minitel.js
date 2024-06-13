@@ -169,6 +169,7 @@ class Minitel extends container_js_1.Container {
                 else {
                     if (skippedACharCounter !== 0) {
                         outputString.push(this.toCursorMove(+lineIdx, +charIdx));
+                        lastAttributes.charset = 0;
                     }
                     // outputString.push('\x09'.repeat(skippedACharCounter));
                     const diff = char.attributesDiff(lastAttributes);
@@ -254,7 +255,7 @@ class Minitel extends container_js_1.Container {
         // this.stream.write('\x0c');
         const renderMe = this.renderString();
         this.stream.write(renderMe);
-        setTimeout((function () { this.emit('frame'); }).bind(this), renderMe.length * (8000 / (this.speed || 300)));
+        setTimeout((function () { this.emit('frame', false); }).bind(this), renderMe.length * (8000 / (this.speed || 300)));
     }
     queueCommand(command, expected, callback = ((_arg0) => { })) {
         const newNode = new linked_list_js_1.LLNode(expected, callback);
@@ -265,7 +266,8 @@ class Minitel extends container_js_1.Container {
         return new Promise((r) => this.queueCommand(command, expected, r));
     }
     requestAnimationFrame(callback) {
-        this.once('frame', () => callback());
+        this.once('frame', callback);
+        setTimeout((function () { callback(false); this.off('frame', callback); }).bind(this), 100);
     }
     get colors() {
         if (this.model === 'Bs0') {
