@@ -39,12 +39,18 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
         const pad = padding.normalise(attributes.pad);
         attributes.width = attributes.width != null ? padding.exludeX(attributes.width, pad) : null;
         attributes.height = attributes.height != null ? padding.exludeY(attributes.height, pad) : null;
-        
-        let result = this.getDimensions(attributes, inheritedProps({
-            ...inheritedAttributes,
-            ...this.attributes,
-            ...forcedAttributes,
-        }));
+
+        let result: { width: number; height: number } = { width: -1, height: -1 };
+        if (!attributes.height || !attributes.width) {
+            result = this.getDimensions(attributes, inheritedProps({
+                ...inheritedAttributes,
+                ...this.attributes,
+                ...forcedAttributes,
+            }));
+        }
+
+        if (attributes.width) result.width = attributes.width;
+        if (attributes.height) result.height = attributes.height;
 
         result.height += pad[0] + pad[2];
         result.width += pad[1] + pad[3];
@@ -109,6 +115,9 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
         if (!attributes.visible) {
             result = RichCharGrid.fill(attributes.width || 0, attributes.height || 0, fillChar);
         }
+
+        if (attributes.width != null) result.setWidth(attributes.width, 'end');
+        if (attributes.height != null) result.setWidth(attributes.height, 'end');
 
         // Descriptor before pad, is this the right choice?
         if (this.keepElmDesc) result.locationDescriptors.add(this, new LocationDescriptor(0, 0, result.width, result.height));
