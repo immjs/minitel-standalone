@@ -8,6 +8,21 @@ const utils_js_1 = require("../utils.js");
 const locationdescriptor_js_1 = require("../locationdescriptor.js");
 const invalidrender_js_1 = require("./invalidrender.js");
 class MinitelObject extends node_events_1.EventEmitter {
+    getDimensions(attributes, inheritMe) {
+        console.warn('getDimensions was not implemented on this component INFORMA GET YOUR SHIT TOGETHER');
+        const tempRender = this.render(attributes, inheritMe);
+        return { width: tempRender.width, height: tempRender.height };
+    }
+    getDimensionsWrapper(inheritedAttributes, forcedAttributes) {
+        const attributes = Object.assign(Object.assign(Object.assign(Object.assign({}, this.defaultAttributes), inheritedAttributes), this.attributes), forcedAttributes);
+        const pad = utils_js_1.padding.normalise(attributes.pad);
+        attributes.width = attributes.width != null ? utils_js_1.padding.exludeX(attributes.width, pad) : null;
+        attributes.height = attributes.height != null ? utils_js_1.padding.exludeY(attributes.height, pad) : null;
+        let result = this.getDimensions(attributes, (0, utils_js_1.inheritedProps)(Object.assign(Object.assign(Object.assign({}, inheritedAttributes), this.attributes), forcedAttributes)));
+        result.height += pad[0] + pad[2];
+        result.width += pad[1] + pad[3];
+        return result;
+    }
     constructor(children, attributes, minitel) {
         super();
         this.keepElmDesc = false;

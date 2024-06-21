@@ -6,6 +6,10 @@ export declare class ZJoin extends MinitelObject<ZJoinAttributes> {
     static defaultAttributes: ZJoinAttributes;
     defaultAttributes: ZJoinAttributes;
     constructor(children: MinitelObject[], attributes: Partial<ZJoinAttributes>, minitel: Minitel);
+    getDimensions(attributes: ZJoinAttributes, inheritMe: Partial<ZJoinAttributes>): {
+        width: number;
+        height: number;
+    };
     render(attributes: ZJoinAttributes, inheritMe: Partial<ZJoinAttributes>): RichCharGrid;
 }
 export interface ZJoinAttributes extends MinitelObjectAttributes {

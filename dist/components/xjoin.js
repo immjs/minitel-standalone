@@ -10,10 +10,48 @@ class XJoin extends minitelobject_js_1.MinitelObject {
         super(children, attributes, minitel);
         this.defaultAttributes = XJoin.defaultAttributes;
     }
+    getDimensions(attributes, inheritMe) {
+        const heightIfStretch = attributes.height || this.children.reduce((p, c) => {
+            const h = c.getDimensionsWrapper(inheritMe).height;
+            if (h == null)
+                return p;
+            return Math.max(p, h);
+        }, -Infinity);
+        let cumulatedWidth = 0;
+        const rendersNoFlexGrow = this.children.map((v) => {
+            if (v.attributes.flexGrow)
+                return null;
+            const render = v.getDimensionsWrapper(inheritMe, Object.assign({}, (attributes.heightAlign === 'stretch' ? { height: heightIfStretch } : {})));
+            cumulatedWidth += render.width;
+            return render;
+        });
+        const flexGrowTotal = this.children.reduce((p, c) => p + +(c.attributes.flexGrow || 0), 0);
+        const remainingSpace = attributes.width != null ? attributes.width - cumulatedWidth : null;
+        const unitOfFlexGrowSpace = remainingSpace != null ? remainingSpace / flexGrowTotal : null;
+        let usedRemainingSpace = 0;
+        const rendersYesFlexGrow = this.children.map((v) => {
+            if (!v.attributes.flexGrow)
+                return null;
+            if (unitOfFlexGrowSpace != null && remainingSpace != null) {
+                const prevUsedRemSpace = usedRemainingSpace;
+                usedRemainingSpace += unitOfFlexGrowSpace;
+                return v.getDimensionsWrapper(inheritMe, Object.assign(Object.assign({}, (attributes.heightAlign === 'stretch' ? { height: heightIfStretch } : {})), { width: Math.round(usedRemainingSpace) - Math.round(prevUsedRemSpace) }));
+            }
+            return v.getDimensionsWrapper(inheritMe);
+        });
+        const dimensions = rendersNoFlexGrow.map((v, i) => v != null ? v : rendersYesFlexGrow[i]);
+        const { gap } = attributes;
+        const width = attributes.width
+            || (typeof gap === 'number' ? gap : 0) * this.children.length + dimensions.reduce((p, v) => p + v.width, 0);
+        const height = attributes.heightAlign === 'stretch'
+            ? heightIfStretch
+            : attributes.height || Math.max(...dimensions.map((v) => v.height));
+        return { width, height };
+    }
     render(attributes, inheritMe) {
         const fillChar = new richchar_js_1.RichChar(attributes.fillChar, attributes).noSize();
         const heightIfStretch = attributes.height || this.children.reduce((p, c) => {
-            const h = c.renderWrapper(inheritMe).height;
+            const h = c.getDimensionsWrapper(inheritMe).height;
             if (h == null)
                 return p;
             return Math.max(p, h);

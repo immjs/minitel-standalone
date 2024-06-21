@@ -13,6 +13,24 @@ class Paragraph extends minitelobject_js_1.MinitelObject {
             this.appendChild(child);
         }
     }
+    getDimensions(attributes, inheritMe) {
+        const lines = [new richchargrid_js_1.RichCharGrid([[]])]; // Again, if someone smarter than me can figure out an elegant way, suit urself
+        for (let child of this.children) {
+            const render = child.renderLines(inheritMe, {
+                width: attributes.width,
+                forcedIndent: lines.at(-1).width,
+            });
+            const newMaxIdx = lines.length - 1;
+            for (let lineIdx in render) {
+                if (+lineIdx !== 0) {
+                    lines[newMaxIdx + +lineIdx] = new richchargrid_js_1.RichCharGrid([[]]);
+                }
+                lines[newMaxIdx + +lineIdx].mergeX(render[+lineIdx], 'end');
+            }
+        }
+        const width = attributes.width || Math.max(...lines.map((v) => v.width));
+        return { width, height: lines.reduce((p, v) => p + v.height, 0) };
+    }
     render(attributes, inheritMe) {
         const fillChar = new richchar_js_1.RichChar(attributes.fillChar, attributes).noSize();
         const lines = [new richchargrid_js_1.RichCharGrid([[]])];

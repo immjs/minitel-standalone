@@ -18,6 +18,12 @@ export class Container<T extends ContainerAttributes = ContainerAttributes, U ex
         this.children = new SingletonArray<MinitelObject>();
         if (children[0]) this.appendChild(children[0]);
     }
+    getDimensions(attributes: ContainerAttributes, inheritMe: Partial<ContainerAttributes>): { width: number; height: number; } {
+        return this.children[0].getDimensionsWrapper(inheritMe, {
+            ...(attributes.width != null ? { width: attributes.width } : {}),
+            ...(attributes.height != null ? { height: attributes.height } : {}),
+        });
+    }
     render(attributes: ContainerAttributes, inheritMe: Partial<ContainerAttributes>) {
         const fillChar = new RichChar(attributes.fillChar, attributes).noSize();
 

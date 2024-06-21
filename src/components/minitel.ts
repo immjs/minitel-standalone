@@ -153,6 +153,9 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
             }
         });
     }
+    getDimensions() {
+        return { width: 40, height: 24 + +this.settings.statusBar };
+    }
     async readyAsync() {
         await Promise.all(this.tillReady);
     }
@@ -162,11 +165,11 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
     renderString(): string {
         this.renderInvalidated = false;
         let renderGrid;
+
+        const { width, height } = this.getDimensions();
+
         try {
-            renderGrid = this.renderWrapper({}, {
-                width: 40,
-                height: 24 + +this.settings.statusBar,
-            });
+            renderGrid = this.renderWrapper({}, { width, height });
         } catch (err) {
             if (err instanceof InvalidRender) {
                 return this.renderString();
@@ -175,8 +178,8 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
             }
         }
 
-        renderGrid.setHeight(24 + +this.settings.statusBar, 'start', new RichChar(' '));
-        renderGrid.setWidth(40, 'start', new RichChar(' '));
+        renderGrid.setHeight(height, 'start', new RichChar(' '));
+        renderGrid.setWidth(width, 'start', new RichChar(' '));
 
         this.handleFocus();
 
@@ -314,9 +317,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
     }
     renderToStream() {
         // this.stream.write('\x0c');
-        const renderMe = this.renderString();
-        this.stream.write(renderMe);
-        setTimeout((function (this: Minitel) { this.emit('frame', false) }).bind(this), renderMe.length * (8000 / (this.speed || 300)));
+        this.stream.write(this.renderString());
     }
     queueCommand(command: string, expected: string | RegExp, callback: ((_arg0: string) => any) = ((_arg0: string) => {})) {
         const newNode = new LLNode(expected, callback);
@@ -327,10 +328,6 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
     }
     queueCommandAsync(command: string, expected: string | RegExp) {
         return new Promise<string>((r) => this.queueCommand(command, expected, r));
-    }
-    requestAnimationFrame(callback: (isArtificial: boolean) => any) {
-        this.once('frame', callback);
-        setTimeout((function (this: Minitel) { callback(false); this.off('frame', callback) }).bind(this), 100);
     }
     get colors() {
         if (this.model === 'Bs0') {

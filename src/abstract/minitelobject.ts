@@ -25,6 +25,32 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
         visible: true,
     };
     defaultAttributes: T = MinitelObject.defaultAttributes as T;
+    getDimensions(attributes: T, inheritMe: Partial<T>): ({ width: number, height: number }) {
+        const tempRender = this.render(attributes, inheritMe);
+        return { width: tempRender.width, height: tempRender.height };
+    }
+    getDimensionsWrapper(inheritedAttributes: Partial<T>, forcedAttributes?: Partial<T>): ({ width: number, height: number }) {
+        const attributes: T = {
+            ...this.defaultAttributes,
+            ...inheritedAttributes,
+            ...this.attributes,
+            ...forcedAttributes,
+        };
+        const pad = padding.normalise(attributes.pad);
+        attributes.width = attributes.width != null ? padding.exludeX(attributes.width, pad) : null;
+        attributes.height = attributes.height != null ? padding.exludeY(attributes.height, pad) : null;
+        
+        let result = this.getDimensions(attributes, inheritedProps({
+            ...inheritedAttributes,
+            ...this.attributes,
+            ...forcedAttributes,
+        }));
+
+        result.height += pad[0] + pad[2];
+        result.width += pad[1] + pad[3];
+
+        return result;
+    }
     constructor(children: MinitelObject[], attributes: Partial<T>, minitel: Minitel) {
         super();
         this.children = [];

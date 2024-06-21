@@ -39,6 +39,9 @@ export class Input
         
         this.on('key', this.keyEventListener);
     }
+    getDimensions(attributes: InputAttributes, inheritMe: Partial<InputAttributes>): { width: number; height: number; } {
+        return { width: attributes.width!, height: attributes.height! }
+    }
     set value(newValue: string) {
         const oldValue = this._value;
         this._value = newValue;

@@ -15,6 +15,9 @@ class Container extends minitelobject_js_1.MinitelObject {
         if (children[0])
             this.appendChild(children[0]);
     }
+    getDimensions(attributes, inheritMe) {
+        return this.children[0].getDimensionsWrapper(inheritMe, Object.assign(Object.assign({}, (attributes.width != null ? { width: attributes.width } : {})), (attributes.height != null ? { height: attributes.height } : {})));
+    }
     render(attributes, inheritMe) {
         const fillChar = new richchar_js_1.RichChar(attributes.fillChar, attributes).noSize();
         const render = this.children[0].renderWrapper(inheritMe, Object.assign(Object.assign({}, (attributes.width != null ? { width: attributes.width } : {})), (attributes.height != null ? { height: attributes.height } : {})));

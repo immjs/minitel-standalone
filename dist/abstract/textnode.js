@@ -13,6 +13,29 @@ class TextNode extends minitelobject_js_1.MinitelObject {
         super([], attributes, minitel);
         this.text = text;
     }
+    getDimensions(attributes, inheritMe) {
+        let text = this.text;
+        const width = attributes.width;
+        const xScalingFactor = attributes.doubleWidth ? 2 : 1;
+        const yScalingFactor = attributes.doubleHeight ? 2 : 1;
+        if (width != null) {
+            const actualWidth = Math.floor(width / xScalingFactor);
+            switch (attributes.wrap) {
+                case 'word-break':
+                    text = (0, word_wrap_1.default)(text, { indent: '', width: actualWidth, cut: true });
+                    break;
+                case 'word-wrap':
+                    text = (0, word_wrap_1.default)(text, { indent: '', width: actualWidth });
+                    break;
+                case 'clip':
+                    text = text.split('\n').map((v) => v.slice(0, actualWidth)).join('\n');
+                    break;
+            }
+        }
+        const lines = text.split(/\r?\n/g);
+        const concreteWidth = Math.max(...lines.map((v) => v.length * xScalingFactor));
+        return { width: concreteWidth, height: lines.length * yScalingFactor };
+    }
     render(attributes, inheritMe) {
         let text = this.text;
         const width = attributes.width;

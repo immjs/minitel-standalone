@@ -15,6 +15,10 @@ export declare class Input extends MinitelObject<InputAttributes, {
     oldScrollDelta: [number, number];
     lastFocusCursorX: number;
     constructor(children: [], attributes: Partial<InputAttributes>, minitel: Minitel);
+    getDimensions(attributes: InputAttributes, inheritMe: Partial<InputAttributes>): {
+        width: number;
+        height: number;
+    };
     set value(newValue: string);
     get value(): string;
     set cursorActuallyAt(newPos: [number, number]);

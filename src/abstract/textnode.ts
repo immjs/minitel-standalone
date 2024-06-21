@@ -11,6 +11,31 @@ export class TextNode extends MinitelObject {
         super([], attributes, minitel);
         this.text = text;
     }
+    getDimensions(attributes: MinitelObjectAttributes, inheritMe: Partial<MinitelObjectAttributes>): { width: number; height: number; } {
+        let text = this.text;
+        const width = attributes.width;
+        const xScalingFactor = attributes.doubleWidth ? 2 : 1;
+        const yScalingFactor = attributes.doubleHeight ? 2 : 1;
+        if (width != null) {
+            const actualWidth = Math.floor(width / xScalingFactor);
+            switch (attributes.wrap) {
+                case 'word-break':
+                    text = wrap(text, { indent: '', width: actualWidth, cut: true });
+                    break;
+                case 'word-wrap':
+                    text = wrap(text, { indent: '', width: actualWidth });
+                    break;
+                case 'clip':
+                    text = text.split('\n').map((v) => v.slice(0, actualWidth)).join('\n');
+                    break;
+            }
+        }
+
+        const lines = text.split(/\r?\n/g);
+        const concreteWidth = Math.max(...lines.map((v) => v.length * xScalingFactor));
+
+        return { width: concreteWidth, height: lines.length * yScalingFactor };
+    }
     render(attributes: MinitelObjectAttributes, inheritMe: Partial<MinitelObjectAttributes>) {
         let text = this.text;
         const width = attributes.width;

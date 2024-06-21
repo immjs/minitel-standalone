@@ -16,6 +16,18 @@ export class ZJoin extends MinitelObject<ZJoinAttributes> {
     constructor(children: MinitelObject[], attributes: Partial<ZJoinAttributes>, minitel: Minitel) {
         super(children, attributes, minitel);
     }
+    getDimensions(attributes: ZJoinAttributes, inheritMe: Partial<ZJoinAttributes>): { width: number; height: number; } {
+        const dimensions = this.children.map((v) => v.getDimensionsWrapper(inheritMe, {
+            width: attributes.width,
+            height: attributes.height,
+            ...(attributes.inheritTransparency ? { fillChar: '\x09' } : {}),
+        }));
+
+        const width = Math.max(...dimensions.map((v) => v.width));
+        const height = Math.max(...dimensions.map((v) => v.height));
+
+        return { width, height };
+    }
     render(attributes: ZJoinAttributes, inheritMe: Partial<ZJoinAttributes>) {
         const fillChar = new RichChar(attributes.fillChar, attributes).noSize();
         const transparentFillChar = new RichChar('\x09', attributes).noSize();

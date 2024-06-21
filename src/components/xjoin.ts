@@ -2,7 +2,7 @@ import { MinitelObject } from '../abstract/minitelobject.js';
 import { RichChar } from '../richchar.js';
 import { RichCharGrid } from '../richchargrid.js';
 import { Align, MinitelObjectAttributes } from '../types.js';
-import { alignInvrt, inheritedProps } from '../utils.js';
+import { alignInvrt } from '../utils.js';
 import type { Minitel } from './minitel.js';
 
 export class XJoin extends MinitelObject<XJoinAttributes> {
@@ -16,11 +16,62 @@ export class XJoin extends MinitelObject<XJoinAttributes> {
     constructor(children: MinitelObject[], attributes: Partial<MinitelObjectAttributes>, minitel: Minitel) {
         super(children, attributes, minitel);
     }
+    getDimensions(attributes: XJoinAttributes, inheritMe: Partial<XJoinAttributes>): { width: number; height: number; } {
+        const heightIfStretch = attributes.height || this.children.reduce((p, c) => {
+            const h = c.getDimensionsWrapper(inheritMe).height;
+            if (h == null) return p;
+            return Math.max(p, h);
+        }, -Infinity);
+
+        let cumulatedWidth = 0;
+
+        const rendersNoFlexGrow = this.children.map((v) => {
+            if (v.attributes.flexGrow) return null;
+            const render = v.getDimensionsWrapper(inheritMe, {
+                ...(attributes.heightAlign === 'stretch' ? { height: heightIfStretch } : {}),
+            });
+            cumulatedWidth += render.width;
+            return render;
+        });
+
+        const flexGrowTotal = this.children.reduce((p, c) => p + +(c.attributes.flexGrow || 0), 0);
+
+        const remainingSpace = attributes.width != null ? attributes.width - cumulatedWidth : null;
+
+        const unitOfFlexGrowSpace = remainingSpace != null ? remainingSpace / flexGrowTotal : null;
+
+        let usedRemainingSpace = 0;
+
+        const rendersYesFlexGrow = this.children.map((v) => {
+            if (!v.attributes.flexGrow) return null;
+            if (unitOfFlexGrowSpace != null && remainingSpace != null) {
+                const prevUsedRemSpace = usedRemainingSpace;
+                usedRemainingSpace += unitOfFlexGrowSpace;
+                return v.getDimensionsWrapper(inheritMe, {
+                    ...(attributes.heightAlign === 'stretch' ? { height: heightIfStretch } : {}),
+                    width: Math.round(usedRemainingSpace) - Math.round(prevUsedRemSpace),
+                });
+            }
+            return v.getDimensionsWrapper(inheritMe);
+        });
+
+        const dimensions = rendersNoFlexGrow.map((v, i) => v != null ? v : rendersYesFlexGrow[i]) as { width: number; height: number; }[];
+
+        const { gap } = attributes;
+        const width = attributes.width
+            || (typeof gap === 'number' ? gap : 0) * this.children.length + dimensions.reduce((p, v) => p + v.width, 0);
+        
+        const height = attributes.heightAlign === 'stretch'
+            ? heightIfStretch
+            : attributes.height || Math.max(...dimensions.map((v) => v.height));
+
+        return { width, height };
+    }
     render(attributes: XJoinAttributes, inheritMe: Partial<XJoinAttributes>) {
         const fillChar = new RichChar(attributes.fillChar, attributes).noSize();
 
         const heightIfStretch = attributes.height || this.children.reduce((p, c) => {
-            const h = c.renderWrapper(inheritMe).height;
+            const h = c.getDimensionsWrapper(inheritMe).height;
             if (h == null) return p;
             return Math.max(p, h);
         }, -Infinity);

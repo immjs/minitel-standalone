@@ -5,6 +5,10 @@ export declare class Container<T extends ContainerAttributes = ContainerAttribut
     static defaultAttributes: ContainerAttributes;
     defaultAttributes: T;
     constructor(children: never[] | undefined, attributes: Partial<T>, minitel: Minitel);
+    getDimensions(attributes: ContainerAttributes, inheritMe: Partial<ContainerAttributes>): {
+        width: number;
+        height: number;
+    };
     render(attributes: ContainerAttributes, inheritMe: Partial<ContainerAttributes>): import("../richchargrid.js").RichCharGrid;
 }
 export interface ContainerAttributes extends MinitelObjectAttributes {

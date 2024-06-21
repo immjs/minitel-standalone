@@ -18,6 +18,9 @@ class Input extends minitelobject_js_1.MinitelObject {
         this.lastFocusCursorX = 0;
         this.on('key', this.keyEventListener);
     }
+    getDimensions(attributes, inheritMe) {
+        return { width: attributes.width, height: attributes.height };
+    }
     set value(newValue) {
         const oldValue = this._value;
         this._value = newValue;

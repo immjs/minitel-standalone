@@ -6,6 +6,10 @@ export declare class YJoin extends MinitelObject<YJoinAttributes> {
     static defaultAttributes: YJoinAttributes;
     defaultAttributes: YJoinAttributes;
     constructor(children: MinitelObject[], attributes: Partial<MinitelObjectAttributes>, minitel: Minitel);
+    getDimensions(attributes: YJoinAttributes, inheritMe: Partial<YJoinAttributes>): {
+        width: number;
+        height: number;
+    };
     render(attributes: YJoinAttributes, inheritMe: Partial<YJoinAttributes>): RichCharGrid;
 }
 export interface YJoinAttributes extends MinitelObjectAttributes {

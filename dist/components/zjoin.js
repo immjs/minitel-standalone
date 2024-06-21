@@ -9,6 +9,12 @@ class ZJoin extends minitelobject_js_1.MinitelObject {
         super(children, attributes, minitel);
         this.defaultAttributes = ZJoin.defaultAttributes;
     }
+    getDimensions(attributes, inheritMe) {
+        const dimensions = this.children.map((v) => v.getDimensionsWrapper(inheritMe, Object.assign({ width: attributes.width, height: attributes.height }, (attributes.inheritTransparency ? { fillChar: '\x09' } : {}))));
+        const width = Math.max(...dimensions.map((v) => v.width));
+        const height = Math.max(...dimensions.map((v) => v.height));
+        return { width, height };
+    }
     render(attributes, inheritMe) {
         const fillChar = new richchar_js_1.RichChar(attributes.fillChar, attributes).noSize();
         const transparentFillChar = new richchar_js_1.RichChar('\x09', attributes).noSize();

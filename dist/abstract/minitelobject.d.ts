@@ -12,6 +12,14 @@ export declare class MinitelObject<T extends MinitelObjectAttributes = MinitelOb
     keepElmDesc: boolean;
     static defaultAttributes: MinitelObjectAttributes;
     defaultAttributes: T;
+    getDimensions(attributes: T, inheritMe: Partial<T>): ({
+        width: number;
+        height: number;
+    });
+    getDimensionsWrapper(inheritedAttributes: Partial<T>, forcedAttributes?: Partial<T>): ({
+        width: number;
+        height: number;
+    });
     constructor(children: MinitelObject[], attributes: Partial<T>, minitel: Minitel);
     appendChild(child: MinitelObject): void;
     insertBeforeChild(child: MinitelObject, beforeChild: MinitelObject): void;

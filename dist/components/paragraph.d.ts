@@ -7,5 +7,9 @@ import { Span } from './span.js';
 export declare class Paragraph extends MinitelObject {
     children: (TextNode | Span)[];
     constructor(children: TextNode[], attributes: Partial<MinitelObjectAttributes>, minitel: Minitel);
+    getDimensions(attributes: MinitelObjectAttributes, inheritMe: Partial<MinitelObjectAttributes>): {
+        width: number;
+        height: number;
+    };
     render(attributes: MinitelObjectAttributes, inheritMe: Partial<MinitelObjectAttributes>): RichCharGrid;
 }

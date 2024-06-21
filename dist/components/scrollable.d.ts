@@ -23,6 +23,10 @@ export declare class Scrollable extends Container<ScrollableAttributes, {
     popPrevScrollDelta(callback: (_arg0: [number, number]) => unknown): void;
     keyEventListener(str: string): void;
     unmount(): void;
+    getDimensions(attributes: ScrollableAttributes, inheritMe: Partial<ScrollableAttributes>): {
+        width: number;
+        height: number;
+    };
     render(attributes: ScrollableAttributes, inheritMe: Partial<ScrollableAttributes>): RichCharGrid;
     get disabled(): boolean;
 }

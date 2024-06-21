@@ -118,6 +118,9 @@ class Minitel extends container_js_1.Container {
             }
         });
     }
+    getDimensions() {
+        return { width: 40, height: 24 + +this.settings.statusBar };
+    }
     readyAsync() {
         return __awaiter(this, void 0, void 0, function* () {
             yield Promise.all(this.tillReady);
@@ -129,11 +132,9 @@ class Minitel extends container_js_1.Container {
     renderString() {
         this.renderInvalidated = false;
         let renderGrid;
+        const { width, height } = this.getDimensions();
         try {
-            renderGrid = this.renderWrapper({}, {
-                width: 40,
-                height: 24 + +this.settings.statusBar,
-            });
+            renderGrid = this.renderWrapper({}, { width, height });
         }
         catch (err) {
             if (err instanceof invalidrender_js_1.InvalidRender) {
@@ -143,8 +144,8 @@ class Minitel extends container_js_1.Container {
                 throw err;
             }
         }
-        renderGrid.setHeight(24 + +this.settings.statusBar, 'start', new richchar_js_1.RichChar(' '));
-        renderGrid.setWidth(40, 'start', new richchar_js_1.RichChar(' '));
+        renderGrid.setHeight(height, 'start', new richchar_js_1.RichChar(' '));
+        renderGrid.setWidth(width, 'start', new richchar_js_1.RichChar(' '));
         this.handleFocus();
         const outputString = ['\x14\x1e'];
         let lastAttributes = Minitel.defaultScreenAttributes;
@@ -253,9 +254,7 @@ class Minitel extends container_js_1.Container {
     }
     renderToStream() {
         // this.stream.write('\x0c');
-        const renderMe = this.renderString();
-        this.stream.write(renderMe);
-        setTimeout((function () { this.emit('frame', false); }).bind(this), renderMe.length * (8000 / (this.speed || 300)));
+        this.stream.write(this.renderString());
     }
     queueCommand(command, expected, callback = ((_arg0) => { })) {
         const newNode = new linked_list_js_1.LLNode(expected, callback);
@@ -264,10 +263,6 @@ class Minitel extends container_js_1.Container {
     }
     queueCommandAsync(command, expected) {
         return new Promise((r) => this.queueCommand(command, expected, r));
-    }
-    requestAnimationFrame(callback) {
-        this.once('frame', callback);
-        setTimeout((function () { callback(false); this.off('frame', callback); }).bind(this), 100);
     }
     get colors() {
         if (this.model === 'Bs0') {

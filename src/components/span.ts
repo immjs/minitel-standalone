@@ -17,6 +17,27 @@ export class Span extends MinitelObject {
         }
     }
 
+    getDimensions(attributes: MinitelObjectAttributes, inheritMe: Partial<MinitelObjectAttributes>): { width: number; height: number; } {
+        const lines = [new RichCharGrid([[]])];
+        for (let child of this.children) {
+            const render = child.renderLines(inheritMe, { // Someone smarter than me will figure out something better than this
+                width: attributes.width,
+                forcedIndent: lines.at(-1)!.width,
+            });
+            const newMaxIdx = lines.length - 1;
+            for (let lineIdx in render) {
+                if (+lineIdx !== 0) {
+                    lines[newMaxIdx + +lineIdx] = new RichCharGrid([[]]);
+                }
+                lines[newMaxIdx + +lineIdx].mergeX(render[+lineIdx], 'end');
+            }
+        }
+
+        const width = attributes.width || Math.max(...lines.map((v) => v.width));
+
+        return { width, height: lines.reduce((p, v) => p + v.height, 0) };
+    }
+
     render(attributes: MinitelObjectAttributes, inheritMe: Partial<MinitelObjectAttributes>) {
         const fillChar = new RichChar(attributes.fillChar, attributes).noSize();
         const lines = [new RichCharGrid([[]])];

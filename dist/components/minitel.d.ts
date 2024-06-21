@@ -28,6 +28,10 @@ export declare class Minitel extends Container<ContainerAttributes, {
     model: string | undefined;
     private tillReady;
     constructor(stream: Duplex, settings: Partial<MinitelSettings>);
+    getDimensions(): {
+        width: number;
+        height: number;
+    };
     readyAsync(): Promise<void>;
     invalidateRender(): void;
     renderString(): string;
@@ -38,6 +42,5 @@ export declare class Minitel extends Container<ContainerAttributes, {
     renderToStream(): void;
     queueCommand(command: string, expected: string | RegExp, callback?: ((_arg0: string) => any)): void;
     queueCommandAsync(command: string, expected: string | RegExp): Promise<string>;
-    requestAnimationFrame(callback: (isArtificial: boolean) => any): void;
     get colors(): number[][];
 }

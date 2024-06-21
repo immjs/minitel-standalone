@@ -92,55 +92,88 @@ class Scrollable extends container_js_1.Container {
         if (this.artificialBlink)
             clearTimeout(this.artificialBlink);
     }
-    render(attributes, inheritMe) {
-        // now its 3 am and i don't know how i'll read back
-        // this code it's such a mess
-        const fillChar = new richchar_js_1.RichChar(attributes.fillChar, attributes);
-        let render;
+    getDimensions(attributes, inheritMe) {
+        const childrenDimensionsFirstTry = this.children[0].getDimensionsWrapper(inheritMe);
+        let renderAttributes = attributes;
         let autoedX = false;
         let autoedY = false;
-        if (attributes.width == null && attributes.height == null) {
-            render = super.render(attributes, inheritMe);
-        }
-        else if (attributes.overflowY !== 'hidden') {
-            if (attributes.height == null) {
-                render = super.render(attributes, inheritMe);
-            }
-            else {
+        if (attributes.width != null && attributes.height != null && attributes.overflowY !== 'hidden') {
+            if (attributes.height != null) {
                 if (attributes.overflowY === 'auto') {
-                    const possibleRender = super.render(Object.assign(Object.assign({}, attributes), { width: attributes.overflowX === 'hidden' ? attributes.width : null, height: null }), inheritMe);
-                    if (possibleRender.height <= attributes.height) {
-                        render = possibleRender;
+                    renderAttributes = Object.assign(Object.assign({}, attributes), { width: attributes.overflowX === 'hidden' ? attributes.width : null, height: null });
+                    const possibleRender = super.getDimensions(renderAttributes, inheritMe);
+                    if (possibleRender.height <= attributes.height)
                         autoedY = true;
-                    }
                 }
                 if (!autoedY) {
                     const width = attributes.width != null && attributes.overflowX === 'hidden'
                         ? attributes.width - 1
                         : null;
-                    render = super.render(Object.assign(Object.assign({}, attributes), { width, height: null }), inheritMe);
+                    renderAttributes = Object.assign(Object.assign({}, attributes), { width, height: null });
                 }
             }
         }
         else {
-            if (attributes.width == null) {
-                render = super.render(attributes, inheritMe);
-            }
-            else {
+            if (attributes.width != null) {
                 if (attributes.overflowX === 'auto') {
-                    const possibleRender = super.render(Object.assign(Object.assign({}, attributes), { height: attributes.height, width: null }), inheritMe);
-                    if (possibleRender.width <= attributes.width) {
-                        render = possibleRender;
+                    renderAttributes = Object.assign(Object.assign({}, attributes), { height: attributes.height, width: null });
+                    const possibleRender = super.getDimensions(renderAttributes, inheritMe);
+                    if (possibleRender.width <= attributes.width)
                         autoedX = true;
-                    }
                 }
                 if (!autoedX) {
                     const height = attributes.height != null ? attributes.height - 1 : null;
-                    render = super.render(Object.assign(Object.assign({}, attributes), { height, width: null }), inheritMe);
+                    renderAttributes = Object.assign(Object.assign({}, attributes), { height, width: null });
                 }
             }
         }
-        const finalRender = render; // Source: Trust me bro
+        const dimensions = super.getDimensions(renderAttributes, inheritMe);
+        if (attributes.overflowY !== 'hidden' && attributes.overflowY !== 'noscrollbar' && !autoedY && attributes.height != null) {
+            dimensions.width += 1;
+        }
+        if (attributes.overflowX !== 'hidden' && attributes.overflowX !== 'noscrollbar' && !autoedX && attributes.width != null) {
+            dimensions.height += 1;
+        }
+        return dimensions;
+    }
+    render(attributes, inheritMe) {
+        // now its 3 am and i don't know how i'll read back
+        // this code it's such a mess
+        const fillChar = new richchar_js_1.RichChar(attributes.fillChar, attributes);
+        let renderAttributes = attributes;
+        let autoedX = false;
+        let autoedY = false;
+        if (attributes.width != null && attributes.height != null && attributes.overflowY !== 'hidden') {
+            if (attributes.height != null) {
+                if (attributes.overflowY === 'auto') {
+                    renderAttributes = Object.assign(Object.assign({}, attributes), { width: attributes.overflowX === 'hidden' ? attributes.width : null, height: null });
+                    const possibleRender = super.getDimensions(renderAttributes, inheritMe);
+                    if (possibleRender.height <= attributes.height)
+                        autoedY = true;
+                }
+                if (!autoedY) {
+                    const width = attributes.width != null && attributes.overflowX === 'hidden'
+                        ? attributes.width - 1
+                        : null;
+                    renderAttributes = Object.assign(Object.assign({}, attributes), { width, height: null });
+                }
+            }
+        }
+        else {
+            if (attributes.width != null) {
+                if (attributes.overflowX === 'auto') {
+                    renderAttributes = Object.assign(Object.assign({}, attributes), { height: attributes.height, width: null });
+                    const possibleRender = super.getDimensions(renderAttributes, inheritMe);
+                    if (possibleRender.width <= attributes.width)
+                        autoedX = true;
+                }
+                if (!autoedX) {
+                    const height = attributes.height != null ? attributes.height - 1 : null;
+                    renderAttributes = Object.assign(Object.assign({}, attributes), { height, width: null });
+                }
+            }
+        }
+        const finalRender = super.render(renderAttributes, inheritMe); // Source: Trust me bro
         const originalWidth = finalRender.width;
         const originalHeight = finalRender.height;
         const maxScrollSizeX = attributes.overflowY !== 'hidden' && attributes.overflowY !== 'noscrollbar' && !autoedY && attributes.width != null
