@@ -1,6 +1,6 @@
 {
   "name": "minitel-standalone",
-  "version": "1.8.3",
+  "version": "1.9.0",
   "description": "A standalone package for minitel components",
   "main": "dist/index.js",
   "scripts": {
