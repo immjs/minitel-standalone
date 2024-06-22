@@ -28,12 +28,12 @@ export class RichChar<T> {
     static getAttributesApplier(attributes: Partial<CharAttributes>, previousAttributes: CharAttributes) {
         const result = [];
         const offsets: Record<keyof Omit<CharAttributes, 'doubleHeight' | 'doubleWidth'>, number | number[]> = {
+            charset: [0x0f, 0x0e, 0x19],
             noBlink: 0x48,
             fg: 0x40,
             bg: 0x50,
             underline: 0x59,
             invert: 0x5C,
-            charset: [0x0f, 0x0e, 0x19],
         };
         let attribute: keyof Omit<CharAttributes, 'doubleHeight' | 'doubleWidth'>;
         for (attribute in offsets) {
