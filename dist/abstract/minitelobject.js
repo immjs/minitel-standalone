@@ -81,7 +81,7 @@ class MinitelObject extends node_events_1.EventEmitter {
         if (attributes.width != null)
             result.setWidth(attributes.width, 'end');
         if (attributes.height != null)
-            result.setWidth(attributes.height, 'end');
+            result.setHeight(attributes.height, 'end');
         // Descriptor before pad, is this the right choice?
         if (this.keepElmDesc)
             result.locationDescriptors.add(this, new locationdescriptor_js_1.LocationDescriptor(0, 0, result.width, result.height));
