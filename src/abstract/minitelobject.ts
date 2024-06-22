@@ -117,7 +117,7 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
         }
 
         if (attributes.width != null) result.setWidth(attributes.width, 'end');
-        if (attributes.height != null) result.setWidth(attributes.height, 'end');
+        if (attributes.height != null) result.setHeight(attributes.height, 'end');
 
         // Descriptor before pad, is this the right choice?
         if (this.keepElmDesc) result.locationDescriptors.add(this, new LocationDescriptor(0, 0, result.width, result.height));
