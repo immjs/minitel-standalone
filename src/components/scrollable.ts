@@ -15,6 +15,8 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
         scrollbarColor: 7,
         blinkPeriod: 500,
         onScroll: () => {},
+        onFocus: () => {},
+        onBlur: () => {},
     };
     defaultAttributes = Scrollable.defaultAttributes;
     _focused = false;
@@ -35,12 +37,16 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
         return this._scrollDelta;
     }
     set focused(val) {
-        if (this._focused !== val) this.minitel.invalidateRender();
-        if (val) {
-            if (this.minitel.focusedObj) this.minitel.focusedObj.focused = false;
-            this._focused = true;
-        } else {
-            this._focused = false;
+        if (this._focused !== val) {
+            this.minitel.invalidateRender();
+            if (val) {
+                if (this.minitel.focusedObj) this.minitel.focusedObj.focused = false;
+                this._focused = true;
+                if (this.attributes.onFocus != null) this.attributes.onFocus();
+            } else {
+                this._focused = false;
+                if (this.attributes.onBlur != null) this.attributes.onBlur();
+            }
         }
     }
     get focused() {
@@ -131,7 +137,7 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
                     renderAttributes = { ...attributes, width, height: null };
                 }
             }
-        } else {
+        } else if (attributes.width != null && attributes.height != null) {
             if (attributes.width != null) {
                 if (attributes.overflowX === 'auto') {
                     renderAttributes = {
@@ -192,7 +198,7 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
                     renderAttributes = { ...attributes, width, height: null };
                 }
             }
-        } else {
+        } else if (attributes.width != null && attributes.height != null) {
             if (attributes.width != null) {
                 if (attributes.overflowX === 'auto') {
                     renderAttributes = {
@@ -299,6 +305,8 @@ export interface ScrollableAttributes extends ContainerAttributes {
     autofocus: boolean;
     disabled: boolean;
     onScroll: (scrollDelta: [number, number]) => void;
+    onFocus: () => void;
+    onBlur: () => void;
     scrollbarColor: number;
     scrollbarBackColor: number;
     blinkPeriod: number;

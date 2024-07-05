@@ -21,6 +21,8 @@ export class Input
         multiline: false,
         onChange: () => {},
         onScroll: () => {},
+        onFocus: () => {},
+        onBlur: () => {},
     };
     defaultAttributes = Input.defaultAttributes;
     _value = '';
@@ -67,12 +69,16 @@ export class Input
         return this._scrollDelta;
     }
     set focused(val) {
-        if (this._focused !== val) this.minitel.invalidateRender();
-        if (val) {
-            if (this.minitel.focusedObj) this.minitel.focusedObj.focused = false;
-            this._focused = true;
-        } else {
-            this._focused = false;
+        if (this._focused !== val) {
+            this.minitel.invalidateRender();
+            if (val) {
+                if (this.minitel.focusedObj) this.minitel.focusedObj.focused = false;
+                this._focused = true;
+                if (this.attributes.onFocus != null) this.attributes.onFocus();
+            } else {
+                this._focused = false;
+                if (this.attributes.onBlur != null) this.attributes.onBlur();
+            }
         }
     }
     get focused() {
