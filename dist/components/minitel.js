@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,16 +7,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Minitel = void 0;
-const container_js_1 = require("./container.js");
-const richchargrid_js_1 = require("../richchargrid.js");
-const singleton_js_1 = require("../singleton.js");
-const richchar_js_1 = require("../richchar.js");
-const inputConstants_js_1 = require("../inputConstants.js");
-const invalidrender_js_1 = require("../abstract/invalidrender.js");
-const linked_list_js_1 = require("../abstract/linked_list.js");
-class Minitel extends container_js_1.Container {
+import { Container } from './container.js';
+import { RichCharGrid } from '../richchargrid.js';
+import { SingletonArray } from '../singleton.js';
+import { RichChar } from '../richchar.js';
+import { expectNextChars } from '../inputConstants.js';
+import { InvalidRender } from '../abstract/invalidrender.js';
+import { LLNode, LinkedList } from '../abstract/linked_list.js';
+export class Minitel extends Container {
     constructor(stream, settings) {
         const that = null;
         super([], {}, that);
@@ -26,11 +23,11 @@ class Minitel extends container_js_1.Container {
         this.lastImmediate = null;
         this.tillReady = [];
         this.minitel = this;
-        this.children = new singleton_js_1.SingletonArray();
+        this.children = new SingletonArray();
         this.settings = Object.assign({ statusBar: false, localEcho: false, extendedMode: true, defaultCase: 'upper' }, settings);
         this.stream = stream;
-        this.previousRender = richchargrid_js_1.RichCharGrid.fill(40, 24 + +this.settings.statusBar, new richchar_js_1.RichChar(' '));
-        this.rxQueue = new linked_list_js_1.LinkedList();
+        this.previousRender = RichCharGrid.fill(40, 24 + +this.settings.statusBar, new RichChar(' '));
+        this.rxQueue = new LinkedList();
         // Take care of localEcho
         this.queueCommand([
             '\x1b\x3b',
@@ -71,7 +68,7 @@ class Minitel extends container_js_1.Container {
                     howManyToExpect = 0;
                 }
                 else {
-                    howManyToExpect = Math.max(0, howManyToExpect + (inputConstants_js_1.expectNextChars[acc] || 0));
+                    howManyToExpect = Math.max(0, howManyToExpect + (expectNextChars[acc] || 0));
                 }
                 if (howManyToExpect === 0) {
                     let prev = undefined;
@@ -137,15 +134,15 @@ class Minitel extends container_js_1.Container {
             renderGrid = this.renderWrapper({}, { width, height });
         }
         catch (err) {
-            if (err instanceof invalidrender_js_1.InvalidRender) {
+            if (err instanceof InvalidRender) {
                 return this.renderString();
             }
             else {
                 throw err;
             }
         }
-        renderGrid.setHeight(height, 'start', new richchar_js_1.RichChar(' '));
-        renderGrid.setWidth(width, 'start', new richchar_js_1.RichChar(' '));
+        renderGrid.setHeight(height, 'start', new RichChar(' '));
+        renderGrid.setWidth(width, 'start', new RichChar(' '));
         this.handleFocus();
         const outputString = ['\x14\x1e'];
         let lastAttributes = Minitel.defaultScreenAttributes;
@@ -165,7 +162,7 @@ class Minitel extends container_js_1.Container {
                     && (char.char != null
                         || (renderGrid.grid[+lineIdx + char.delta[0]][+charIdx + char.delta[1]].isEqual(this.previousRender.grid[+lineIdx + char.delta[0]][+charIdx + char.delta[1]])))) {
                     skippedACharCounter += 1;
-                    lastAttributes = Object.assign({ fg: 7, bg: 0, doubleWidth: false, doubleHeight: false, noBlink: true, invert: false }, richchar_js_1.RichChar.getDelimited(prevChar.attributes, lastAttributes.charset));
+                    lastAttributes = Object.assign({ fg: 7, bg: 0, doubleWidth: false, doubleHeight: false, noBlink: true, invert: false }, RichChar.getDelimited(prevChar.attributes, lastAttributes.charset));
                 }
                 else {
                     if (skippedACharCounter !== 0) {
@@ -174,7 +171,7 @@ class Minitel extends container_js_1.Container {
                     }
                     // outputString.push('\x09'.repeat(skippedACharCounter));
                     const diff = char.attributesDiff(lastAttributes);
-                    const applier = richchar_js_1.RichChar.getAttributesApplier(diff, lastAttributes);
+                    const applier = RichChar.getAttributesApplier(diff, lastAttributes);
                     outputString.push(applier);
                     lastAttributes = char.attributes;
                     outputString.push(typeof char.char === 'string' ? char.char : ['', ' '][char.delta[0]]);
@@ -186,7 +183,7 @@ class Minitel extends container_js_1.Container {
                 outputString.push('\x0b');
             if (+lineIdx === 0 && this.settings.statusBar)
                 outputString.push('\x1f\x41\x41');
-            lastAttributes = Object.assign(Object.assign({}, lastAttributes), richchar_js_1.RichChar.getDelimited(Minitel.defaultScreenAttributes, lastAttributes.charset));
+            lastAttributes = Object.assign(Object.assign({}, lastAttributes), RichChar.getDelimited(Minitel.defaultScreenAttributes, lastAttributes.charset));
         }
         this.previousRender = renderGrid.copy();
         if (this.focusedObj) {
@@ -257,7 +254,7 @@ class Minitel extends container_js_1.Container {
         this.stream.write(this.renderString());
     }
     queueCommand(command, expected, callback = ((_arg0) => { })) {
-        const newNode = new linked_list_js_1.LLNode(expected, callback);
+        const newNode = new LLNode(expected, callback);
         this.rxQueue.append(newNode);
         this.stream.write(command);
     }
@@ -289,7 +286,6 @@ class Minitel extends container_js_1.Container {
         ];
     }
 }
-exports.Minitel = Minitel;
 Minitel.defaultScreenAttributes = {
     fg: 7,
     bg: 0,

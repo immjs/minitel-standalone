@@ -1,11 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.XJoin = void 0;
-const minitelobject_js_1 = require("../abstract/minitelobject.js");
-const richchar_js_1 = require("../richchar.js");
-const richchargrid_js_1 = require("../richchargrid.js");
-const utils_js_1 = require("../utils.js");
-class XJoin extends minitelobject_js_1.MinitelObject {
+import { MinitelObject } from '../abstract/minitelobject.js';
+import { RichChar } from '../richchar.js';
+import { RichCharGrid } from '../richchargrid.js';
+import { alignInvrt } from '../utils.js';
+export class XJoin extends MinitelObject {
     constructor(children, attributes, minitel) {
         super(children, attributes, minitel);
         this.defaultAttributes = XJoin.defaultAttributes;
@@ -49,7 +46,7 @@ class XJoin extends minitelobject_js_1.MinitelObject {
         return { width, height };
     }
     render(attributes, inheritMe) {
-        const fillChar = new richchar_js_1.RichChar(attributes.fillChar, attributes).noSize();
+        const fillChar = new RichChar(attributes.fillChar, attributes).noSize();
         const heightIfStretch = attributes.height || this.children.reduce((p, c) => {
             const h = c.getDimensionsWrapper(inheritMe).height;
             if (h == null)
@@ -79,12 +76,12 @@ class XJoin extends minitelobject_js_1.MinitelObject {
             return v.renderWrapper(inheritMe);
         });
         const renders = rendersNoFlexGrow.map((v, i) => v != null ? v : rendersYesFlexGrow[i]);
-        const result = new richchargrid_js_1.RichCharGrid();
+        const result = new RichCharGrid();
         const height = attributes.heightAlign === 'stretch'
             ? heightIfStretch
             : attributes.height || Math.max(...renders.map((v) => v.height));
         if (renders.length === 0)
-            return richchargrid_js_1.RichCharGrid.fill(attributes.width || 0, attributes.height || 0, fillChar);
+            return RichCharGrid.fill(attributes.width || 0, attributes.height || 0, fillChar);
         const contentsWidth = renders.reduce((c, v) => c + v.width, 0);
         // space-between: w / (n - 1)
         // space-around: w / n
@@ -107,7 +104,7 @@ class XJoin extends minitelobject_js_1.MinitelObject {
         let gapCumul = 0;
         for (let render of renders) {
             if (render !== renders[0]) {
-                const gapConstituent = new richchargrid_js_1.RichCharGrid([]);
+                const gapConstituent = new RichCharGrid([]);
                 const lastCumul = gapCumul;
                 gapCumul += gapWidth;
                 gapConstituent.setHeight(height, 'end', fillChar);
@@ -115,13 +112,12 @@ class XJoin extends minitelobject_js_1.MinitelObject {
                 result.mergeX(gapConstituent);
             }
             if (attributes.heightAlign !== 'stretch')
-                render.setHeight(height, utils_js_1.alignInvrt[attributes.heightAlign], fillChar);
+                render.setHeight(height, alignInvrt[attributes.heightAlign], fillChar);
             result.mergeX(render);
         }
         if (attributes.width != null)
-            result.setWidth(attributes.width, utils_js_1.alignInvrt[attributes.widthAlign], fillChar);
+            result.setWidth(attributes.width, alignInvrt[attributes.widthAlign], fillChar);
         return result;
     }
 }
-exports.XJoin = XJoin;
-XJoin.defaultAttributes = Object.assign(Object.assign({}, minitelobject_js_1.MinitelObject.defaultAttributes), { gap: 0, widthAlign: 'start', heightAlign: 'stretch' });
+XJoin.defaultAttributes = Object.assign(Object.assign({}, MinitelObject.defaultAttributes), { gap: 0, widthAlign: 'start', heightAlign: 'stretch' });

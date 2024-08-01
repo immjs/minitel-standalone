@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.RichCharGrid = void 0;
-const locationdescriptor_js_1 = require("./locationdescriptor.js");
-const richchar_js_1 = require("./richchar.js");
-class RichCharGrid {
+import { LocationDescriptors } from './locationdescriptor.js';
+import { RichChar } from './richchar.js';
+export class RichCharGrid {
     constructor(grid = []) {
         this._width = 0;
         this.grid = grid;
-        this.locationDescriptors = new locationdescriptor_js_1.LocationDescriptors();
+        this.locationDescriptors = new LocationDescriptors();
         this.width; // run check on getter
     }
     mostCommonAttribute(attribute) {
@@ -32,9 +29,9 @@ class RichCharGrid {
         const result = new RichCharGrid([[]]);
         const allNewChars = [];
         for (let char of line) {
-            const newChar = new richchar_js_1.RichChar(char, attributes);
+            const newChar = new RichChar(char, attributes);
             allNewChars.push(newChar);
-            const emptyCodepdChar = new richchar_js_1.RichChar(null, attributes, [0, -1], newChar).noSize();
+            const emptyCodepdChar = new RichChar(null, attributes, [0, -1], newChar).noSize();
             result.mergeX(new RichCharGrid(attributes.doubleWidth
                 ? [[newChar, emptyCodepdChar]]
                 : [[newChar]]));
@@ -43,11 +40,11 @@ class RichCharGrid {
             const newLine = new RichCharGrid([[]]);
             for (let newChar of allNewChars) {
                 newLine.mergeX(new RichCharGrid([
-                    [new richchar_js_1.RichChar(null, Object.assign({}, attributes), [1, 0], newChar).noSize()]
+                    [new RichChar(null, Object.assign({}, attributes), [1, 0], newChar).noSize()]
                 ]));
                 if (attributes.doubleWidth) {
                     newLine.mergeX(new RichCharGrid([
-                        [new richchar_js_1.RichChar(null, Object.assign({}, attributes), [1, -1], newChar).noSize()]
+                        [new RichChar(null, Object.assign({}, attributes), [1, -1], newChar).noSize()]
                     ]));
                 }
             }
@@ -131,7 +128,7 @@ class RichCharGrid {
                 return this;
         }
     }
-    setHeight(height, heightAlign, char = new richchar_js_1.RichChar(' ')) {
+    setHeight(height, heightAlign, char = new RichChar(' ')) {
         if (this.height === height)
             return this;
         if (this.height > height)
@@ -151,7 +148,7 @@ class RichCharGrid {
                 return this;
         }
     }
-    setWidth(width, widthAlign, char = new richchar_js_1.RichChar(' ')) {
+    setWidth(width, widthAlign, char = new RichChar(' ')) {
         if (this.width === width)
             return this;
         if (this.width > width)
@@ -238,4 +235,3 @@ ${this.grid.map((line) => `|${line.map(({ char }) => char === '' ? '_' : char).j
 =====END RICHCHARGRID=====`;
     }
 }
-exports.RichCharGrid = RichCharGrid;

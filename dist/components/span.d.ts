@@ -1,8 +1,8 @@
-import { MinitelObject } from "../abstract/minitelobject";
-import { TextNode } from "../abstract/textnode";
-import { RichCharGrid } from "../richchargrid";
-import { MinitelObjectAttributes, RenderLinesAttributes } from "../types";
-import { Minitel } from "./minitel";
+import { MinitelObject } from "../abstract/minitelobject.js";
+import { TextNode } from "../abstract/textnode.js";
+import { RichCharGrid } from "../richchargrid.js";
+import { MinitelObjectAttributes, RenderLinesAttributes } from "../types.js";
+import { Minitel } from "./minitel.js";
 export declare class Span extends MinitelObject {
     children: (TextNode | Span)[];
     constructor(children: (TextNode | Span)[], attributes: Partial<MinitelObjectAttributes>, minitel: Minitel);

@@ -1,10 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ZJoin = void 0;
-const minitelobject_js_1 = require("../abstract/minitelobject.js");
-const richchar_js_1 = require("../richchar.js");
-const richchargrid_js_1 = require("../richchargrid.js");
-class ZJoin extends minitelobject_js_1.MinitelObject {
+import { MinitelObject } from '../abstract/minitelobject.js';
+import { RichChar } from '../richchar.js';
+import { RichCharGrid } from '../richchargrid.js';
+export class ZJoin extends MinitelObject {
     constructor(children, attributes, minitel) {
         super(children, attributes, minitel);
         this.defaultAttributes = ZJoin.defaultAttributes;
@@ -16,14 +13,14 @@ class ZJoin extends minitelobject_js_1.MinitelObject {
         return { width, height };
     }
     render(attributes, inheritMe) {
-        const fillChar = new richchar_js_1.RichChar(attributes.fillChar, attributes).noSize();
-        const transparentFillChar = new richchar_js_1.RichChar('\x09', attributes).noSize();
+        const fillChar = new RichChar(attributes.fillChar, attributes).noSize();
+        const transparentFillChar = new RichChar('\x09', attributes).noSize();
         if (this.children.length === 0)
-            return new richchargrid_js_1.RichCharGrid();
+            return new RichCharGrid();
         const renders = this.children.map((v) => v.renderWrapper(inheritMe, Object.assign({ width: attributes.width, height: attributes.height }, (attributes.inheritTransparency ? { fillChar: '\x09' } : {}))));
         const maxWidth = Math.max(...renders.map((v) => v.width));
         const maxHeight = Math.max(...renders.map((v) => v.height));
-        const result = richchargrid_js_1.RichCharGrid.fill(maxWidth, maxHeight, fillChar);
+        const result = RichCharGrid.fill(maxWidth, maxHeight, fillChar);
         for (const render of renders) {
             render.setWidth(maxWidth, attributes.widthAlign, transparentFillChar);
             render.setHeight(maxHeight, attributes.heightAlign, transparentFillChar);
@@ -40,5 +37,4 @@ class ZJoin extends minitelobject_js_1.MinitelObject {
         return result;
     }
 }
-exports.ZJoin = ZJoin;
-ZJoin.defaultAttributes = Object.assign(Object.assign({}, minitelobject_js_1.MinitelObject.defaultAttributes), { widthAlign: 'start', heightAlign: 'start', inheritTransparency: false });
+ZJoin.defaultAttributes = Object.assign(Object.assign({}, MinitelObject.defaultAttributes), { widthAlign: 'start', heightAlign: 'start', inheritTransparency: false });

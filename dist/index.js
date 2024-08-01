@@ -1,26 +1,10 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-__exportStar(require("./abstract/textnode.js"), exports);
-__exportStar(require("./components/container.js"), exports);
-__exportStar(require("./components/input.js"), exports);
-__exportStar(require("./components/minitel.js"), exports);
-__exportStar(require("./components/paragraph.js"), exports);
-__exportStar(require("./components/scrollable.js"), exports);
-__exportStar(require("./components/xjoin.js"), exports);
-__exportStar(require("./components/yjoin.js"), exports);
-__exportStar(require("./components/zjoin.js"), exports);
-__exportStar(require("./components/span.js"), exports);
+export * from './abstract/textnode.js';
+export * from './components/container.js';
+export * from './components/input.js';
+export * from './components/minitel.js';
+export * from './components/paragraph.js';
+export * from './components/scrollable.js';
+export * from './components/xjoin.js';
+export * from './components/yjoin.js';
+export * from './components/zjoin.js';
+export * from './components/span.js';

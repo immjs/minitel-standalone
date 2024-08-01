@@ -1,10 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Scrollable = void 0;
-const richchar_js_1 = require("../richchar.js");
-const richchargrid_js_1 = require("../richchargrid.js");
-const container_js_1 = require("./container.js");
-class Scrollable extends container_js_1.Container {
+import { RichChar } from '../richchar.js';
+import { RichCharGrid } from '../richchargrid.js';
+import { Container } from './container.js';
+export class Scrollable extends Container {
     blink() {
         if (this.artificialBlink)
             clearTimeout(this.artificialBlink);
@@ -139,7 +136,7 @@ class Scrollable extends container_js_1.Container {
     render(attributes, inheritMe) {
         // now its 3 am and i don't know how i'll read back
         // this code it's such a mess
-        const fillChar = new richchar_js_1.RichChar(attributes.fillChar, attributes);
+        const fillChar = new RichChar(attributes.fillChar, attributes);
         let renderAttributes = attributes;
         let autoedX = false;
         let autoedY = false;
@@ -195,17 +192,17 @@ class Scrollable extends container_js_1.Container {
             finalRender.setWidth(originalWidth - this.scrollDelta[1], 'start', fillChar);
             finalRender.setWidth(maxScrollSizeX, 'end', fillChar);
         }
-        const scrollChar = new richchar_js_1.RichChar('\x7f', Object.assign(Object.assign({}, attributes), { fg: this.blinkShown ? attributes.scrollbarColor : attributes.scrollbarBackColor }));
-        const scrollBackChar = new richchar_js_1.RichChar('\x7f', Object.assign(Object.assign({}, attributes), { fg: attributes.scrollbarBackColor }));
+        const scrollChar = new RichChar('\x7f', Object.assign(Object.assign({}, attributes), { fg: this.blinkShown ? attributes.scrollbarColor : attributes.scrollbarBackColor }));
+        const scrollBackChar = new RichChar('\x7f', Object.assign(Object.assign({}, attributes), { fg: attributes.scrollbarBackColor }));
         if (attributes.overflowY !== 'hidden' && attributes.overflowY !== 'noscrollbar' && !autoedY && attributes.height != null) {
             const percentageScrolled = this.scrollDelta[0] / (originalHeight - maxScrollSizeY);
             const scrollbarOffset = Math.floor((maxScrollSizeY - scrollbarSizeY) * percentageScrolled);
             let rightScrollbar;
             if (originalHeight - maxScrollSizeY === 0 && attributes.overflowY === 'pad') {
-                rightScrollbar = richchargrid_js_1.RichCharGrid.fill(1, finalRender.height, fillChar);
+                rightScrollbar = RichCharGrid.fill(1, finalRender.height, fillChar);
             }
             else {
-                rightScrollbar = richchargrid_js_1.RichCharGrid.fill(1, scrollbarSizeY, scrollChar);
+                rightScrollbar = RichCharGrid.fill(1, scrollbarSizeY, scrollChar);
                 rightScrollbar.setHeight(scrollbarSizeY + scrollbarOffset, 'start', scrollBackChar);
                 rightScrollbar.setHeight(finalRender.height, 'end', scrollBackChar);
             }
@@ -216,10 +213,10 @@ class Scrollable extends container_js_1.Container {
             const scrollbarOffset = Math.floor((maxScrollSizeX - scrollbarSizeX) * percentageScrolled);
             let bottomScrollbar;
             if (originalWidth - maxScrollSizeX === 0 && attributes.overflowX === 'pad') {
-                bottomScrollbar = richchargrid_js_1.RichCharGrid.fill(finalRender.width, 1, fillChar);
+                bottomScrollbar = RichCharGrid.fill(finalRender.width, 1, fillChar);
             }
             else {
-                bottomScrollbar = richchargrid_js_1.RichCharGrid.fill(scrollbarSizeX, 1, scrollChar);
+                bottomScrollbar = RichCharGrid.fill(scrollbarSizeX, 1, scrollChar);
                 bottomScrollbar.setWidth(scrollbarSizeX + scrollbarOffset, 'start', scrollBackChar);
                 bottomScrollbar.setWidth(finalRender.height, 'end', scrollBackChar);
             }
@@ -233,5 +230,4 @@ class Scrollable extends container_js_1.Container {
         return this.attributes.disabled || false;
     }
 }
-exports.Scrollable = Scrollable;
-Scrollable.defaultAttributes = Object.assign(Object.assign({}, container_js_1.Container.defaultAttributes), { overflowX: 'hidden', overflowY: 'auto', autofocus: false, disabled: false, scrollbarBackColor: 5, scrollbarColor: 7, blinkPeriod: 500, onScroll: () => { } });
+Scrollable.defaultAttributes = Object.assign(Object.assign({}, Container.defaultAttributes), { overflowX: 'hidden', overflowY: 'auto', autofocus: false, disabled: false, scrollbarBackColor: 5, scrollbarColor: 7, blinkPeriod: 500, onScroll: () => { } });

@@ -1,5 +1,5 @@
-/// <reference types="node" />
-/// <reference types="node" />
+/// <reference types="node" resolution-mode="require"/>
+/// <reference types="node" resolution-mode="require"/>
 import { Duplex } from 'stream';
 import { Container, ContainerAttributes } from './container.js';
 import { RichCharGrid } from '../richchargrid.js';

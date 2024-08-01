@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.toBitArray = exports.padding = exports.inheritedProps = exports.alignInvrt = void 0;
-exports.alignInvrt = {
+export const alignInvrt = {
     start: 'end',
     middle: 'middle',
     end: 'start',
 };
-function inheritedProps(props) {
+export function inheritedProps(props) {
     const inheritedProps = ['fillChar', 'fg', 'textAlign', 'bg', 'underline', 'noBlink', 'invert', 'doubleWidth', 'doubleHeight', 'wrap'];
     const result = {};
     let inheritedProp;
@@ -17,8 +14,7 @@ function inheritedProps(props) {
     }
     return result;
 }
-exports.inheritedProps = inheritedProps;
-exports.padding = {
+export const padding = {
     normalise(pad) {
         var _a, _b;
         let fullPad; // URDL
@@ -41,8 +37,7 @@ exports.padding = {
         return height;
     },
 };
-function toBitArray(char) {
+export function toBitArray(char) {
     const int = char.charCodeAt(0).toString(2);
     return int.padStart(8, '0').split('').map((v) => parseInt(v));
 }
-exports.toBitArray = toBitArray;

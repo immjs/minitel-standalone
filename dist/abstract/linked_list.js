@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.LLNode = exports.LinkedList = void 0;
-class LinkedList {
+export class LinkedList {
     constructor() { }
     isEmpty() {
         return !this.head;
@@ -38,8 +35,7 @@ class LinkedList {
         this.head = newHead;
     }
 }
-exports.LinkedList = LinkedList;
-class LLNode {
+export class LLNode {
     constructor(expected, callback) {
         this.expected = expected;
         this.callback = callback;
@@ -48,4 +44,3 @@ class LLNode {
         this.next = newNext;
     }
 }
-exports.LLNode = LLNode;

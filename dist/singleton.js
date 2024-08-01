@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.SingletonArray = void 0;
-class SingletonArray extends Array {
+export class SingletonArray extends Array {
     checkIsSingleton(addedElms) {
         if (this.length + addedElms > 1)
             throw new Error('SingletonArray only allows a maximum of one element');
@@ -20,4 +17,3 @@ class SingletonArray extends Array {
         return [this[0]].flatMap(callback);
     }
 }
-exports.SingletonArray = SingletonArray;

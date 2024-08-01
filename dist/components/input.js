@@ -1,11 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Input = void 0;
-const minitelobject_js_1 = require("../abstract/minitelobject.js");
-const richchar_js_1 = require("../richchar.js");
-const richchargrid_js_1 = require("../richchargrid.js");
-const utils_js_1 = require("../utils.js");
-class Input extends minitelobject_js_1.MinitelObject {
+import { MinitelObject } from '../abstract/minitelobject.js';
+import { RichChar } from '../richchar.js';
+import { RichCharGrid } from '../richchargrid.js';
+import { alignInvrt } from '../utils.js';
+export class Input extends MinitelObject {
     constructor(children, attributes, minitel) {
         super(children, attributes, minitel);
         this.defaultAttributes = Input.defaultAttributes;
@@ -161,16 +158,16 @@ class Input extends minitelobject_js_1.MinitelObject {
         this.off('key', this.keyEventListener);
     }
     render(attributes, inheritMe) {
-        const fillChar = new richchar_js_1.RichChar(attributes.fillChar, attributes).noSize();
+        const fillChar = new RichChar(attributes.fillChar, attributes).noSize();
         // TODO: fix types
         const lines = {
             text: this.value.split('\n'),
             password: this.value.split('\n').map((line) => '-'.repeat(line.length)),
         }[attributes.type];
-        const result = new richchargrid_js_1.RichCharGrid([]);
+        const result = new RichCharGrid([]);
         const concreteWidth = Math.max(...lines.map((v) => v.length));
         for (let line of lines) {
-            result.mergeY(richchargrid_js_1.RichCharGrid.fromLine(line, attributes).setWidth(concreteWidth, utils_js_1.alignInvrt[attributes.textAlign], fillChar));
+            result.mergeY(RichCharGrid.fromLine(line, attributes).setWidth(concreteWidth, alignInvrt[attributes.textAlign], fillChar));
         }
         if (attributes.height != null) {
             if (this.scrollDelta[0] > this.cursorActuallyAt[0]) {
@@ -207,5 +204,4 @@ class Input extends minitelobject_js_1.MinitelObject {
         return this.attributes.disabled || false;
     }
 }
-exports.Input = Input;
-Input.defaultAttributes = Object.assign(Object.assign({}, minitelobject_js_1.MinitelObject.defaultAttributes), { fillChar: '.', width: 8, height: 1, type: 'text', autofocus: false, disabled: false, multiline: false, onChange: () => { }, onScroll: () => { } });
+Input.defaultAttributes = Object.assign(Object.assign({}, MinitelObject.defaultAttributes), { fillChar: '.', width: 8, height: 1, type: 'text', autofocus: false, disabled: false, multiline: false, onChange: () => { }, onScroll: () => { } });

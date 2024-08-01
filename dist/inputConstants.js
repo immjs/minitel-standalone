@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.expectNextChars = void 0;
-exports.expectNextChars = {
+export const expectNextChars = {
     '\x13': 1,
     '\x01': Infinity,
     '\x1b': 1,

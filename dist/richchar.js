@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.RichChar = void 0;
-class RichChar {
+export class RichChar {
     // skip: boolean;
     static getDelimited(attributes, charset) {
         return Object.assign(Object.assign({}, (charset !== 1 ? { bg: attributes.bg } : {})), { underline: attributes.underline, charset: attributes.charset });
@@ -85,4 +82,3 @@ class RichChar {
         return new RichChar(this.char, newAttributes, ...[this.delta, this.actualChar]);
     }
 }
-exports.RichChar = RichChar;

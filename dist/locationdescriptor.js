@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.LocationDescriptors = exports.LocationDescriptor = void 0;
-class LocationDescriptor {
+export class LocationDescriptor {
     constructor(y, x, w, h) {
         this.y = y;
         this.x = x;
@@ -20,8 +17,7 @@ class LocationDescriptor {
         this.w = Math.min(w, this.w);
     }
 }
-exports.LocationDescriptor = LocationDescriptor;
-class LocationDescriptors {
+export class LocationDescriptors {
     constructor(...extended) {
         this.locs = new Map();
         this.lookupAt = extended;
@@ -58,4 +54,3 @@ class LocationDescriptors {
         return this.lookupAt.every((v) => v.isEmpty);
     }
 }
-exports.LocationDescriptors = LocationDescriptors;

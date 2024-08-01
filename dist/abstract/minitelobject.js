@@ -1,25 +1,22 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.MinitelObject = void 0;
-const node_events_1 = require("node:events");
-const richchar_js_1 = require("../richchar.js");
-const richchargrid_js_1 = require("../richchargrid.js");
-const utils_js_1 = require("../utils.js");
-const locationdescriptor_js_1 = require("../locationdescriptor.js");
-const invalidrender_js_1 = require("./invalidrender.js");
-class MinitelObject extends node_events_1.EventEmitter {
+import { EventEmitter } from 'node:events';
+import { RichChar } from '../richchar.js';
+import { RichCharGrid } from '../richchargrid.js';
+import { inheritedProps, padding } from '../utils.js';
+import { LocationDescriptor } from '../locationdescriptor.js';
+import { InvalidRender } from './invalidrender.js';
+export class MinitelObject extends EventEmitter {
     getDimensions(attributes, inheritMe) {
         const tempRender = this.render(attributes, inheritMe);
         return { width: tempRender.width, height: tempRender.height };
     }
     getDimensionsWrapper(inheritedAttributes, forcedAttributes) {
         const attributes = Object.assign(Object.assign(Object.assign(Object.assign({}, this.defaultAttributes), inheritedAttributes), this.attributes), forcedAttributes);
-        const pad = utils_js_1.padding.normalise(attributes.pad);
-        attributes.width = attributes.width != null ? utils_js_1.padding.exludeX(attributes.width, pad) : null;
-        attributes.height = attributes.height != null ? utils_js_1.padding.exludeY(attributes.height, pad) : null;
+        const pad = padding.normalise(attributes.pad);
+        attributes.width = attributes.width != null ? padding.exludeX(attributes.width, pad) : null;
+        attributes.height = attributes.height != null ? padding.exludeY(attributes.height, pad) : null;
         let result = { width: -1, height: -1 };
         if (!attributes.height || !attributes.width) {
-            result = this.getDimensions(attributes, (0, utils_js_1.inheritedProps)(Object.assign(Object.assign(Object.assign({}, inheritedAttributes), this.attributes), forcedAttributes)));
+            result = this.getDimensions(attributes, inheritedProps(Object.assign(Object.assign(Object.assign({}, inheritedAttributes), this.attributes), forcedAttributes)));
         }
         if (attributes.width)
             result.width = attributes.width;
@@ -67,16 +64,16 @@ class MinitelObject extends node_events_1.EventEmitter {
     }
     renderWrapper(inheritedAttributes, forcedAttributes) {
         const attributes = Object.assign(Object.assign(Object.assign(Object.assign({}, this.defaultAttributes), inheritedAttributes), this.attributes), forcedAttributes);
-        const pad = utils_js_1.padding.normalise(attributes.pad);
-        attributes.width = attributes.width != null ? utils_js_1.padding.exludeX(attributes.width, pad) : null;
-        attributes.height = attributes.height != null ? utils_js_1.padding.exludeY(attributes.height, pad) : null;
-        const fillChar = new richchar_js_1.RichChar(attributes.fillChar, attributes).noSize();
-        let result = this.render(attributes, (0, utils_js_1.inheritedProps)(Object.assign(Object.assign(Object.assign({}, inheritedAttributes), this.attributes), forcedAttributes)));
+        const pad = padding.normalise(attributes.pad);
+        attributes.width = attributes.width != null ? padding.exludeX(attributes.width, pad) : null;
+        attributes.height = attributes.height != null ? padding.exludeY(attributes.height, pad) : null;
+        const fillChar = new RichChar(attributes.fillChar, attributes).noSize();
+        let result = this.render(attributes, inheritedProps(Object.assign(Object.assign(Object.assign({}, inheritedAttributes), this.attributes), forcedAttributes)));
         if (this.minitel.renderInvalidated) {
-            throw new invalidrender_js_1.InvalidRender();
+            throw new InvalidRender();
         }
         if (!attributes.visible) {
-            result = richchargrid_js_1.RichCharGrid.fill(attributes.width || 0, attributes.height || 0, fillChar);
+            result = RichCharGrid.fill(attributes.width || 0, attributes.height || 0, fillChar);
         }
         if (attributes.width != null)
             result.setWidth(attributes.width, 'end');
@@ -84,7 +81,7 @@ class MinitelObject extends node_events_1.EventEmitter {
             result.setHeight(attributes.height, 'end');
         // Descriptor before pad, is this the right choice?
         if (this.keepElmDesc)
-            result.locationDescriptors.add(this, new locationdescriptor_js_1.LocationDescriptor(0, 0, result.width, result.height));
+            result.locationDescriptors.add(this, new LocationDescriptor(0, 0, result.width, result.height));
         result.pad(pad, fillChar);
         return result;
     }
@@ -107,7 +104,6 @@ class MinitelObject extends node_events_1.EventEmitter {
         return this.children.includes(child) || this.children.some((v) => v.has(child));
     }
 }
-exports.MinitelObject = MinitelObject;
 MinitelObject.defaultAttributes = {
     width: null,
     height: null,

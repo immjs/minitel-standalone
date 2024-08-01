@@ -1,4 +1,4 @@
-/// <reference types="node" />
+/// <reference types="node" resolution-mode="require"/>
 import { EventEmitter } from 'node:events';
 import type { Minitel } from '../components/minitel.js';
 import { RichCharGrid } from '../richchargrid.js';

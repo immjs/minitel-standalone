@@ -1,10 +1,10 @@
-import { MinitelObject } from "../abstract/minitelobject";
-import { TextNode } from "../abstract/textnode";
-import { RichChar } from "../richchar";
-import { RichCharGrid } from "../richchargrid";
-import { MinitelObjectAttributes, RenderLinesAttributes } from "../types";
-import { alignInvrt, inheritedProps } from "../utils";
-import { Minitel } from "./minitel";
+import { MinitelObject } from "../abstract/minitelobject.js";
+import { TextNode } from "../abstract/textnode.js";
+import { RichChar } from "../richchar.js";
+import { RichCharGrid } from "../richchargrid.js";
+import { MinitelObjectAttributes, RenderLinesAttributes } from "../types.js";
+import { alignInvrt, inheritedProps } from "../utils.js";
+import { Minitel } from "./minitel.js";
 
 export class Span extends MinitelObject {
     children: (TextNode | Span)[];
