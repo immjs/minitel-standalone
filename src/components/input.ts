@@ -142,7 +142,7 @@ export class Input
                 this.minitel.queueImmediateRenderToStream();
                 break;
             default:
-                if (/^[a-zA-Z0-9,\.';\-\:?!"#$%&\(\)\[\]<>@+=*/ ]$/g.test(key) || (key === '\x0d' && this.attributes.multiline)) {
+                if (/^[a-zA-Z0-9,\.';\-\:?!"#$%&\(\)\[\]\{\}<>@+=*/ ]$/g.test(key) || (key === '\x0d' && this.attributes.multiline)) {
                     const lines = this.value.split('\n');
 
                     let cumulPosition = lines.filter((_, i) => i < this.cursorActuallyAt[0]).reduce((p, v) => p + v.length + 1, 0);
