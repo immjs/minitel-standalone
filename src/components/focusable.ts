@@ -2,7 +2,7 @@ import { FocusableAttributes as FocusableIfaceAttributes, Focusable as Focusable
 import { Container, ContainerAttributes } from './container.js';
 import type { Minitel } from './minitel.js';
 
-interface FocusableAttributes extends FocusableIfaceAttributes, ContainerAttributes {}
+export interface FocusableAttributes extends FocusableIfaceAttributes, ContainerAttributes {}
 
 export class Focusable extends Container<FocusableAttributes, { key: [string] }> implements FocusableIface {
     static defaultAttributes: FocusableAttributes = {
