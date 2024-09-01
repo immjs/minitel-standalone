@@ -1,7 +1,7 @@
 import { FocusableAttributes as FocusableIfaceAttributes, Focusable as FocusableIface } from '../abstract/focusable.js';
 import { Container, ContainerAttributes } from './container.js';
 import type { Minitel } from './minitel.js';
-interface FocusableAttributes extends FocusableIfaceAttributes, ContainerAttributes {
+export interface FocusableAttributes extends FocusableIfaceAttributes, ContainerAttributes {
 }
 export declare class Focusable extends Container<FocusableAttributes, {
     key: [string];
@@ -16,4 +16,3 @@ export declare class Focusable extends Container<FocusableAttributes, {
     constructor(children: never[] | undefined, attributes: Partial<FocusableAttributes>, minitel: Minitel);
     get disabled(): boolean;
 }
-export {};
