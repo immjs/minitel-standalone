@@ -4,7 +4,6 @@ import { RichChar } from '../richchar.js';
 import { RichCharGrid } from '../richchargrid.js';
 import { alignInvrt } from '../utils.js';
 import type { Minitel } from './minitel.js';
-import { Scrollable, ScrollableAttributes } from './scrollable.js';
 
 export class Input
     extends MinitelObject<InputAttributes, { key: [string] }>
@@ -19,6 +18,8 @@ export class Input
         autofocus: false,
         disabled: false,
         multiline: false,
+        onFocus: () => {},
+        onBlur: () => {},
         onChange: () => {},
         onScroll: () => {},
     };
@@ -71,8 +72,10 @@ export class Input
         if (val) {
             if (this.minitel.focusedObj) this.minitel.focusedObj.focused = false;
             this._focused = true;
+            this.attributes.onFocus?.();
         } else {
             this._focused = false;
+            this.attributes.onBlur?.();
         }
     }
     get focused() {

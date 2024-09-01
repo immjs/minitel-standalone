@@ -15,6 +15,8 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
         scrollbarColor: 7,
         blinkPeriod: 500,
         onScroll: () => {},
+        onFocus: () => {},
+        onBlur: () => {},
     };
     defaultAttributes = Scrollable.defaultAttributes;
     _focused = false;
@@ -39,8 +41,10 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
         if (val) {
             if (this.minitel.focusedObj) this.minitel.focusedObj.focused = false;
             this._focused = true;
+            this.attributes.onFocus?.();
         } else {
             this._focused = false;
+            this.attributes.onBlur?.();
         }
     }
     get focused() {
@@ -302,4 +306,6 @@ export interface ScrollableAttributes extends ContainerAttributes {
     scrollbarColor: number;
     scrollbarBackColor: number;
     blinkPeriod: number;
+    onFocus: () => void;
+    onBlur: () => void;
 }

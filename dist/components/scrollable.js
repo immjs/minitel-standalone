@@ -11,15 +11,18 @@ export class Scrollable extends Container {
         return this._scrollDelta;
     }
     set focused(val) {
+        var _a, _b, _c, _d;
         if (this._focused !== val)
             this.minitel.invalidateRender();
         if (val) {
             if (this.minitel.focusedObj)
                 this.minitel.focusedObj.focused = false;
             this._focused = true;
+            (_b = (_a = this.attributes).onFocus) === null || _b === void 0 ? void 0 : _b.call(_a);
         }
         else {
             this._focused = false;
+            (_d = (_c = this.attributes).onBlur) === null || _d === void 0 ? void 0 : _d.call(_c);
         }
     }
     get focused() {
@@ -230,4 +233,4 @@ export class Scrollable extends Container {
         return this.attributes.disabled || false;
     }
 }
-Scrollable.defaultAttributes = Object.assign(Object.assign({}, Container.defaultAttributes), { overflowX: 'hidden', overflowY: 'auto', autofocus: false, disabled: false, scrollbarBackColor: 5, scrollbarColor: 7, blinkPeriod: 500, onScroll: () => { } });
+Scrollable.defaultAttributes = Object.assign(Object.assign({}, Container.defaultAttributes), { overflowX: 'hidden', overflowY: 'auto', autofocus: false, disabled: false, scrollbarBackColor: 5, scrollbarColor: 7, blinkPeriod: 500, onScroll: () => { }, onFocus: () => { }, onBlur: () => { } });

@@ -39,4 +39,6 @@ export interface ScrollableAttributes extends ContainerAttributes {
     scrollbarColor: number;
     scrollbarBackColor: number;
     blinkPeriod: number;
+    onFocus: () => void;
+    onBlur: () => void;
 }

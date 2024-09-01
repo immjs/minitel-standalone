@@ -11,4 +11,6 @@ export interface Focusable extends MinitelObject<FocusableAttributes, {
 export interface FocusableAttributes extends MinitelObjectAttributes {
     autofocus: boolean;
     disabled: boolean;
+    onFocus: () => void;
+    onBlur: () => void;
 }

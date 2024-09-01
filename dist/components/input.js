@@ -46,15 +46,18 @@ export class Input extends MinitelObject {
         return this._scrollDelta;
     }
     set focused(val) {
+        var _a, _b, _c, _d;
         if (this._focused !== val)
             this.minitel.invalidateRender();
         if (val) {
             if (this.minitel.focusedObj)
                 this.minitel.focusedObj.focused = false;
             this._focused = true;
+            (_b = (_a = this.attributes).onFocus) === null || _b === void 0 ? void 0 : _b.call(_a);
         }
         else {
             this._focused = false;
+            (_d = (_c = this.attributes).onBlur) === null || _d === void 0 ? void 0 : _d.call(_c);
         }
     }
     get focused() {
@@ -204,4 +207,4 @@ export class Input extends MinitelObject {
         return this.attributes.disabled || false;
     }
 }
-Input.defaultAttributes = Object.assign(Object.assign({}, MinitelObject.defaultAttributes), { fillChar: '.', width: 8, height: 1, type: 'text', autofocus: false, disabled: false, multiline: false, onChange: () => { }, onScroll: () => { } });
+Input.defaultAttributes = Object.assign(Object.assign({}, MinitelObject.defaultAttributes), { fillChar: '.', width: 8, height: 1, type: 'text', autofocus: false, disabled: false, multiline: false, onFocus: () => { }, onBlur: () => { }, onChange: () => { }, onScroll: () => { } });

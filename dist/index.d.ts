@@ -4,6 +4,7 @@ export * from './components/input.js';
 export * from './components/minitel.js';
 export * from './components/paragraph.js';
 export * from './components/scrollable.js';
+export * from './components/focusable.js';
 export * from './components/xjoin.js';
 export * from './components/yjoin.js';
 export * from './components/zjoin.js';
