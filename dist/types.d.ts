@@ -1,4 +1,4 @@
-export interface CharAttributes {
+export interface RealCharAttributes {
     fg: number;
     bg: number;
     underline: boolean;
@@ -8,6 +8,7 @@ export interface CharAttributes {
     invert: boolean;
     charset: number;
 }
+export type CharAttributes = Omit<RealCharAttributes, 'doubleHeight' | 'doubleWidth'>;
 export type ApplicableCharAttributes = Omit<CharAttributes, 'charset'>;
 export type Align = 'start' | 'middle' | 'end';
 export interface MinitelObjectAttributes extends Partial<ApplicableCharAttributes> {

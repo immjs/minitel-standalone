@@ -50,14 +50,16 @@ export class Input extends MinitelObject {
         if (this._focused !== val)
             this.minitel.invalidateRender();
         if (val) {
-            if (this.minitel.focusedObj)
+            if (this.minitel.focusedObj && this.minitel.focusedObj !== this)
                 this.minitel.focusedObj.focused = false;
+            if (this._focused !== val)
+                (_b = (_a = this.attributes).onFocus) === null || _b === void 0 ? void 0 : _b.call(_a);
             this._focused = true;
-            (_b = (_a = this.attributes).onFocus) === null || _b === void 0 ? void 0 : _b.call(_a);
         }
         else {
+            if (this._focused !== val)
+                (_d = (_c = this.attributes).onBlur) === null || _d === void 0 ? void 0 : _d.call(_c);
             this._focused = false;
-            (_d = (_c = this.attributes).onBlur) === null || _d === void 0 ? void 0 : _d.call(_c);
         }
     }
     get focused() {

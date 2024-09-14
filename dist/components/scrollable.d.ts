@@ -1,4 +1,6 @@
 import { Focusable } from '../abstract/focusable.js';
+import { MinitelObject } from '../abstract/minitelobject.js';
+import { LocationDescriptor } from '../locationdescriptor.js';
 import { RichCharGrid } from '../richchargrid.js';
 import { Container, ContainerAttributes } from './container.js';
 import type { Minitel } from './minitel.js';
@@ -18,7 +20,7 @@ export declare class Scrollable extends Container<ScrollableAttributes, {
     set focused(val: boolean);
     get focused(): boolean;
     blinkHandler(): void;
-    constructor(children: never[] | undefined, attributes: Partial<ScrollableAttributes>, minitel: Minitel);
+    constructor(children: MinitelObject<import("../types.js").MinitelObjectAttributes, Record<string, any[]>>[] | undefined, attributes: Partial<ScrollableAttributes>, minitel: Minitel);
     pushPrevScrollDelta(): void;
     popPrevScrollDelta(callback: (_arg0: [number, number]) => unknown): void;
     keyEventListener(str: string): void;
@@ -27,6 +29,7 @@ export declare class Scrollable extends Container<ScrollableAttributes, {
         width: number;
         height: number;
     };
+    mapLocation(attributes: ScrollableAttributes, inheritMe: Partial<ScrollableAttributes>, nextNode: MinitelObject, nodes: MinitelObject[], weAt: number): LocationDescriptor;
     render(attributes: ScrollableAttributes, inheritMe: Partial<ScrollableAttributes>): RichCharGrid;
     get disabled(): boolean;
 }

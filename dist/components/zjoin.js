@@ -1,6 +1,7 @@
 import { MinitelObject } from '../abstract/minitelobject.js';
 import { RichChar } from '../richchar.js';
 import { RichCharGrid } from '../richchargrid.js';
+import { getDeltaFromSetting } from '../utils.js';
 export class ZJoin extends MinitelObject {
     constructor(children, attributes, minitel) {
         super(children, attributes, minitel);
@@ -11,6 +12,22 @@ export class ZJoin extends MinitelObject {
         const width = Math.max(...dimensions.map((v) => v.width));
         const height = Math.max(...dimensions.map((v) => v.height));
         return { width, height };
+    }
+    mapLocation(attributes, inheritMe, nextNode, nodes, weAt) {
+        const renders = this.children.map((v) => [v, v.getDimensionsWrapper(inheritMe, {
+                width: attributes.width,
+                height: attributes.height,
+            })]);
+        const maxWidth = Math.max(...renders.map((v) => v[1].width));
+        const maxHeight = Math.max(...renders.map((v) => v[1].height));
+        const relevant = renders.find((v) => v[0] === nextNode);
+        const prevLocation = nextNode.mapLocationWrapper(inheritMe, {
+            width: attributes.width,
+            height: attributes.height,
+        }, nodes, weAt);
+        prevLocation.x += getDeltaFromSetting(relevant[1].width, maxWidth, attributes.widthAlign);
+        prevLocation.y += getDeltaFromSetting(relevant[1].height, maxWidth, attributes.heightAlign);
+        return prevLocation;
     }
     render(attributes, inheritMe) {
         const fillChar = new RichChar(attributes.fillChar, attributes).noSize();

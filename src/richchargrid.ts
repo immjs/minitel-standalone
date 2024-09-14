@@ -1,6 +1,6 @@
 import { LocationDescriptors } from './locationdescriptor.js';
 import { RichChar } from './richchar.js';
-import { Align, CharAttributes, FullPadding, Padding } from './types.js';
+import { Align, CharAttributes, FullPadding, Padding, RealCharAttributes } from './types.js';
 
 export class RichCharGrid {
     grid: (RichChar<string> | RichChar<null>)[][];
@@ -29,7 +29,7 @@ export class RichCharGrid {
         }
         return maxValue;
     }
-    static fromLine(line: string | string[], attributes: Partial<CharAttributes>) {
+    static fromLine(line: string | string[], attributes: Partial<RealCharAttributes>) {
         const result = new RichCharGrid([[]]);
         const allNewChars = [];
         for (let char of line) {
@@ -140,7 +140,7 @@ export class RichCharGrid {
         }
     }
 
-    setHeight(height: number, heightAlign: Align, char = new RichChar(' ')) {
+    setHeight(height: number, heightAlign: Align, char: RichChar<string>) {
         if (this.height === height) return this;
         if (this.height > height) return this.cutHeight(height, heightAlign);
         const addAmount = height - this.height;
@@ -158,7 +158,7 @@ export class RichCharGrid {
                 return this;
         }
     }
-    setWidth(width: number, widthAlign: Align, char = new RichChar(' ')) {
+    setWidth(width: number, widthAlign: Align, char: RichChar<string>) {
         if (this.width === width) return this;
         if (this.width > width) return this.cutWidth(width, widthAlign);
         const addAmount = width - this.width;

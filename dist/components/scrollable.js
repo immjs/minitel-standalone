@@ -15,14 +15,16 @@ export class Scrollable extends Container {
         if (this._focused !== val)
             this.minitel.invalidateRender();
         if (val) {
-            if (this.minitel.focusedObj)
+            if (this.minitel.focusedObj && this.minitel.focusedObj !== this)
                 this.minitel.focusedObj.focused = false;
+            if (this._focused !== val)
+                (_b = (_a = this.attributes).onFocus) === null || _b === void 0 ? void 0 : _b.call(_a);
             this._focused = true;
-            (_b = (_a = this.attributes).onFocus) === null || _b === void 0 ? void 0 : _b.call(_a);
         }
         else {
+            if (this._focused !== val)
+                (_d = (_c = this.attributes).onBlur) === null || _d === void 0 ? void 0 : _d.call(_c);
             this._focused = false;
-            (_d = (_c = this.attributes).onBlur) === null || _d === void 0 ? void 0 : _d.call(_c);
         }
     }
     get focused() {
@@ -136,6 +138,12 @@ export class Scrollable extends Container {
         }
         return dimensions;
     }
+    mapLocation(attributes, inheritMe, nextNode, nodes, weAt) {
+        const location = nextNode.mapLocationWrapper(inheritMe, {}, nodes, weAt);
+        location.x -= this.scrollDelta[1];
+        location.y -= this.scrollDelta[0];
+        return location;
+    }
     render(attributes, inheritMe) {
         // now its 3 am and i don't know how i'll read back
         // this code it's such a mess
@@ -153,7 +161,9 @@ export class Scrollable extends Container {
                 }
                 if (!autoedY) {
                     const width = attributes.width != null && attributes.overflowX === 'hidden'
-                        ? attributes.width - 1
+                        ? attributes.overflowY === 'noscrollbar'
+                            ? attributes.width
+                            : attributes.width - 1
                         : null;
                     renderAttributes = Object.assign(Object.assign({}, attributes), { width, height: null });
                 }
@@ -168,7 +178,11 @@ export class Scrollable extends Container {
                         autoedX = true;
                 }
                 if (!autoedX) {
-                    const height = attributes.height != null ? attributes.height - 1 : null;
+                    const height = attributes.height != null // && attributes.overflowX === 'hidden' // we already know that
+                        ? attributes.overflowX === 'noscrollbar'
+                            ? attributes.height
+                            : attributes.height - 1
+                        : null;
                     renderAttributes = Object.assign(Object.assign({}, attributes), { height, width: null });
                 }
             }

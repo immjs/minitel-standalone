@@ -1,7 +1,7 @@
-import { CharAttributes } from './types.js';
+import { CharAttributes, RealCharAttributes } from './types.js';
 
 export class RichChar<T> {
-    attributes: CharAttributes;
+    attributes: RealCharAttributes;
     delta: T extends null ? [number, number] : undefined;
     actualChar: T extends null ? RichChar<string> : undefined;
     char: T;
@@ -13,7 +13,7 @@ export class RichChar<T> {
             charset: attributes.charset,
         }
     }
-    static normalizeAttributes(attributes: Partial<CharAttributes>): CharAttributes {
+    static normalizeAttributes(attributes: Partial<RealCharAttributes>): RealCharAttributes {
         return {
             fg: attributes.fg ?? 7,
             bg: attributes.bg ?? 0,
@@ -25,9 +25,9 @@ export class RichChar<T> {
             charset: attributes.charset ?? 0,
         };
     }
-    static getAttributesApplier(attributes: Partial<CharAttributes>, previousAttributes: CharAttributes) {
+    static getAttributesApplier(attributes: Partial<RealCharAttributes>, previousAttributes: RealCharAttributes) {
         const result = [];
-        const offsets: Record<keyof Omit<CharAttributes, 'doubleHeight' | 'doubleWidth'>, number | number[]> = {
+        const offsets: Record<keyof CharAttributes, number | number[]> = {
             charset: [0x0f, 0x0e, 0x19],
             noBlink: 0x48,
             fg: 0x40,
@@ -35,7 +35,7 @@ export class RichChar<T> {
             underline: 0x59,
             invert: 0x5C,
         };
-        let attribute: keyof Omit<CharAttributes, 'doubleHeight' | 'doubleWidth'>;
+        let attribute: keyof CharAttributes;
         for (attribute in offsets) {
             if (attribute in attributes) {
                 const relevantOffset = offsets[attribute];

@@ -70,12 +70,12 @@ export class Input
     set focused(val) {
         if (this._focused !== val) this.minitel.invalidateRender();
         if (val) {
-            if (this.minitel.focusedObj) this.minitel.focusedObj.focused = false;
+            if (this.minitel.focusedObj && this.minitel.focusedObj !== this) this.minitel.focusedObj.focused = false;
+            if (this._focused !== val) this.attributes.onFocus?.();
             this._focused = true;
-            this.attributes.onFocus?.();
         } else {
+            if (this._focused !== val) this.attributes.onBlur?.();
             this._focused = false;
-            this.attributes.onBlur?.();
         }
     }
     get focused() {

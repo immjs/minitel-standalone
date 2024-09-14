@@ -1,7 +1,9 @@
 import { MinitelObject } from '../abstract/minitelobject.js';
+import { LocationDescriptor } from '../locationdescriptor.js';
 import { RichChar } from '../richchar.js';
 import { RichCharGrid } from '../richchargrid.js';
 import { Align, MinitelObjectAttributes } from '../types.js';
+import { getDeltaFromSetting } from '../utils.js';
 import { alignInvrt, inheritedProps } from '../utils.js';
 import type { Minitel } from './minitel.js';
 
@@ -27,6 +29,27 @@ export class ZJoin extends MinitelObject<ZJoinAttributes> {
         const height = Math.max(...dimensions.map((v) => v.height));
 
         return { width, height };
+    }
+    mapLocation(attributes: ZJoinAttributes, inheritMe: Partial<ZJoinAttributes>, nextNode: MinitelObject, nodes: MinitelObject[], weAt: number): LocationDescriptor {
+        const renders = this.children.map((v) => [v, v.getDimensionsWrapper(inheritMe, {
+            width: attributes.width,
+            height: attributes.height,
+        })] as const);
+
+        const maxWidth = Math.max(...renders.map((v) => v[1].width));
+        const maxHeight = Math.max(...renders.map((v) => v[1].height));
+
+        const relevant = renders.find((v) => v[0] === nextNode)!;
+
+        const prevLocation = nextNode.mapLocationWrapper(inheritMe, {
+            width: attributes.width,
+            height: attributes.height,
+        }, nodes, weAt);
+
+        prevLocation.x += getDeltaFromSetting(relevant[1].width, maxWidth, attributes.widthAlign);
+        prevLocation.y += getDeltaFromSetting(relevant[1].height, maxWidth, attributes.heightAlign);
+
+        return prevLocation;
     }
     render(attributes: ZJoinAttributes, inheritMe: Partial<ZJoinAttributes>) {
         const fillChar = new RichChar(attributes.fillChar, attributes).noSize();

@@ -7,7 +7,7 @@ export const alignInvrt: Record<Align, Align> = {
 };
 
 export function inheritedProps<T extends MinitelObjectAttributes> (props: Partial<T>): Partial<T> {
-    const inheritedProps = ['fillChar', 'fg', 'textAlign', 'bg', 'underline', 'noBlink', 'invert', 'doubleWidth', 'doubleHeight', 'wrap'] as const;
+    const inheritedProps = ['fillChar', 'fg', 'textAlign', 'bg', 'underline', 'noBlink', 'invert', 'wrap'] as const;
     const result: Partial<T> = {};
 
     let inheritedProp: keyof MinitelObjectAttributes;
@@ -44,4 +44,11 @@ export function toBitArray(char: string): number[] {
     const int = char.charCodeAt(0).toString(2);
 
     return int.padStart(8, '0').split('').map((v) => parseInt(v));
+}
+
+export function getDeltaFromSetting(size: number, setInto: number, align: Align) {
+    if (align === 'start') return 0;
+    if (align === 'end') return setInto - size;
+
+    return Math.floor((setInto - size) / 2);
 }

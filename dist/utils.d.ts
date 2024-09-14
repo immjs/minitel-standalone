@@ -7,3 +7,4 @@ export declare const padding: {
     exludeY(height: number, pad: FullPadding): number;
 };
 export declare function toBitArray(char: string): number[];
+export declare function getDeltaFromSetting(size: number, setInto: number, align: Align): number;

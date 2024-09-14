@@ -135,6 +135,7 @@ export class Minitel extends Container {
         }
         catch (err) {
             if (err instanceof InvalidRender) {
+                console.error(err);
                 return this.renderString();
             }
             else {
@@ -212,7 +213,8 @@ export class Minitel extends Container {
         const focusables = this.focusables();
         if (this.focusedObj) {
             const isInTree = this.has(this.focusedObj);
-            this.focusedObj.focused = isInTree;
+            if (this.focusedObj.focused !== isInTree)
+                this.focusedObj.focused = isInTree;
             if (isInTree)
                 return;
             this.focusedObj = null;
@@ -220,7 +222,7 @@ export class Minitel extends Container {
         const oneWithAutofocusIdx = focusables.findLastIndex((v) => v.attributes.autofocus);
         if (oneWithAutofocusIdx !== -1)
             this.focusedObj = focusables[oneWithAutofocusIdx];
-        if (this.focusedObj)
+        if (this.focusedObj && !this.focusedObj.focused)
             this.focusedObj.focused = true;
     }
     focusDelta(delta) {
@@ -234,7 +236,7 @@ export class Minitel extends Container {
         curr %= focusables.length;
         curr += focusables.length;
         curr %= focusables.length;
-        if (this.focusedObj)
+        if (this.focusedObj && this.focusedObj.focused)
             this.focusedObj.focused = false;
         this.focusedObj = focusables[curr];
         this.focusedObj.focused = true;

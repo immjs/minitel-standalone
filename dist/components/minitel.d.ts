@@ -3,7 +3,7 @@
 import { Duplex } from 'stream';
 import { Container, ContainerAttributes } from './container.js';
 import { RichCharGrid } from '../richchargrid.js';
-import { CharAttributes } from '../types.js';
+import { RealCharAttributes } from '../types.js';
 import { Focusable } from '../abstract/focusable.js';
 import { LinkedList } from '../abstract/linked_list.js';
 export interface MinitelSettings {
@@ -16,7 +16,7 @@ export declare class Minitel extends Container<ContainerAttributes, {
     key: [string];
     frame: [boolean];
 }> {
-    static defaultScreenAttributes: CharAttributes;
+    static defaultScreenAttributes: RealCharAttributes;
     renderInvalidated: boolean;
     stream: Duplex;
     previousRender: RichCharGrid;

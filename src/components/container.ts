@@ -12,7 +12,7 @@ export class Container<T extends ContainerAttributes = ContainerAttributes, U ex
         heightAlign: 'start',
     };
     defaultAttributes = Container.defaultAttributes as T;
-    constructor(children = [], attributes: Partial<T>, minitel: Minitel) {
+    constructor(children: MinitelObject[] = [], attributes: Partial<T>, minitel: Minitel) {
         if (children.length > 1) throw new Error('Container must only include one element');
         super([], attributes, minitel);
         this.children = new SingletonArray<MinitelObject>();

@@ -1,7 +1,7 @@
 import { Duplex } from 'stream';
 import { Container, ContainerAttributes } from './container.js';
 import { RichCharGrid } from '../richchargrid.js';
-import { CharAttributes, MinitelObjectAttributes } from '../types.js';
+import { CharAttributes, MinitelObjectAttributes, RealCharAttributes } from '../types.js';
 import { SingletonArray } from '../singleton.js';
 import { MinitelObject } from '../abstract/minitelobject.js';
 import { RichChar } from '../richchar.js';
@@ -20,7 +20,7 @@ export interface MinitelSettings {
 }
 
 export class Minitel extends Container<ContainerAttributes, { key: [string], frame: [boolean] }> {
-    static defaultScreenAttributes: CharAttributes = {
+    static defaultScreenAttributes: RealCharAttributes = {
         fg: 7,
         bg: 0,
         underline: false,
@@ -172,6 +172,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
             renderGrid = this.renderWrapper({}, { width, height });
         } catch (err) {
             if (err instanceof InvalidRender) {
+                console.error(err);
                 return this.renderString();
             } else {
                 throw err;
@@ -185,7 +186,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
 
         const outputString = ['\x14\x1e'];
 
-        let lastAttributes: CharAttributes = Minitel.defaultScreenAttributes;
+        let lastAttributes: RealCharAttributes = Minitel.defaultScreenAttributes;
         let skippedACharCounter = 0;
         let lastChar: [RichChar<string> | RichChar<null>, RichChar<string> | RichChar<null>] | null = null;
 
@@ -279,7 +280,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
         const focusables = this.focusables();
         if (this.focusedObj) {
             const isInTree = this.has(this.focusedObj);
-            this.focusedObj.focused = isInTree;
+            if (this.focusedObj.focused !== isInTree) this.focusedObj.focused = isInTree;
             if (isInTree) return;
             this.focusedObj = null;
         }
@@ -287,7 +288,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
 
         if (oneWithAutofocusIdx !== -1) this.focusedObj = focusables[oneWithAutofocusIdx];
 
-        if (this.focusedObj) this.focusedObj.focused = true;
+        if (this.focusedObj && !this.focusedObj.focused) this.focusedObj.focused = true;
     }
     focusDelta(delta: 1 | -1) {
         const focusables = this.focusables();
@@ -302,7 +303,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
         curr += focusables.length;
         curr %= focusables.length;
 
-        if (this.focusedObj) this.focusedObj.focused = false;
+        if (this.focusedObj && this.focusedObj.focused) this.focusedObj.focused = false;
         this.focusedObj = focusables[curr];
         this.focusedObj.focused = true;
         return this.focusedObj;

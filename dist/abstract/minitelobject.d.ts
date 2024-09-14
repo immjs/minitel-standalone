@@ -4,6 +4,7 @@ import type { Minitel } from '../components/minitel.js';
 import { RichCharGrid } from '../richchargrid.js';
 import { MinitelObjectAttributes } from '../types.js';
 import { Focusable } from './focusable.js';
+import { LocationDescriptor } from '../locationdescriptor.js';
 export declare class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttributes, U extends Record<string, any[]> = Record<string, any[]>> extends EventEmitter<U> {
     children: MinitelObject[];
     attributes: Partial<T>;
@@ -30,4 +31,10 @@ export declare class MinitelObject<T extends MinitelObjectAttributes = MinitelOb
     unmount(): void;
     unmountWrapper(): void;
     has(child: MinitelObject): boolean;
+    mapLocation(attributes: T, inheritMe: Partial<T>, nextNode: MinitelObject, nodes: MinitelObject[], weAt: number): LocationDescriptor;
+    mapLocationWrapper(inheritedAttributes: Partial<T>, forcedAttributes: Partial<T>, nodes: MinitelObject[], weAt: number): LocationDescriptor;
+    get parentList(): MinitelObject[];
+    scrollIntoView(context?: MinitelObject & {
+        scrollDelta: [number, number];
+    }): void;
 }

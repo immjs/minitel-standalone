@@ -1,4 +1,6 @@
 import { Focusable } from '../abstract/focusable.js';
+import { MinitelObject } from '../abstract/minitelobject.js';
+import { LocationDescriptor } from '../locationdescriptor.js';
 import { RichChar } from '../richchar.js';
 import { RichCharGrid } from '../richchargrid.js';
 import { Container, ContainerAttributes } from './container.js';
@@ -39,12 +41,12 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
     set focused(val) {
         if (this._focused !== val) this.minitel.invalidateRender();
         if (val) {
-            if (this.minitel.focusedObj) this.minitel.focusedObj.focused = false;
+            if (this.minitel.focusedObj && this.minitel.focusedObj !== this) this.minitel.focusedObj.focused = false;
+            if (this._focused !== val) this.attributes.onFocus?.();
             this._focused = true;
-            this.attributes.onFocus?.();
         } else {
+            if (this._focused !== val) this.attributes.onBlur?.();
             this._focused = false;
-            this.attributes.onBlur?.();
         }
     }
     get focused() {
@@ -63,7 +65,7 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
 
         this.blink();
     }
-    constructor(children = [], attributes: Partial<ScrollableAttributes>, minitel: Minitel) {
+    constructor(children: MinitelObject[] = [], attributes: Partial<ScrollableAttributes>, minitel: Minitel) {
         super(children, attributes, minitel);
 
         this.blink();
@@ -165,6 +167,13 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
 
         return dimensions;
     }
+    mapLocation(attributes: ScrollableAttributes, inheritMe: Partial<ScrollableAttributes>, nextNode: MinitelObject, nodes: MinitelObject[], weAt: number): LocationDescriptor {
+        const location = nextNode.mapLocationWrapper(inheritMe, {}, nodes, weAt);
+        location.x -= this.scrollDelta[1];
+        location.y -= this.scrollDelta[0];
+
+        return location;
+    }
     render(attributes: ScrollableAttributes, inheritMe: Partial<ScrollableAttributes>) {
         // now its 3 am and i don't know how i'll read back
         // this code it's such a mess
@@ -190,7 +199,9 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
 
                 if (!autoedY) {
                     const width = attributes.width != null && attributes.overflowX === 'hidden'
-                        ? attributes.width - 1
+                        ? attributes.overflowY === 'noscrollbar'
+                            ? attributes.width
+                            : attributes.width - 1
                         : null;
         
                     renderAttributes = { ...attributes, width, height: null };
@@ -209,8 +220,12 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
                 }
 
                 if (!autoedX) {
-                    const height = attributes.height != null ? attributes.height - 1 : null;
-        
+                    const height = attributes.height != null // && attributes.overflowX === 'hidden' // we already know that
+                        ? attributes.overflowX === 'noscrollbar'
+                            ? attributes.height
+                            : attributes.height - 1
+                        : null;
+
                     renderAttributes = { ...attributes, height, width: null };
                 }
             }
@@ -227,7 +242,6 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
         const scrollbarSizeX = attributes.width && Math.max(Math.floor(maxScrollSizeX! * maxScrollSizeX! / originalWidth), 1);
 
         this.scrollDelta[1] = Math.max(0, Math.min(this.scrollDelta[1], (originalWidth - maxScrollSizeX!) || 0));
-
 
         const maxScrollSizeY = attributes.overflowX !== 'hidden' && attributes.overflowX !== 'noscrollbar' && !autoedX && attributes.height != null
             ? attributes.height - 1

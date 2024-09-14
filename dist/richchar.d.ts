@@ -1,6 +1,6 @@
-import { CharAttributes } from './types.js';
+import { CharAttributes, RealCharAttributes } from './types.js';
 export declare class RichChar<T> {
-    attributes: CharAttributes;
+    attributes: RealCharAttributes;
     delta: T extends null ? [number, number] : undefined;
     actualChar: T extends null ? RichChar<string> : undefined;
     char: T;
@@ -9,8 +9,8 @@ export declare class RichChar<T> {
         charset: number;
         bg?: number | undefined;
     };
-    static normalizeAttributes(attributes: Partial<CharAttributes>): CharAttributes;
-    static getAttributesApplier(attributes: Partial<CharAttributes>, previousAttributes: CharAttributes): string;
+    static normalizeAttributes(attributes: Partial<RealCharAttributes>): RealCharAttributes;
+    static getAttributesApplier(attributes: Partial<RealCharAttributes>, previousAttributes: RealCharAttributes): string;
     attributesDiff(attributes: CharAttributes): CharAttributes;
     constructor(char: T, attributes?: Partial<CharAttributes>, ...[delta, actualChar,]: T extends null ? [[number, number], RichChar<string>] : [undefined?, undefined?]);
     areAttributesEqual(attributes: CharAttributes): boolean;

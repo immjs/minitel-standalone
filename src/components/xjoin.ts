@@ -1,7 +1,9 @@
 import { MinitelObject } from '../abstract/minitelobject.js';
+import { LocationDescriptor } from '../locationdescriptor.js';
 import { RichChar } from '../richchar.js';
 import { RichCharGrid } from '../richchargrid.js';
 import { Align, MinitelObjectAttributes } from '../types.js';
+import { getDeltaFromSetting } from '../utils.js';
 import { alignInvrt } from '../utils.js';
 import type { Minitel } from './minitel.js';
 
@@ -13,7 +15,7 @@ export class XJoin extends MinitelObject<XJoinAttributes> {
         heightAlign: 'stretch',
     }
     defaultAttributes = XJoin.defaultAttributes;
-    constructor(children: MinitelObject[], attributes: Partial<MinitelObjectAttributes>, minitel: Minitel) {
+    constructor(children: MinitelObject[], attributes: Partial<XJoinAttributes>, minitel: Minitel) {
         super(children, attributes, minitel);
     }
     getDimensions(attributes: XJoinAttributes, inheritMe: Partial<XJoinAttributes>): { width: number; height: number; } {
@@ -67,6 +69,103 @@ export class XJoin extends MinitelObject<XJoinAttributes> {
 
         return { width, height };
     }
+
+    mapLocation(attributes: XJoinAttributes, inheritMe: Partial<XJoinAttributes>, nextNode: MinitelObject, nodes: MinitelObject<MinitelObjectAttributes, Record<string, any[]>>[], weAt: number): LocationDescriptor {
+        const heightIfStretch = attributes.height || this.children.reduce((p, c) => {
+            const h = c.getDimensionsWrapper(inheritMe).height;
+            if (h == null) return p;
+            return Math.max(p, h);
+        }, -Infinity);
+
+        let cumulatedWidth = 0;
+        let nextMapLocation: LocationDescriptor | null = null as LocationDescriptor | null;
+
+        const rendersNoFlexGrow = this.children.map((v) => {
+            if (v.attributes.flexGrow) return null;
+            const newOptions = {
+                ...(attributes.heightAlign === 'stretch' ? { height: heightIfStretch } : {}),
+            };
+            if (v === nextNode) nextMapLocation = v.mapLocationWrapper(inheritMe, newOptions, nodes, weAt);
+            const render = v.getDimensionsWrapper(inheritMe, newOptions);
+            cumulatedWidth += render.width;
+            return [v, render];
+        });
+
+        const flexGrowTotal = this.children.reduce((p, c) => p + +(c.attributes.flexGrow || 0), 0);
+
+        const remainingSpace = attributes.width != null ? attributes.width - cumulatedWidth : null;
+
+        const unitOfFlexGrowSpace = remainingSpace != null ? remainingSpace / flexGrowTotal : null;
+
+        let usedRemainingSpace = 0;
+
+        const rendersYesFlexGrow = this.children.map((v) => {
+            if (!v.attributes.flexGrow) return null;
+            let newOptions = {};
+            if (unitOfFlexGrowSpace != null && remainingSpace != null) {
+                const prevUsedRemSpace = usedRemainingSpace;
+                usedRemainingSpace += unitOfFlexGrowSpace;
+                newOptions = {
+                    ...(attributes.heightAlign === 'stretch' ? { height: heightIfStretch } : {}),
+                    width: Math.round(usedRemainingSpace) - Math.round(prevUsedRemSpace),
+                };
+            }
+            if (v === nextNode) nextMapLocation = v.mapLocationWrapper(inheritMe, newOptions, nodes, weAt);
+            return [v, v.getDimensionsWrapper(inheritMe, newOptions)];
+        });
+
+        if (!(nextMapLocation instanceof LocationDescriptor)) throw new Error('nextNode was not within children; this is fatal for xjoin');
+
+        const renders = rendersNoFlexGrow.map((v, i) => v != null ? v : rendersYesFlexGrow[i]) as [MinitelObject, {
+            width: number;
+            height: number;
+        }][];
+
+        const height = attributes.heightAlign === 'stretch'
+            ? heightIfStretch
+            : attributes.height || Math.max(...renders.map((v) => v[1].height));
+
+        const contentsWidth = renders.reduce((c, v) => c + v[1].width, 0);
+        // space-between: w / (n - 1)
+        // space-around: w / n
+        // space-evenly: w / (n + 1)
+        let gapWidth: number;
+        if (typeof attributes.gap === 'number') {
+            gapWidth = attributes.gap;
+        } else if (attributes.width != null) {
+            const mappingTable = {
+                'space-between': renders.length - 1,
+                'space-around': renders.length,
+                'space-evenly': renders.length + 1,
+            };
+            gapWidth = (attributes.width - contentsWidth) / mappingTable[attributes.gap];
+        } else {
+            gapWidth = 0;
+        }
+
+        let gapCumul = 0;
+
+        let xCumul = 0;
+
+        for (let render of renders) {
+            if (render !== renders[0]) {
+                const lastCumul = gapCumul;
+                gapCumul += gapWidth;
+                xCumul += Math.round(gapCumul) - Math.round(lastCumul);
+            }
+
+            if (render[0] === nextNode) {
+                if (attributes.heightAlign !== 'stretch') {
+                    nextMapLocation.y += getDeltaFromSetting(nextMapLocation.h, height, alignInvrt[attributes.heightAlign]);
+                }
+                nextMapLocation.x += xCumul;
+            } else {
+                xCumul += render[1].width;
+            }
+        }
+        return nextMapLocation;
+    }
+
     render(attributes: XJoinAttributes, inheritMe: Partial<XJoinAttributes>) {
         const fillChar = new RichChar(attributes.fillChar, attributes).noSize();
 

@@ -128,7 +128,7 @@ export class RichCharGrid {
                 return this;
         }
     }
-    setHeight(height, heightAlign, char = new RichChar(' ')) {
+    setHeight(height, heightAlign, char) {
         if (this.height === height)
             return this;
         if (this.height > height)
@@ -148,7 +148,7 @@ export class RichCharGrid {
                 return this;
         }
     }
-    setWidth(width, widthAlign, char = new RichChar(' ')) {
+    setWidth(width, widthAlign, char) {
         if (this.width === width)
             return this;
         if (this.width > width)

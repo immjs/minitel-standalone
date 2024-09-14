@@ -1,6 +1,8 @@
 import { MinitelObject } from '../abstract/minitelobject.js';
+import { LocationDescriptor } from '../locationdescriptor.js';
 import { RichChar } from '../richchar.js';
 import { RichCharGrid } from '../richchargrid.js';
+import { getDeltaFromSetting } from '../utils.js';
 import { alignInvrt } from '../utils.js';
 export class YJoin extends MinitelObject {
     constructor(children, attributes, minitel) {
@@ -44,6 +46,87 @@ export class YJoin extends MinitelObject {
             ? widthIfStretch
             : attributes.width || Math.max(...dimensions.map((v) => v.width));
         return { width, height };
+    }
+    mapLocation(attributes, inheritMe, nextNode, nodes, weAt) {
+        const widthIfStretch = attributes.width || this.children.reduce((p, c) => {
+            const w = c.getDimensionsWrapper(inheritMe).width;
+            if (w == null)
+                return p;
+            return Math.max(p, w);
+        }, -Infinity);
+        let cumulatedHeight = 0;
+        let nextMapLocation = null;
+        const rendersNoFlexGrow = this.children.map((v) => {
+            if (v.attributes.flexGrow)
+                return null;
+            const newOptions = Object.assign({}, (attributes.widthAlign === 'stretch' ? { width: widthIfStretch } : {}));
+            if (v === nextNode)
+                nextMapLocation = v.mapLocationWrapper(inheritMe, newOptions, nodes, weAt);
+            const render = v.getDimensionsWrapper(inheritMe, newOptions);
+            cumulatedHeight += render.width;
+            return [v, render];
+        });
+        const flexGrowTotal = this.children.reduce((p, c) => p + +(c.attributes.flexGrow || 0), 0);
+        const remainingSpace = attributes.height != null ? attributes.height - cumulatedHeight : null;
+        const unitOfFlexGrowSpace = remainingSpace != null ? remainingSpace / flexGrowTotal : null;
+        let usedRemainingSpace = 0;
+        const rendersYesFlexGrow = this.children.map((v) => {
+            if (!v.attributes.flexGrow)
+                return null;
+            let newOptions = {};
+            if (unitOfFlexGrowSpace != null && remainingSpace != null) {
+                const prevUsedRemSpace = usedRemainingSpace;
+                usedRemainingSpace += unitOfFlexGrowSpace;
+                newOptions = Object.assign(Object.assign({}, (attributes.widthAlign === 'stretch' ? { width: widthIfStretch } : {})), { height: Math.round(usedRemainingSpace) - Math.round(prevUsedRemSpace) });
+            }
+            if (v === nextNode)
+                nextMapLocation = v.mapLocationWrapper(inheritMe, newOptions, nodes, weAt);
+            return [v, v.getDimensionsWrapper(inheritMe, newOptions)];
+        });
+        if (!(nextMapLocation instanceof LocationDescriptor))
+            throw new Error('nextNode was not within children; this is fatal for xjoin');
+        const renders = rendersNoFlexGrow.map((v, i) => v != null ? v : rendersYesFlexGrow[i]);
+        const width = attributes.widthAlign === 'stretch'
+            ? widthIfStretch
+            : attributes.width || Math.max(...renders.map((v) => v[1].width));
+        const contentsHeight = renders.reduce((c, v) => c + v[1].height, 0);
+        // space-between: w / (n - 1)
+        // space-around: w / n
+        // space-evenly: w / (n + 1)
+        let gapWidth;
+        if (typeof attributes.gap === 'number') {
+            gapWidth = attributes.gap;
+        }
+        else if (attributes.height != null) {
+            const mappingTable = {
+                'space-between': renders.length - 1,
+                'space-around': renders.length,
+                'space-evenly': renders.length + 1,
+            };
+            gapWidth = (attributes.height - contentsHeight) / mappingTable[attributes.gap];
+        }
+        else {
+            gapWidth = 0;
+        }
+        let gapCumul = 0;
+        let yCumul = 0;
+        for (let render of renders) {
+            if (render !== renders[0]) {
+                const lastCumul = gapCumul;
+                gapCumul += gapWidth;
+                yCumul += Math.round(gapCumul) - Math.round(lastCumul);
+            }
+            if (render[0] === nextNode) {
+                if (attributes.widthAlign !== 'stretch') {
+                    nextMapLocation.x += getDeltaFromSetting(nextMapLocation.w, width, alignInvrt[attributes.widthAlign]);
+                }
+                nextMapLocation.y += yCumul;
+            }
+            else {
+                yCumul += render[1].height;
+            }
+        }
+        return nextMapLocation;
     }
     render(attributes, inheritMe) {
         const fillChar = new RichChar(attributes.fillChar, attributes).noSize();

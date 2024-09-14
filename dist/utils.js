@@ -4,7 +4,7 @@ export const alignInvrt = {
     end: 'start',
 };
 export function inheritedProps(props) {
-    const inheritedProps = ['fillChar', 'fg', 'textAlign', 'bg', 'underline', 'noBlink', 'invert', 'doubleWidth', 'doubleHeight', 'wrap'];
+    const inheritedProps = ['fillChar', 'fg', 'textAlign', 'bg', 'underline', 'noBlink', 'invert', 'wrap'];
     const result = {};
     let inheritedProp;
     for (inheritedProp of inheritedProps) {
@@ -40,4 +40,11 @@ export const padding = {
 export function toBitArray(char) {
     const int = char.charCodeAt(0).toString(2);
     return int.padStart(8, '0').split('').map((v) => parseInt(v));
+}
+export function getDeltaFromSetting(size, setInto, align) {
+    if (align === 'start')
+        return 0;
+    if (align === 'end')
+        return setInto - size;
+    return Math.floor((setInto - size) / 2);
 }
