@@ -49,6 +49,8 @@ wss.on('connection', (ws) => {
         widthAlign: 'middle',
         heightAlign: 'middle',
         gap: 1,
+        doubleHeight: true,
+        doubleWidth: true,
     }, minitel));
 
     minitel.queueImmediateRenderToStream();

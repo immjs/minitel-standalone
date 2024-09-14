@@ -90,6 +90,36 @@ export class RichCharGrid {
         this.setWidth(this.width + fullPad[3], 'start', safeFillChar);
         return this;
     }
+    forceIntegrityOn(y, x) {
+        const cell = this.grid[y][x];
+        if (!cell.delta)
+            return;
+        const newY = y + cell.delta[0];
+        const newX = x + cell.delta[1];
+        if (!(newY in this.grid) || !(newX in this.grid[newY])) {
+            this.grid[y][x] = cell.copy();
+            this.grid[y][x].delta = undefined;
+            this.grid[y][x].actualChar = undefined;
+            if (x === 0)
+                this.grid[y][x].char = '<';
+            else
+                this.grid[y][x].char = '>';
+        }
+    }
+    forceIntegrityOnTheSides() {
+        for (let side = 0; side < 2; side += 1) {
+            for (let y = 0; y < this.height; y += 1) {
+                const currY = y;
+                const currX = side * (this.width - 1);
+                this.forceIntegrityOn(currY, currX);
+            }
+            for (let x = 0; x < this.width; x += 1) {
+                const currX = x;
+                const currY = side * (this.height - 1);
+                this.forceIntegrityOn(currY, currX);
+            }
+        }
+    }
     cutHeight(height, heightAlign) {
         const prevHeight = this.height;
         const cutAmount = prevHeight - height;
@@ -101,11 +131,13 @@ export class RichCharGrid {
                     this.locationDescriptors.applyDelta(-cutAmount, 0);
                 this.grid.splice(cutStart, cutAmount);
                 this.locationDescriptors.cut(this.height, this.width);
+                this.forceIntegrityOnTheSides();
                 return this;
             case 'middle':
                 const topToMiddle = Math.floor(cutAmount / 2);
                 this.cutHeight(prevHeight - topToMiddle, 'start');
                 this.cutHeight(height, 'end');
+                this.forceIntegrityOnTheSides();
                 return this;
         }
     }
@@ -120,11 +152,13 @@ export class RichCharGrid {
                     this.locationDescriptors.applyDelta(0, -cutAmount);
                 this.grid.forEach((line) => line.splice(cutStart, cutAmount));
                 this.locationDescriptors.cut(this.height, this.width);
+                this.forceIntegrityOnTheSides();
                 return this;
             case 'middle':
                 const leftToMiddle = Math.floor(cutAmount / 2);
                 this.cutWidth(prevWidth - leftToMiddle, 'start');
                 this.cutWidth(width, 'end');
+                this.forceIntegrityOnTheSides();
                 return this;
         }
     }

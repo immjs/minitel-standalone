@@ -1,7 +1,7 @@
 import { Duplex } from 'stream';
 import { Container, ContainerAttributes } from './container.js';
 import { RichCharGrid } from '../richchargrid.js';
-import { CharAttributes, MinitelObjectAttributes, RealCharAttributes } from '../types.js';
+import { CharAttributes } from '../types.js';
 import { SingletonArray } from '../singleton.js';
 import { MinitelObject } from '../abstract/minitelobject.js';
 import { RichChar } from '../richchar.js';
@@ -20,7 +20,7 @@ export interface MinitelSettings {
 }
 
 export class Minitel extends Container<ContainerAttributes, { key: [string], frame: [boolean] }> {
-    static defaultScreenAttributes: RealCharAttributes = {
+    static defaultScreenAttributes: CharAttributes = {
         fg: 7,
         bg: 0,
         underline: false,
@@ -124,7 +124,6 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
                         }
                         prev = current;
                         current = current.next;
-                        debugger;
                     }
                     if (current) {
                         this.rxQueue.removeNodeAfter(prev);
@@ -186,9 +185,11 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
 
         const outputString = ['\x14\x1e'];
 
-        let lastAttributes: RealCharAttributes = Minitel.defaultScreenAttributes;
+        let lastAttributes: CharAttributes = Minitel.defaultScreenAttributes;
         let skippedACharCounter = 0;
         let lastChar: [RichChar<string> | RichChar<null>, RichChar<string> | RichChar<null>] | null = null;
+
+        // console.log(this.previousRender.toString());
 
         for (let lineIdx in renderGrid.grid) {
             if (+lineIdx === 0 && this.settings.statusBar) outputString.push('\x1f\x40\x41');
@@ -235,7 +236,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
 
                     lastAttributes = char.attributes;
 
-                    outputString.push(typeof char.char === 'string' ? char.char : ['', ' '][char.delta[0]])
+                    outputString.push(typeof char.char === 'string' ? char.char : ['', ' '].at(char.delta[0])!)
                     skippedACharCounter = 0;
                 }
                 lastChar = [char, prevChar];

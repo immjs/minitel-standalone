@@ -86,7 +86,6 @@ export class Minitel extends Container {
                         }
                         prev = current;
                         current = current.next;
-                        debugger;
                     }
                     if (current) {
                         this.rxQueue.removeNodeAfter(prev);
@@ -149,6 +148,7 @@ export class Minitel extends Container {
         let lastAttributes = Minitel.defaultScreenAttributes;
         let skippedACharCounter = 0;
         let lastChar = null;
+        console.log(this.previousRender.toString());
         for (let lineIdx in renderGrid.grid) {
             if (+lineIdx === 0 && this.settings.statusBar)
                 outputString.push('\x1f\x40\x41');
@@ -175,7 +175,7 @@ export class Minitel extends Container {
                     const applier = RichChar.getAttributesApplier(diff, lastAttributes);
                     outputString.push(applier);
                     lastAttributes = char.attributes;
-                    outputString.push(typeof char.char === 'string' ? char.char : ['', ' '][char.delta[0]]);
+                    outputString.push(typeof char.char === 'string' ? char.char : ['', ' '].at(char.delta[0]));
                     skippedACharCounter = 0;
                 }
                 lastChar = [char, prevChar];

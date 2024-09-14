@@ -1,13 +1,13 @@
 import { LocationDescriptors } from './locationdescriptor.js';
 import { RichChar } from './richchar.js';
-import { Align, FullPadding, RealCharAttributes } from './types.js';
+import { Align, CharAttributes, FullPadding } from './types.js';
 export declare class RichCharGrid {
     grid: (RichChar<string> | RichChar<null>)[][];
     locationDescriptors: LocationDescriptors;
     _width: number;
     constructor(grid?: (RichChar<string> | RichChar<null>)[][]);
     mostCommonAttribute(attribute: 'fg' | 'invert' | 'noBlink'): any;
-    static fromLine(line: string | string[], attributes: Partial<RealCharAttributes>): RichCharGrid;
+    static fromLine(line: string | string[], attributes: Partial<CharAttributes>): RichCharGrid;
     static fill(w: number, h: number, char: RichChar<string>): RichCharGrid;
     get width(): number;
     get height(): number;
@@ -15,6 +15,8 @@ export declare class RichCharGrid {
     copyLine(index: number): (RichChar<string> | RichChar<null>)[][];
     copyCol(index: number): (RichChar<string> | RichChar<null>)[][];
     pad(fullPad: FullPadding, fillChar: RichChar<string>): this;
+    forceIntegrityOn(y: number, x: number): void;
+    forceIntegrityOnTheSides(): void;
     cutHeight(height: number, heightAlign: Align): this;
     cutWidth(width: number, widthAlign: Align): this;
     setHeight(height: number, heightAlign: Align, char: RichChar<string>): this;

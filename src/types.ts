@@ -4,7 +4,7 @@
 // import { YJoinAttributes } from './components/yjoin.js';
 // import { ZJoinAttributes } fr``om './components/zjoin.js';
 
-export interface RealCharAttributes {
+export interface CharAttributes {
     fg: number;
     bg: number;
     underline: boolean;
@@ -14,7 +14,7 @@ export interface RealCharAttributes {
     invert: boolean;
     charset: number;
 }
-export type CharAttributes = Omit<RealCharAttributes, 'doubleHeight' | 'doubleWidth'>;
+export type CharAttributesWithoutDouble = Omit<CharAttributes, 'doubleHeight' | 'doubleWidth'>;
 export type ApplicableCharAttributes = Omit<CharAttributes, 'charset'>;
 export type Align = 'start' | 'middle' | 'end';
 export interface MinitelObjectAttributes extends Partial<ApplicableCharAttributes> {
