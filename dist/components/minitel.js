@@ -148,7 +148,7 @@ export class Minitel extends Container {
         let lastAttributes = Minitel.defaultScreenAttributes;
         let skippedACharCounter = 0;
         let lastChar = null;
-        console.log(this.previousRender.toString());
+        // console.log(this.previousRender.toString());
         for (let lineIdx in renderGrid.grid) {
             if (+lineIdx === 0 && this.settings.statusBar)
                 outputString.push('\x1f\x40\x41');
