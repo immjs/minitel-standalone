@@ -125,6 +125,10 @@ export class Minitel extends Container {
     invalidateRender() {
         this.renderInvalidated = true;
     }
+    mapLocation(attributes, inheritMe, nextNode, nodes, weAt) {
+        const { width, height } = this.getDimensions();
+        return nextNode.mapLocationWrapper(inheritMe, { width, height }, nodes, weAt);
+    }
     renderString() {
         this.renderInvalidated = false;
         let renderGrid;

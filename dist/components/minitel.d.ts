@@ -4,8 +4,10 @@ import { Duplex } from 'stream';
 import { Container, ContainerAttributes } from './container.js';
 import { RichCharGrid } from '../richchargrid.js';
 import { CharAttributes } from '../types.js';
+import { MinitelObject } from '../abstract/minitelobject.js';
 import { Focusable } from '../abstract/focusable.js';
 import { LinkedList } from '../abstract/linked_list.js';
+import type { LocationDescriptor } from '../locationdescriptor.js';
 export interface MinitelSettings {
     statusBar: boolean;
     localEcho: boolean;
@@ -34,6 +36,7 @@ export declare class Minitel extends Container<ContainerAttributes, {
     };
     readyAsync(): Promise<void>;
     invalidateRender(): void;
+    mapLocation(attributes: ContainerAttributes, inheritMe: Partial<ContainerAttributes>, nextNode: MinitelObject, nodes: MinitelObject[], weAt: number): LocationDescriptor;
     renderString(): string;
     toCursorMove(y: number, x: number): string;
     handleFocus(): void;

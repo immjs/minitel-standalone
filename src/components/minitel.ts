@@ -1,7 +1,7 @@
 import { Duplex } from 'stream';
 import { Container, ContainerAttributes } from './container.js';
 import { RichCharGrid } from '../richchargrid.js';
-import { CharAttributes } from '../types.js';
+import { CharAttributes, MinitelObjectAttributes } from '../types.js';
 import { SingletonArray } from '../singleton.js';
 import { MinitelObject } from '../abstract/minitelobject.js';
 import { RichChar } from '../richchar.js';
@@ -11,6 +11,7 @@ import { Focusable } from '../abstract/focusable.js';
 import { expectNextChars } from '../inputConstants.js';
 import { InvalidRender } from '../abstract/invalidrender.js';
 import { LLNode, LinkedList } from '../abstract/linked_list.js';
+import type { LocationDescriptor } from '../locationdescriptor.js';
 
 export interface MinitelSettings {
     statusBar: boolean;
@@ -160,6 +161,10 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
     }
     invalidateRender(): void {
         this.renderInvalidated = true;
+    }
+    mapLocation(attributes: ContainerAttributes, inheritMe: Partial<ContainerAttributes>, nextNode: MinitelObject, nodes: MinitelObject[], weAt: number): LocationDescriptor {
+        const { width, height } = this.getDimensions();
+        return nextNode.mapLocationWrapper(inheritMe, { width, height }, nodes, weAt)
     }
     renderString(): string {
         this.renderInvalidated = false;
