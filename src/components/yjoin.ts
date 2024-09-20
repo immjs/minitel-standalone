@@ -24,9 +24,9 @@ export class YJoin extends MinitelObject<YJoinAttributes> {
             if (w == null) return p;
             return Math.max(p, w);
         }, -Infinity);
-    
+
         let cumulatedHeight = 0;
-    
+
         const rendersNoFlexGrow = this.children.map((v) => {
             if (v.attributes.flexGrow) return null;
             const render = v.getDimensionsWrapper(inheritMe, {
@@ -35,15 +35,17 @@ export class YJoin extends MinitelObject<YJoinAttributes> {
             cumulatedHeight += render.height;
             return render;
         });
-    
+
         const flexGrowTotal = this.children.reduce((p, c) => p + +(c.attributes.flexGrow || 0), 0);
-    
-        const remainingSpace = attributes.height != null ? attributes.height - cumulatedHeight : null;
-    
+
+        const gapIfStatic = typeof attributes.gap === 'number' ? attributes.gap : 0;
+
+        const remainingSpace = attributes.height != null ? attributes.height - cumulatedHeight - gapIfStatic * (this.children.length - 1) : null;
+
         const unitOfFlexGrowSpace = remainingSpace != null ? remainingSpace / flexGrowTotal : null;
-    
+
         let usedRemainingSpace = 0;
-    
+
         const rendersYesFlexGrow = this.children.map((v) => {
             if (!v.attributes.flexGrow) return null;
             if (unitOfFlexGrowSpace != null && remainingSpace != null) {
@@ -94,7 +96,9 @@ export class YJoin extends MinitelObject<YJoinAttributes> {
 
         const flexGrowTotal = this.children.reduce((p, c) => p + +(c.attributes.flexGrow || 0), 0);
 
-        const remainingSpace = attributes.height != null ? attributes.height - cumulatedHeight : null;
+        const gapIfStatic = typeof attributes.gap === 'number' ? attributes.gap : 0;
+
+        const remainingSpace = attributes.height != null ? attributes.height - cumulatedHeight - gapIfStatic * (this.children.length - 1) : null;
 
         const unitOfFlexGrowSpace = remainingSpace != null ? remainingSpace / flexGrowTotal : null;
 
@@ -130,18 +134,18 @@ export class YJoin extends MinitelObject<YJoinAttributes> {
         // space-between: w / (n - 1)
         // space-around: w / n
         // space-evenly: w / (n + 1)
-        let gapWidth: number;
+        let gapHeight: number;
         if (typeof attributes.gap === 'number') {
-            gapWidth = attributes.gap;
+            gapHeight = attributes.gap;
         } else if (attributes.height != null) {
             const mappingTable = {
                 'space-between': renders.length - 1,
                 'space-around': renders.length,
                 'space-evenly': renders.length + 1,
             };
-            gapWidth = (attributes.height - contentsHeight) / mappingTable[attributes.gap];
+            gapHeight = (attributes.height - contentsHeight) / mappingTable[attributes.gap];
         } else {
-            gapWidth = 0;
+            gapHeight = 0;
         }
 
         let gapCumul = 0;
@@ -151,7 +155,7 @@ export class YJoin extends MinitelObject<YJoinAttributes> {
         for (let render of renders) {
             if (render !== renders[0]) {
                 const lastCumul = gapCumul;
-                gapCumul += gapWidth;
+                gapCumul += gapHeight;
                 yCumul += Math.round(gapCumul) - Math.round(lastCumul);
             }
 

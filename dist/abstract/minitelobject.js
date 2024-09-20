@@ -123,8 +123,8 @@ export class MinitelObject extends EventEmitter {
             return new LocationDescriptor(0, 0, dimensions.width, dimensions.height);
         }
         let result = this.mapLocation(attributes, inheritedProps(Object.assign(Object.assign(Object.assign({}, inheritedAttributes), this.attributes), forcedAttributes)), nextNode, nodes, weAt + 1);
-        result.x += pad[0];
-        result.y += pad[3];
+        result.y += pad[0];
+        result.x += pad[3];
         return result;
     }
     get parentList() {
@@ -149,6 +149,7 @@ export class MinitelObject extends EventEmitter {
         }
         else if (relY + thisPos.h > scrollablePos.h) {
             context.scrollDelta[0] -= scrollablePos.h - (relY + thisPos.h);
+            console.log(scrollablePos.h - (relY + thisPos.h), scrollablePos, relY, thisPos);
         }
         if (relX < 0) {
             context.scrollDelta[1] += relX;

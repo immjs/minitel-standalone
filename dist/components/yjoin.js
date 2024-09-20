@@ -25,7 +25,8 @@ export class YJoin extends MinitelObject {
             return render;
         });
         const flexGrowTotal = this.children.reduce((p, c) => p + +(c.attributes.flexGrow || 0), 0);
-        const remainingSpace = attributes.height != null ? attributes.height - cumulatedHeight : null;
+        const gapIfStatic = typeof attributes.gap === 'number' ? attributes.gap : 0;
+        const remainingSpace = attributes.height != null ? attributes.height - cumulatedHeight - gapIfStatic * (this.children.length - 1) : null;
         const unitOfFlexGrowSpace = remainingSpace != null ? remainingSpace / flexGrowTotal : null;
         let usedRemainingSpace = 0;
         const rendersYesFlexGrow = this.children.map((v) => {
@@ -67,7 +68,8 @@ export class YJoin extends MinitelObject {
             return [v, render];
         });
         const flexGrowTotal = this.children.reduce((p, c) => p + +(c.attributes.flexGrow || 0), 0);
-        const remainingSpace = attributes.height != null ? attributes.height - cumulatedHeight : null;
+        const gapIfStatic = typeof attributes.gap === 'number' ? attributes.gap : 0;
+        const remainingSpace = attributes.height != null ? attributes.height - cumulatedHeight - gapIfStatic * (this.children.length - 1) : null;
         const unitOfFlexGrowSpace = remainingSpace != null ? remainingSpace / flexGrowTotal : null;
         let usedRemainingSpace = 0;
         const rendersYesFlexGrow = this.children.map((v) => {
@@ -93,9 +95,9 @@ export class YJoin extends MinitelObject {
         // space-between: w / (n - 1)
         // space-around: w / n
         // space-evenly: w / (n + 1)
-        let gapWidth;
+        let gapHeight;
         if (typeof attributes.gap === 'number') {
-            gapWidth = attributes.gap;
+            gapHeight = attributes.gap;
         }
         else if (attributes.height != null) {
             const mappingTable = {
@@ -103,17 +105,17 @@ export class YJoin extends MinitelObject {
                 'space-around': renders.length,
                 'space-evenly': renders.length + 1,
             };
-            gapWidth = (attributes.height - contentsHeight) / mappingTable[attributes.gap];
+            gapHeight = (attributes.height - contentsHeight) / mappingTable[attributes.gap];
         }
         else {
-            gapWidth = 0;
+            gapHeight = 0;
         }
         let gapCumul = 0;
         let yCumul = 0;
         for (let render of renders) {
             if (render !== renders[0]) {
                 const lastCumul = gapCumul;
-                gapCumul += gapWidth;
+                gapCumul += gapHeight;
                 yCumul += Math.round(gapCumul) - Math.round(lastCumul);
             }
             if (render[0] === nextNode) {

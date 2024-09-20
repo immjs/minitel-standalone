@@ -67,7 +67,8 @@ export class XJoin extends MinitelObject {
             return [v, render];
         });
         const flexGrowTotal = this.children.reduce((p, c) => p + +(c.attributes.flexGrow || 0), 0);
-        const remainingSpace = attributes.width != null ? attributes.width - cumulatedWidth : null;
+        const gapIfStatic = typeof attributes.gap === 'number' ? attributes.gap : 0;
+        const remainingSpace = attributes.width != null ? attributes.width - cumulatedWidth - gapIfStatic * (this.children.length - 1) : null;
         const unitOfFlexGrowSpace = remainingSpace != null ? remainingSpace / flexGrowTotal : null;
         let usedRemainingSpace = 0;
         const rendersYesFlexGrow = this.children.map((v) => {
@@ -145,7 +146,8 @@ export class XJoin extends MinitelObject {
             return render;
         });
         const flexGrowTotal = this.children.reduce((p, c) => p + +(c.attributes.flexGrow || 0), 0);
-        const remainingSpace = attributes.width != null ? attributes.width - cumulatedWidth : null;
+        const gapIfStatic = typeof attributes.gap === 'number' ? attributes.gap : 0;
+        const remainingSpace = attributes.width != null ? attributes.width - cumulatedWidth - gapIfStatic * (this.children.length - 1) : null;
         const unitOfFlexGrowSpace = remainingSpace != null ? remainingSpace / flexGrowTotal : null;
         let usedRemainingSpace = 0;
         const rendersYesFlexGrow = this.children.map((v) => {

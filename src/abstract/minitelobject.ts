@@ -184,8 +184,8 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
             ...forcedAttributes,
         }), nextNode, nodes, weAt + 1);
 
-        result.x += pad[0];
-        result.y += pad[3];
+        result.y += pad[0];
+        result.x += pad[3];
 
         return result;
     }
@@ -216,6 +216,7 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
             context.scrollDelta[0] += relY;
         } else if (relY + thisPos.h > scrollablePos.h) {
             context.scrollDelta[0] -= scrollablePos.h - (relY + thisPos.h);
+            console.log(scrollablePos.h - (relY + thisPos.h), scrollablePos, relY, thisPos);
         }
 
         if (relX < 0) {
