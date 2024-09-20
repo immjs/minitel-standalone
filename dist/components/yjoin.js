@@ -63,7 +63,7 @@ export class YJoin extends MinitelObject {
             if (v === nextNode)
                 nextMapLocation = v.mapLocationWrapper(inheritMe, newOptions, nodes, weAt);
             const render = v.getDimensionsWrapper(inheritMe, newOptions);
-            cumulatedHeight += render.width;
+            cumulatedHeight += render.height;
             return [v, render];
         });
         const flexGrowTotal = this.children.reduce((p, c) => p + +(c.attributes.flexGrow || 0), 0);
