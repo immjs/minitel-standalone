@@ -38,7 +38,9 @@ export class XJoin extends MinitelObject<XJoinAttributes> {
 
         const flexGrowTotal = this.children.reduce((p, c) => p + +(c.attributes.flexGrow || 0), 0);
 
-        const remainingSpace = attributes.width != null ? attributes.width - cumulatedWidth : null;
+        const gapIfStatic = typeof attributes.gap === 'number' ? attributes.gap : 0;
+        
+        const remainingSpace = attributes.width != null ? attributes.width - cumulatedWidth - gapIfStatic * (this.children.length - 1) : null;
 
         const unitOfFlexGrowSpace = remainingSpace != null ? remainingSpace / flexGrowTotal : null;
 
