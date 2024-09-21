@@ -149,7 +149,6 @@ export class MinitelObject extends EventEmitter {
         }
         else if (relY + thisPos.h > scrollablePos.h) {
             context.scrollDelta[0] -= scrollablePos.h - (relY + thisPos.h);
-            console.log(scrollablePos.h - (relY + thisPos.h), scrollablePos, relY, thisPos);
         }
         if (relX < 0) {
             context.scrollDelta[1] += relX;
