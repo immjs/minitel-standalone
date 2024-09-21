@@ -193,7 +193,9 @@ export class YJoin extends MinitelObject<YJoinAttributes> {
 
         const flexGrowTotal = this.children.reduce((p, c) => p + +(c.attributes.flexGrow || 0), 0);
 
-        const remainingSpace = attributes.height != null ? attributes.height - cumulatedHeight : null;
+        const gapIfStatic = typeof attributes.gap === 'number' ? attributes.gap : 0;
+        
+        const remainingSpace = attributes.height != null ? attributes.height - cumulatedHeight - gapIfStatic * (this.children.length - 1) : null;
 
         const unitOfFlexGrowSpace = remainingSpace != null && flexGrowTotal !== 0 ? remainingSpace / flexGrowTotal : null;
 
