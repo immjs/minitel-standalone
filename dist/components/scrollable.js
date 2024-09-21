@@ -95,7 +95,6 @@ export class Scrollable extends Container {
             clearTimeout(this.artificialBlink);
     }
     getDimensions(attributes, inheritMe) {
-        const childrenDimensionsFirstTry = this.children[0].getDimensionsWrapper(inheritMe);
         let renderAttributes = attributes;
         let autoedX = false;
         let autoedY = false;

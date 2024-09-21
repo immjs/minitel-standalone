@@ -110,8 +110,6 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
         if (this.artificialBlink) clearTimeout(this.artificialBlink);
     }
     getDimensions(attributes: ScrollableAttributes, inheritMe: Partial<ScrollableAttributes>) {
-        const childrenDimensionsFirstTry = this.children[0].getDimensionsWrapper(inheritMe);
-
         let renderAttributes = attributes;
 
         let autoedX = false;
