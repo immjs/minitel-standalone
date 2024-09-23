@@ -219,7 +219,9 @@ export class Minitel extends Container {
             const isInTree = this.has(this.focusedObj);
             if (this.focusedObj.focused !== isInTree)
                 this.focusedObj.focused = isInTree;
-            if (isInTree)
+            if (this.focusedObj.focused && this.focusedObj.disabled)
+                this.focusedObj.focused = false;
+            if (isInTree && !this.focusedObj.disabled)
                 return;
             this.focusedObj = null;
         }

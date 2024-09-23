@@ -287,7 +287,8 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
         if (this.focusedObj) {
             const isInTree = this.has(this.focusedObj);
             if (this.focusedObj.focused !== isInTree) this.focusedObj.focused = isInTree;
-            if (isInTree) return;
+            if (this.focusedObj.focused && this.focusedObj.disabled) this.focusedObj.focused = false;
+            if (isInTree && !this.focusedObj.disabled) return;
             this.focusedObj = null;
         }
         const oneWithAutofocusIdx = focusables.findLastIndex((v) => v.attributes.autofocus);
