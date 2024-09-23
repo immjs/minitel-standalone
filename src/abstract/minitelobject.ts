@@ -225,4 +225,7 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
             context.scrollDelta[1] -= scrollablePos.w - (relX + thisPos.w);
         }
     }
+    get disabled(): boolean {
+        return this.attributes.disabled || this.parent?.disabled || false;
+    }
 }

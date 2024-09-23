@@ -36,7 +36,4 @@ export class Focusable extends Container<FocusableAttributes, { key: [string] }>
     constructor(children: MinitelObject[] = [], attributes: Partial<FocusableAttributes>, minitel: Minitel) {
         super(children, attributes, minitel);
     }
-    get disabled() {
-        return this.attributes.disabled || false;
-    }
 }

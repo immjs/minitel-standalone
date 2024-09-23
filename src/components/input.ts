@@ -238,9 +238,6 @@ export class Input
     get focusCursorAt() {
         return [this.cursorActuallyAt[0] - this.scrollDelta[0], this.cursorActuallyAt[1] - this.scrollDelta[1]] as [number, number];
     }
-    get disabled() {
-        return this.attributes.disabled || false;
-    }
 }
 
 export interface InputAttributes extends FocusableAttributes {

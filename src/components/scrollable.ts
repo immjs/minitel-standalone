@@ -304,9 +304,6 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
 
         return finalRender;
     }
-    get disabled() {
-        return this.attributes.disabled || false;
-    }
 }
 
 export interface ScrollableAttributes extends ContainerAttributes {
