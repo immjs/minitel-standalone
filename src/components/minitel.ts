@@ -134,7 +134,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
                     }
 
                     this.emit('key', acc);
-                    if (acc.match(/^([a-zA-Z0-9,\.';\-\:?!"#$%&\(\)\[\]\{\}<>@+=*/ ]|\x0d|\x13\x47|\x1b\x5b[\x41\x42\x43\x44])$/g)) {
+                    if (acc.match(/^([a-zA-Z0-9,\.';\-\:?!"#$%&\(\)\[\]\{\}<>@+=*/_~ ]|\x0d|\x13\x47|\x1b\x5b[\x41\x42\x43\x44])$/g)) {
                         const focusedObj = this.focusedObj;
                         if (focusedObj) {
                             focusedObj.emit('key', acc);
