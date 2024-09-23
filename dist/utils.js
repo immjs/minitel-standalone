@@ -4,7 +4,7 @@ export const alignInvrt = {
     end: 'start',
 };
 export function inheritedProps(props) {
-    const inheritedProps = ['fillChar', 'fg', 'textAlign', 'bg', 'underline', 'doubleWidth', 'doubleHeight', 'noBlink', 'invert', 'wrap'];
+    const inheritedProps = ['fillChar', 'fg', 'textAlign', 'bg', 'underline', 'doubleWidth', 'doubleHeight', 'noBlink', 'invert', 'wrap', 'disabled'];
     const result = {};
     let inheritedProp;
     for (inheritedProp of inheritedProps) {

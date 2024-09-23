@@ -26,6 +26,7 @@ export interface MinitelObjectAttributes extends Partial<ApplicableCharAttribute
     flexGrow: number | boolean;
     pad: Padding;
     visible: boolean;
+    disabled: boolean;
 }
 export interface RenderLinesAttributes extends MinitelObjectAttributes {
     forcedIndent?: number;

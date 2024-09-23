@@ -23,6 +23,7 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
         flexGrow: 0,
         pad: 0,
         visible: true,
+        disabled: false,
     };
     defaultAttributes: T = MinitelObject.defaultAttributes as T;
     getDimensions(attributes: T, inheritMe: Partial<T>): ({ width: number, height: number }) {
