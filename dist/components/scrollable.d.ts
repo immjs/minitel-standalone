@@ -31,7 +31,6 @@ export declare class Scrollable extends Container<ScrollableAttributes, {
     };
     mapLocation(attributes: ScrollableAttributes, inheritMe: Partial<ScrollableAttributes>, nextNode: MinitelObject, nodes: MinitelObject[], weAt: number): LocationDescriptor;
     render(attributes: ScrollableAttributes, inheritMe: Partial<ScrollableAttributes>): RichCharGrid;
-    get disabled(): boolean;
 }
 export interface ScrollableAttributes extends ContainerAttributes {
     overflowX: 'scroll' | 'pad' | 'auto' | 'hidden' | 'noscrollbar';

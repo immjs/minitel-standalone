@@ -14,5 +14,4 @@ export declare class Focusable extends Container<FocusableAttributes, {
     set focused(val: boolean);
     get focused(): boolean;
     constructor(children: MinitelObject<import("../types.js").MinitelObjectAttributes, Record<string, any[]>>[] | undefined, attributes: Partial<FocusableAttributes>, minitel: Minitel);
-    get disabled(): boolean;
 }

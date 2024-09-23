@@ -27,8 +27,5 @@ export class Focusable extends Container {
         this._focused = false;
         this.keepElmDesc = true;
     }
-    get disabled() {
-        return this.attributes.disabled || false;
-    }
 }
 Focusable.defaultAttributes = Object.assign(Object.assign({}, Container.defaultAttributes), { autofocus: false, disabled: false, widthAlign: 'start', heightAlign: 'start', onFocus: () => { }, onBlur: () => { } });

@@ -242,8 +242,5 @@ export class Scrollable extends Container {
         this.popPrevScrollDelta(attributes.onScroll);
         return finalRender;
     }
-    get disabled() {
-        return this.attributes.disabled || false;
-    }
 }
 Scrollable.defaultAttributes = Object.assign(Object.assign({}, Container.defaultAttributes), { overflowX: 'hidden', overflowY: 'auto', autofocus: false, disabled: false, scrollbarBackColor: 5, scrollbarColor: 7, blinkPeriod: 500, onScroll: () => { }, onFocus: () => { }, onBlur: () => { } });

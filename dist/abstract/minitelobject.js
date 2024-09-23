@@ -157,6 +157,10 @@ export class MinitelObject extends EventEmitter {
             context.scrollDelta[1] -= scrollablePos.w - (relX + thisPos.w);
         }
     }
+    get disabled() {
+        var _a;
+        return this.attributes.disabled || ((_a = this.parent) === null || _a === void 0 ? void 0 : _a.disabled) || false;
+    }
 }
 MinitelObject.defaultAttributes = {
     width: null,

@@ -37,4 +37,5 @@ export declare class MinitelObject<T extends MinitelObjectAttributes = MinitelOb
     scrollIntoView(context?: MinitelObject & {
         scrollDelta: [number, number];
     }): void;
+    get disabled(): boolean;
 }

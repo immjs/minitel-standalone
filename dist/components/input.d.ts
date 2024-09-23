@@ -32,7 +32,6 @@ export declare class Input extends MinitelObject<InputAttributes, {
     unmount(): void;
     render(attributes: InputAttributes, inheritMe: Partial<InputAttributes>): RichCharGrid;
     get focusCursorAt(): [number, number];
-    get disabled(): boolean;
 }
 export interface InputAttributes extends FocusableAttributes {
     type: 'text' | 'password';

@@ -205,8 +205,5 @@ export class Input extends MinitelObject {
     get focusCursorAt() {
         return [this.cursorActuallyAt[0] - this.scrollDelta[0], this.cursorActuallyAt[1] - this.scrollDelta[1]];
     }
-    get disabled() {
-        return this.attributes.disabled || false;
-    }
 }
 Input.defaultAttributes = Object.assign(Object.assign({}, MinitelObject.defaultAttributes), { fillChar: '.', width: 8, height: 1, type: 'text', autofocus: false, disabled: false, multiline: false, onFocus: () => { }, onBlur: () => { }, onChange: () => { }, onScroll: () => { } });
