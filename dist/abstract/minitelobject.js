@@ -167,4 +167,5 @@ MinitelObject.defaultAttributes = {
     flexGrow: 0,
     pad: 0,
     visible: true,
+    disabled: false,
 };
