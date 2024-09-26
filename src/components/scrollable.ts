@@ -166,7 +166,60 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
         return dimensions;
     }
     mapLocation(attributes: ScrollableAttributes, inheritMe: Partial<ScrollableAttributes>, nextNode: MinitelObject, nodes: MinitelObject[], weAt: number): LocationDescriptor {
-        const location = nextNode.mapLocationWrapper(inheritMe, {}, nodes, weAt);
+        let renderAttributes = attributes;
+
+        let autoedX = false;
+        let autoedY = false;
+
+        if (attributes.width != null && attributes.height != null && attributes.overflowY !== 'hidden') {
+            if (attributes.height != null) {
+                if (attributes.overflowY === 'auto') {
+                    renderAttributes = {
+                        ...attributes,
+                        width: attributes.overflowX === 'hidden' ? attributes.width : null,
+                        height: null,
+                    };
+                    const possibleRender = super.getDimensions(renderAttributes, inheritMe);
+                    if (possibleRender.height <= attributes.height) autoedY = true;
+                }
+
+                if (!autoedY) {
+                    const width = attributes.width != null && attributes.overflowX === 'hidden'
+                        ? attributes.width - 1
+                        : null;
+        
+                    renderAttributes = { ...attributes, width, height: null };
+                }
+            }
+        } else {
+            if (attributes.width != null) {
+                if (attributes.overflowX === 'auto') {
+                    renderAttributes = {
+                        ...attributes,
+                        height: attributes.height,
+                        width: null,
+                    };
+                    const possibleRender = super.getDimensions(renderAttributes, inheritMe);
+                    if (possibleRender.width <= attributes.width) autoedX = true;
+                }
+
+                if (!autoedX) {
+                    const height = attributes.height != null ? attributes.height - 1 : null;
+        
+                    renderAttributes = { ...attributes, height, width: null };
+                }
+            }
+        }
+        const dimensions = super.getDimensions(renderAttributes, inheritMe);
+
+        if (attributes.overflowY !== 'hidden' && attributes.overflowY !== 'noscrollbar' && !autoedY && attributes.height != null) {
+            dimensions.width += 1;
+        }
+        if (attributes.overflowX !== 'hidden' && attributes.overflowX !== 'noscrollbar' && !autoedX && attributes.width != null) {
+            dimensions.height += 1;
+        }
+
+        const location = nextNode.mapLocationWrapper(inheritMe, renderAttributes, nodes, weAt);
         location.x -= this.scrollDelta[1];
         location.y -= this.scrollDelta[0];
 

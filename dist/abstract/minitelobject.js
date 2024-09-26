@@ -106,7 +106,7 @@ export class MinitelObject extends EventEmitter {
         return this.children.includes(child) || this.children.some((v) => v.has(child));
     }
     mapLocation(attributes, inheritMe, nextNode, nodes, weAt) {
-        return nextNode.mapLocationWrapper(inheritMe, {}, nodes, weAt);
+        return nextNode.mapLocationWrapper(inheritMe, { width: attributes.width, height: attributes.height }, nodes, weAt);
     }
     mapLocationWrapper(inheritedAttributes, forcedAttributes, nodes, weAt) {
         const nextNode = nodes[weAt + 1];

@@ -150,7 +150,7 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
     }
 
     mapLocation(attributes: T, inheritMe: Partial<T>, nextNode: MinitelObject, nodes: MinitelObject[], weAt: number): LocationDescriptor {
-        return nextNode.mapLocationWrapper(inheritMe, {}, nodes, weAt)
+        return nextNode.mapLocationWrapper(inheritMe, { width: attributes.width, height: attributes.height }, nodes, weAt)
     }
     mapLocationWrapper(inheritedAttributes: Partial<T>, forcedAttributes: Partial<T>, nodes: MinitelObject[], weAt: number): LocationDescriptor {
         const nextNode: MinitelObject | undefined = nodes[weAt + 1];

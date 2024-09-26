@@ -47,7 +47,7 @@ export class ZJoin extends MinitelObject<ZJoinAttributes> {
         }, nodes, weAt);
 
         prevLocation.x += getDeltaFromSetting(relevant[1].width, maxWidth, attributes.widthAlign);
-        prevLocation.y += getDeltaFromSetting(relevant[1].height, maxWidth, attributes.heightAlign);
+        prevLocation.y += getDeltaFromSetting(relevant[1].height, maxHeight, attributes.heightAlign);
 
         return prevLocation;
     }
