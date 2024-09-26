@@ -143,6 +143,13 @@ export class MinitelObject extends EventEmitter {
         const pathToScrollable = context.parentList;
         const thisPos = this.minitel.mapLocationWrapper({}, {}, pathToThis, 0);
         const scrollablePos = this.minitel.mapLocationWrapper({}, {}, pathToScrollable, 0);
+        // DEAR FUTURE ME,
+        // IS YOUR SCROLLINTOVIEW BUGGED AFTER ADDING PADDING TO INHERITANCE?
+        // WELL MAYBE IF YOUR RETARDED ASS DID NOT DO THAT IT WOULD NOT BREAK
+        // - Love, Juliet
+        const scrollableFullPad = padding.normalise(context.attributes.pad || 0);
+        scrollablePos.y -= scrollableFullPad[0];
+        scrollablePos.x -= scrollableFullPad[3];
         const [relY, relX] = [thisPos.y - scrollablePos.y, thisPos.x - scrollablePos.x];
         if (relY < 0) {
             context.scrollDelta[0] += relY;
