@@ -275,7 +275,7 @@ export class Scrollable extends Container {
             else {
                 bottomScrollbar = RichCharGrid.fill(scrollbarSizeX, 1, scrollChar);
                 bottomScrollbar.setWidth(scrollbarSizeX + scrollbarOffset, 'start', scrollBackChar);
-                bottomScrollbar.setWidth(finalRender.height, 'end', scrollBackChar);
+                bottomScrollbar.setWidth(finalRender.width, 'end', scrollBackChar);
             }
             finalRender.mergeY(bottomScrollbar);
         }

@@ -88,7 +88,7 @@ export class MinitelObject extends EventEmitter {
         return result;
     }
     focusables() {
-        const isFocusable = (v) => 'disabled' in v;
+        const isFocusable = (v) => 'focused' in v;
         return this.children.flatMap((v) => {
             const focusables = [];
             if (isFocusable(v) && !v.disabled)

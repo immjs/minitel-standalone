@@ -130,7 +130,7 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
         return result;
     }
     focusables(): Focusable[] {
-        const isFocusable = (v: MinitelObject): v is Focusable => 'disabled' in v;
+        const isFocusable = (v: MinitelObject): v is Focusable => 'focused' in v;
         return this.children.flatMap((v) => {
             const focusables = [];
             if (isFocusable(v) && !v.disabled) focusables.push(v);
