@@ -120,7 +120,7 @@ export class MinitelObject extends EventEmitter {
         attributes.height = attributes.height != null ? padding.exludeY(attributes.height, pad) : null;
         if (!nextNode) {
             const dimensions = this.getDimensionsWrapper(attributes, inheritedProps(Object.assign(Object.assign(Object.assign({}, inheritedAttributes), this.attributes), forcedAttributes)));
-            return new LocationDescriptor(0, 0, dimensions.width, dimensions.height);
+            return new LocationDescriptor(pad[0], pad[3], dimensions.width, dimensions.height);
         }
         let result = this.mapLocation(attributes, inheritedProps(Object.assign(Object.assign(Object.assign({}, inheritedAttributes), this.attributes), forcedAttributes)), nextNode, nodes, weAt + 1);
         result.y += pad[0];
@@ -147,9 +147,9 @@ export class MinitelObject extends EventEmitter {
         // IS YOUR SCROLLINTOVIEW BUGGED AFTER ADDING PADDING TO INHERITANCE?
         // WELL MAYBE IF YOUR RETARDED ASS DID NOT DO THAT IT WOULD NOT BREAK
         // - Love, Juliet
-        const scrollableFullPad = padding.normalise(context.attributes.pad || 0);
-        scrollablePos.y -= scrollableFullPad[0];
-        scrollablePos.x -= scrollableFullPad[3];
+        // Bitch at least manage to fix the code correctly
+        // then worry about making haikus or whatever else
+        // -- Fuckingly, Juliet
         const [relY, relX] = [thisPos.y - scrollablePos.y, thisPos.x - scrollablePos.x];
         if (relY < 0) {
             context.scrollDelta[0] += relY;

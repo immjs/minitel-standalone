@@ -176,7 +176,7 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
                 ...this.attributes,
                 ...forcedAttributes,
             }));
-            return new LocationDescriptor(0, 0, dimensions.width, dimensions.height);
+            return new LocationDescriptor(pad[0], pad[3], dimensions.width, dimensions.height);
         }
 
         let result = this.mapLocation(attributes, inheritedProps({
@@ -215,10 +215,10 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
         // IS YOUR SCROLLINTOVIEW BUGGED AFTER ADDING PADDING TO INHERITANCE?
         // WELL MAYBE IF YOUR RETARDED ASS DID NOT DO THAT IT WOULD NOT BREAK
         // - Love, Juliet
-        const scrollableFullPad = padding.normalise(context.attributes.pad || 0);
-
-        scrollablePos.y -= scrollableFullPad[0];
-        scrollablePos.x -= scrollableFullPad[3];
+        
+        // Bitch at least manage to fix the code correctly
+        // then worry about making haikus or whatever else
+        // -- Fuckingly, Juliet
 
         const [relY, relX] = [thisPos.y - scrollablePos.y, thisPos.x - scrollablePos.x];
 
