@@ -176,7 +176,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
             renderGrid = this.renderWrapper({}, { width, height });
         } catch (err) {
             if (err instanceof InvalidRender) {
-                console.error(err);
+                // console.error(err);
                 return this.renderString();
             } else {
                 throw err;

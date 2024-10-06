@@ -138,7 +138,7 @@ export class Minitel extends Container {
         }
         catch (err) {
             if (err instanceof InvalidRender) {
-                console.error(err);
+                // console.error(err);
                 return this.renderString();
             }
             else {

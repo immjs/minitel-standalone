@@ -181,7 +181,7 @@ export class Scrollable extends Container {
         const location = nextNode.mapLocationWrapper(inheritMe, { width: renderAttributes.width, height: renderAttributes.height }, nodes, weAt);
         location.x -= this.scrollDelta[1];
         location.y -= this.scrollDelta[0];
-        console.log(location);
+        // console.log(location);
         return location;
     }
     render(attributes, inheritMe) {

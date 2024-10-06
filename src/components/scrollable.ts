@@ -223,7 +223,7 @@ export class Scrollable extends Container<ScrollableAttributes, { key: [string] 
         location.x -= this.scrollDelta[1];
         location.y -= this.scrollDelta[0];
 
-        console.log(location);
+        // console.log(location);
         return location;
     }
     render(attributes: ScrollableAttributes, inheritMe: Partial<ScrollableAttributes>) {
