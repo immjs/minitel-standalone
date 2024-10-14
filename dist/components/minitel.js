@@ -14,6 +14,31 @@ import { RichChar } from '../richchar.js';
 import { expectNextChars } from '../inputConstants.js';
 import { InvalidRender } from '../abstract/invalidrender.js';
 import { LLNode, LinkedList } from '../abstract/linked_list.js';
+export const specialCharTranslation = {
+    à: '\x19\x41a',
+    â: '\x19\x43a',
+    ä: '\x19\x48a',
+    é: '\x19\x42e',
+    è: '\x19\x41e',
+    ê: '\x19\x43e',
+    ë: '\x19\x48e',
+    î: '\x19\x43i',
+    ï: '\x19\x48i',
+    ö: '\x19\x48o',
+    ô: '\x19\x43o',
+    ù: '\x19\x41u',
+    û: '\x19\x43u',
+    ü: '\x19\x48u',
+    ç: '\x19\x4bc',
+    œ: '\x19\x7a',
+    Œ: '\x19\x6a',
+    '°': '\x19\x30',
+    '₤': '\x19\x23',
+    '←': '\x19\x2C',
+    '↑': '\x19\x2D',
+    '→': '\x19\x2E',
+    '↓': '\x19\x2F',
+};
 export class Minitel extends Container {
     constructor(stream, settings) {
         const that = null;
@@ -26,7 +51,8 @@ export class Minitel extends Container {
         this.children = new SingletonArray();
         this.settings = Object.assign({ statusBar: false, localEcho: false, extendedMode: true, defaultCase: 'upper' }, settings);
         this.stream = stream;
-        this.previousRender = RichCharGrid.fill(40, 24 + +this.settings.statusBar, new RichChar(' '));
+        const { width, height } = this.getDimensions();
+        this.previousRender = RichCharGrid.fill(width, height, new RichChar(' '));
         this.rxQueue = new LinkedList();
         // Take care of localEcho
         this.queueCommand([
@@ -129,7 +155,7 @@ export class Minitel extends Container {
         const { width, height } = this.getDimensions();
         return nextNode.mapLocationWrapper(inheritMe, { width, height }, nodes, weAt);
     }
-    renderString() {
+    renderString(clear = false) {
         this.renderInvalidated = false;
         let renderGrid;
         const { width, height } = this.getDimensions();
@@ -148,7 +174,12 @@ export class Minitel extends Container {
         renderGrid.setHeight(height, 'start', new RichChar(' '));
         renderGrid.setWidth(width, 'start', new RichChar(' '));
         this.handleFocus();
-        const outputString = ['\x14\x1e'];
+        const outputString = [];
+        if (clear) {
+            outputString.push('\x0c');
+            this.previousRender = RichCharGrid.fill(width, height, new RichChar(' '));
+        }
+        outputString.push('\x14\x1e');
         let lastAttributes = Minitel.defaultScreenAttributes;
         let skippedACharCounter = 0;
         let lastChar = null;
@@ -179,7 +210,9 @@ export class Minitel extends Container {
                     const applier = RichChar.getAttributesApplier(diff, lastAttributes);
                     outputString.push(applier);
                     lastAttributes = char.attributes;
-                    outputString.push(typeof char.char === 'string' ? char.char : ['', ' '].at(char.delta[0]));
+                    outputString.push(typeof char.char === 'string'
+                        ? (specialCharTranslation[char.char] || char.char.charCodeAt(0) < 128 ? char.char : '\x7f')
+                        : ['', ' '].at(char.delta[0]));
                     skippedACharCounter = 0;
                 }
                 lastChar = [char, prevChar];
@@ -257,9 +290,9 @@ export class Minitel extends Container {
             this.lastImmediate = null;
         });
     }
-    renderToStream() {
+    renderToStream(clear = false) {
         // this.stream.write('\x0c');
-        this.stream.write(this.renderString());
+        this.stream.write(this.renderString(clear));
     }
     queueCommand(command, expected, callback = ((_arg0) => { })) {
         const newNode = new LLNode(expected, callback);

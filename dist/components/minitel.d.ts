@@ -14,6 +14,7 @@ export interface MinitelSettings {
     extendedMode: boolean;
     defaultCase: 'upper' | 'lower';
 }
+export declare const specialCharTranslation: Record<string, string>;
 export declare class Minitel extends Container<ContainerAttributes, {
     key: [string];
     frame: [boolean];
@@ -37,12 +38,12 @@ export declare class Minitel extends Container<ContainerAttributes, {
     readyAsync(): Promise<void>;
     invalidateRender(): void;
     mapLocation(attributes: ContainerAttributes, inheritMe: Partial<ContainerAttributes>, nextNode: MinitelObject, nodes: MinitelObject[], weAt: number): LocationDescriptor;
-    renderString(): string;
+    renderString(clear?: boolean): string;
     toCursorMove(y: number, x: number): string;
     handleFocus(): void;
     focusDelta(delta: 1 | -1): Focusable | undefined;
     queueImmediateRenderToStream(): void;
-    renderToStream(): void;
+    renderToStream(clear?: boolean): void;
     queueCommand(command: string, expected: string | RegExp, callback?: ((_arg0: string) => any)): void;
     queueCommandAsync(command: string, expected: string | RegExp): Promise<string>;
     get colors(): number[][];

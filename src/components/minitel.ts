@@ -20,6 +20,32 @@ export interface MinitelSettings {
     defaultCase: 'upper' | 'lower';
 }
 
+export const specialCharTranslation: Record<string, string> = {
+    à: '\x19\x41a',
+    â: '\x19\x43a',
+    ä: '\x19\x48a',
+    é: '\x19\x42e',
+    è: '\x19\x41e',
+    ê: '\x19\x43e',
+    ë: '\x19\x48e',
+    î: '\x19\x43i',
+    ï: '\x19\x48i',
+    ö: '\x19\x48o',
+    ô: '\x19\x43o',
+    ù: '\x19\x41u',
+    û: '\x19\x43u',
+    ü: '\x19\x48u',
+    ç: '\x19\x4bc',
+    œ: '\x19\x7a',
+    Œ: '\x19\x6a',
+    '°': '\x19\x30',
+    '₤': '\x19\x23',
+    '←': '\x19\x2C',
+    '↑': '\x19\x2D',
+    '→': '\x19\x2E',
+    '↓': '\x19\x2F',
+};
+
 export class Minitel extends Container<ContainerAttributes, { key: [string], frame: [boolean] }> {
     static defaultScreenAttributes: CharAttributes = {
         fg: 7,
@@ -55,7 +81,8 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
             ...settings,
         };
         this.stream = stream;
-        this.previousRender = RichCharGrid.fill(40, 24 + +this.settings.statusBar, new RichChar(' '));
+        const { width, height } = this.getDimensions();
+        this.previousRender = RichCharGrid.fill(width, height, new RichChar(' '));
 
         this.rxQueue = new LinkedList();
 
@@ -166,7 +193,7 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
         const { width, height } = this.getDimensions();
         return nextNode.mapLocationWrapper(inheritMe, { width, height }, nodes, weAt)
     }
-    renderString(): string {
+    renderString(clear = false): string {
         this.renderInvalidated = false;
         let renderGrid;
 
@@ -188,7 +215,14 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
 
         this.handleFocus();
 
-        const outputString = ['\x14\x1e'];
+        const outputString = [];
+
+        if (clear) {
+            outputString.push('\x0c');
+            this.previousRender = RichCharGrid.fill(width, height, new RichChar(' '));
+        }
+
+        outputString.push('\x14\x1e');
 
         let lastAttributes: CharAttributes = Minitel.defaultScreenAttributes;
         let skippedACharCounter = 0;
@@ -241,7 +275,9 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
 
                     lastAttributes = char.attributes;
 
-                    outputString.push(typeof char.char === 'string' ? char.char : ['', ' '].at(char.delta[0])!)
+                    outputString.push(typeof char.char === 'string'
+                        ? (specialCharTranslation[char.char] || char.char.charCodeAt(0) < 128 ? char.char : '\x7f')
+                        : ['', ' '].at(char.delta[0])!)
                     skippedACharCounter = 0;
                 }
                 lastChar = [char, prevChar];
@@ -323,9 +359,9 @@ export class Minitel extends Container<ContainerAttributes, { key: [string], fra
             this.lastImmediate = null;
         });
     }
-    renderToStream() {
+    renderToStream(clear = false) {
         // this.stream.write('\x0c');
-        this.stream.write(this.renderString());
+        this.stream.write(this.renderString(clear));
     }
     queueCommand(command: string, expected: string | RegExp, callback: ((_arg0: string) => any) = ((_arg0: string) => {})) {
         const newNode = new LLNode(expected, callback);
