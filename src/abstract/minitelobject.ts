@@ -24,7 +24,9 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
         pad: 0,
         visible: true,
         disabled: false,
+        onResize: (currDim: [number, number], prevDim: [number, number] | null) => { },
     };
+    previousDimensions: [number, number] | null = null;
     defaultAttributes: T = MinitelObject.defaultAttributes as T;
     getDimensions(attributes: T, inheritMe: Partial<T>): ({ width: number, height: number }) {
         const tempRender = this.render(attributes, inheritMe);
@@ -55,6 +57,11 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
 
         result.height += pad[0] + pad[2];
         result.width += pad[1] + pad[3];
+
+        if (result.height !== this.previousDimensions?.[0] || result.height !== this.previousDimensions?.[1]) {
+            attributes.onResize([result.height, result.width], this.previousDimensions);
+            this.previousDimensions = [result.height, result.width];
+        }
 
         return result;
     }
@@ -104,7 +111,7 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
         attributes.height = attributes.height != null ? padding.exludeY(attributes.height, pad) : null;
 
         const fillChar = new RichChar(attributes.fillChar, attributes).noSize();
-        
+
         let result = this.render(attributes, inheritedProps({
             ...inheritedAttributes,
             ...this.attributes,
@@ -119,7 +126,7 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
 
         if (attributes.width != null) result.setWidth(attributes.width, 'end', fillChar);
         if (attributes.height != null) result.setHeight(attributes.height, 'end', fillChar);
-        
+
         result.pad(pad, fillChar);
 
         // Descriptor before pad, is this the right choice?
@@ -215,7 +222,7 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
         // IS YOUR SCROLLINTOVIEW BUGGED AFTER ADDING PADDING TO INHERITANCE?
         // WELL MAYBE IF YOUR RETARDED ASS DID NOT DO THAT IT WOULD NOT BREAK
         // - Love, Juliet
-        
+
         // Bitch at least manage to fix the code correctly
         // then worry about making haikus or whatever else
         // -- Fuckingly, Juliet

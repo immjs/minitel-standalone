@@ -12,6 +12,7 @@ export declare class MinitelObject<T extends MinitelObjectAttributes = MinitelOb
     minitel: Minitel;
     keepElmDesc: boolean;
     static defaultAttributes: MinitelObjectAttributes;
+    previousDimensions: [number, number] | null;
     defaultAttributes: T;
     getDimensions(attributes: T, inheritMe: Partial<T>): ({
         width: number;

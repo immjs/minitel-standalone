@@ -10,6 +10,7 @@ export class MinitelObject extends EventEmitter {
         return { width: tempRender.width, height: tempRender.height };
     }
     getDimensionsWrapper(inheritedAttributes, forcedAttributes) {
+        var _a, _b;
         const attributes = Object.assign(Object.assign(Object.assign(Object.assign({}, this.defaultAttributes), inheritedAttributes), this.attributes), forcedAttributes);
         const pad = padding.normalise(attributes.pad);
         attributes.width = attributes.width != null ? padding.exludeX(attributes.width, pad) : null;
@@ -24,11 +25,16 @@ export class MinitelObject extends EventEmitter {
             result.height = attributes.height;
         result.height += pad[0] + pad[2];
         result.width += pad[1] + pad[3];
+        if (result.height !== ((_a = this.previousDimensions) === null || _a === void 0 ? void 0 : _a[0]) || result.height !== ((_b = this.previousDimensions) === null || _b === void 0 ? void 0 : _b[1])) {
+            attributes.onResize([result.height, result.width], this.previousDimensions);
+            this.previousDimensions = [result.height, result.width];
+        }
         return result;
     }
     constructor(children, attributes, minitel) {
         super();
         this.keepElmDesc = false;
+        this.previousDimensions = null;
         this.defaultAttributes = MinitelObject.defaultAttributes;
         this.children = [];
         this.minitel = minitel;
@@ -179,4 +185,5 @@ MinitelObject.defaultAttributes = {
     pad: 0,
     visible: true,
     disabled: false,
+    onResize: (currDim, prevDim) => { },
 };

@@ -21,6 +21,7 @@ export interface MinitelObjectAttributes extends Partial<ApplicableCharAttribute
     pad: Padding;
     visible: boolean;
     disabled: boolean;
+    onResize: (curr: [number, number], prev: [number, number] | null) => void;
 }
 export interface RenderLinesAttributes extends MinitelObjectAttributes {
     forcedIndent?: number;
