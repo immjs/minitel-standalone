@@ -6,14 +6,14 @@ import { alignInvrt, inheritedProps } from '../utils.js';
 import type { Minitel } from './minitel.js';
 import { RichCharGrid } from '../richchargrid.js';
 
-export class Container<T extends DisplayAttributes = DisplayAttributes, U extends Record<string, any[]> = Record<string, any[]>> extends MinitelObject<T, U> {
+export class Display<T extends DisplayAttributes = DisplayAttributes, U extends Record<string, any[]> = Record<string, any[]>> extends MinitelObject<T, U> {
     static defaultAttributes: DisplayAttributes = {
         ...MinitelObject.defaultAttributes,
         grid: new RichCharGrid(),
         widthAlign: 'middle',
         heightAlign: 'middle',
     };
-    defaultAttributes = Container.defaultAttributes as T;
+    defaultAttributes = Display.defaultAttributes as T;
     constructor(children: MinitelObject[] = [], attributes: Partial<T>, minitel: Minitel) {
         if (children.length !== 0) throw new Error('Display may not have any elements');
         super([], attributes, minitel);

@@ -3,12 +3,12 @@ import { RichChar } from '../richchar.js';
 import { NullArray } from '../custom_arrays.js';
 import { alignInvrt } from '../utils.js';
 import { RichCharGrid } from '../richchargrid.js';
-export class Container extends MinitelObject {
+export class Display extends MinitelObject {
     constructor(children = [], attributes, minitel) {
         if (children.length !== 0)
             throw new Error('Display may not have any elements');
         super([], attributes, minitel);
-        this.defaultAttributes = Container.defaultAttributes;
+        this.defaultAttributes = Display.defaultAttributes;
         this.children = new NullArray();
         if (children[0])
             this.appendChild(children[0]);
@@ -27,4 +27,4 @@ export class Container extends MinitelObject {
         return render;
     }
 }
-Container.defaultAttributes = Object.assign(Object.assign({}, MinitelObject.defaultAttributes), { grid: new RichCharGrid(), widthAlign: 'middle', heightAlign: 'middle' });
+Display.defaultAttributes = Object.assign(Object.assign({}, MinitelObject.defaultAttributes), { grid: new RichCharGrid(), widthAlign: 'middle', heightAlign: 'middle' });
