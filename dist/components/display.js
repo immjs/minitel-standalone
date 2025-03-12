@@ -10,8 +10,6 @@ export class Display extends MinitelObject {
         super([], attributes, minitel);
         this.defaultAttributes = Display.defaultAttributes;
         this.children = new NullArray();
-        if (children[0])
-            this.appendChild(children[0]);
     }
     getDimensions(attributes, inheritMe) {
         return { width: attributes.width || 0, height: attributes.height || 0 };

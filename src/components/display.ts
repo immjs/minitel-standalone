@@ -6,24 +6,23 @@ import { alignInvrt, inheritedProps } from '../utils.js';
 import type { Minitel } from './minitel.js';
 import { RichCharGrid } from '../richchargrid.js';
 
-export class Display<T extends DisplayAttributes = DisplayAttributes, U extends Record<string, any[]> = Record<string, any[]>> extends MinitelObject<T, U> {
+export class Display extends MinitelObject<DisplayAttributes> {
     static defaultAttributes: DisplayAttributes = {
         ...MinitelObject.defaultAttributes,
         grid: new RichCharGrid(),
         widthAlign: 'middle',
         heightAlign: 'middle',
     };
-    defaultAttributes = Display.defaultAttributes as T;
-    constructor(children: MinitelObject[] = [], attributes: Partial<T>, minitel: Minitel) {
+    defaultAttributes = Display.defaultAttributes as DisplayAttributes;
+    constructor(children: MinitelObject[] = [], attributes: Partial<DisplayAttributes>, minitel: Minitel) {
         if (children.length !== 0) throw new Error('Display may not have any elements');
         super([], attributes, minitel);
         this.children = new NullArray();
-        if (children[0]) this.appendChild(children[0]);
     }
-    getDimensions(attributes: T, inheritMe: Partial<T>): { width: number; height: number; } {
+    getDimensions(attributes: DisplayAttributes, inheritMe: Partial<DisplayAttributes>): { width: number; height: number; } {
         return { width: attributes.width || 0, height: attributes.height || 0 };
     }
-    render(attributes: T, inheritMe: Partial<T>) {
+    render(attributes: DisplayAttributes, inheritMe: Partial<DisplayAttributes>) {
         const fillChar = new RichChar(attributes.fillChar, attributes).noSize();
 
         const render = attributes.grid;
