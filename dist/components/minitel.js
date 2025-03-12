@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { Container } from './container.js';
 import { RichCharGrid } from '../richchargrid.js';
-import { SingletonArray } from '../singleton.js';
+import { SingletonArray } from '../custom_arrays.js';
 import { RichChar } from '../richchar.js';
 import { expectNextChars } from '../inputConstants.js';
 import { InvalidRender } from '../abstract/invalidrender.js';

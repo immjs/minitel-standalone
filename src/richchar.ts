@@ -5,6 +5,23 @@ export class RichChar<T> {
     delta: T extends null ? [number, number] : undefined;
     actualChar: T extends null ? RichChar<string> : undefined;
     char: T;
+
+    serialize() {
+        // I could do it better..... but yk
+        const serializedAttrs = [
+            this.attributes.fg,
+            this.attributes.bg,
+            this.attributes.underline,
+            this.attributes.doubleHeight,
+            this.attributes.doubleWidth,
+            this.attributes.noBlink,
+            this.attributes.invert,
+            this.attributes.charset,
+        ];
+        if (this.delta) return this.delta;
+        return JSON.stringify([serializedAttrs, this.char]);
+    }
+
     // skip: boolean;
     static getDelimited(attributes: CharAttributes, charset: number) {
         return {

@@ -1,23 +1,24 @@
 import { MinitelObject } from '../abstract/minitelobject.js';
 import { RichChar } from '../richchar.js';
-import { SingletonArray } from '../custom_arrays.js';
+import { NullArray } from '../custom_arrays.js';
 import { alignInvrt } from '../utils.js';
+import { RichCharGrid } from '../richchargrid.js';
 export class Container extends MinitelObject {
     constructor(children = [], attributes, minitel) {
-        if (children.length > 1)
-            throw new Error('Container must only include one element');
+        if (children.length !== 0)
+            throw new Error('Display may not have any elements');
         super([], attributes, minitel);
         this.defaultAttributes = Container.defaultAttributes;
-        this.children = new SingletonArray();
+        this.children = new NullArray();
         if (children[0])
             this.appendChild(children[0]);
     }
     getDimensions(attributes, inheritMe) {
-        return this.children[0].getDimensionsWrapper(inheritMe, Object.assign(Object.assign({}, (attributes.width != null ? { width: attributes.width } : {})), (attributes.height != null ? { height: attributes.height } : {})));
+        return { width: attributes.width || 0, height: attributes.height || 0 };
     }
     render(attributes, inheritMe) {
         const fillChar = new RichChar(attributes.fillChar, attributes).noSize();
-        const render = this.children[0].renderWrapper(inheritMe, Object.assign(Object.assign({}, (attributes.width != null ? { width: attributes.width } : {})), (attributes.height != null ? { height: attributes.height } : {})));
+        const render = attributes.grid;
         if (attributes.height)
             render.setHeight(attributes.height, alignInvrt[attributes.heightAlign], fillChar);
         if (attributes.width)
@@ -26,4 +27,4 @@ export class Container extends MinitelObject {
         return render;
     }
 }
-Container.defaultAttributes = Object.assign(Object.assign({}, MinitelObject.defaultAttributes), { widthAlign: 'start', heightAlign: 'start' });
+Container.defaultAttributes = Object.assign(Object.assign({}, MinitelObject.defaultAttributes), { grid: new RichCharGrid(), widthAlign: 'middle', heightAlign: 'middle' });

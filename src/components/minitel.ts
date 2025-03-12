@@ -2,7 +2,7 @@ import { Duplex } from 'stream';
 import { Container, ContainerAttributes } from './container.js';
 import { RichCharGrid } from '../richchargrid.js';
 import { CharAttributes, MinitelObjectAttributes } from '../types.js';
-import { SingletonArray } from '../singleton.js';
+import { SingletonArray } from '../custom_arrays.js';
 import { MinitelObject } from '../abstract/minitelobject.js';
 import { RichChar } from '../richchar.js';
 // import type { FiberRoot } from 'react-reconciler';

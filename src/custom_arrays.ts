@@ -15,3 +15,9 @@ export class SingletonArray<T> extends Array<T> {
         return [this[0]].flatMap(callback);
     }
 }
+
+export class NullArray extends Array<never> {
+    push(...args: never[]): number {
+        throw new Error('Null array does not allow elements.');
+    }
+}

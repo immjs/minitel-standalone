@@ -4,6 +4,7 @@ export declare class RichChar<T> {
     delta: T extends null ? [number, number] : undefined;
     actualChar: T extends null ? RichChar<string> : undefined;
     char: T;
+    serialize(): string | NonNullable<T extends null ? [number, number] : undefined>;
     static getDelimited(attributes: CharAttributes, charset: number): {
         underline: boolean;
         charset: number;

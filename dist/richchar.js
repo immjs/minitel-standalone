@@ -1,4 +1,20 @@
 export class RichChar {
+    serialize() {
+        // I could do it better..... but yk
+        const serializedAttrs = [
+            this.attributes.fg,
+            this.attributes.bg,
+            this.attributes.underline,
+            this.attributes.doubleHeight,
+            this.attributes.doubleWidth,
+            this.attributes.noBlink,
+            this.attributes.invert,
+            this.attributes.charset,
+        ];
+        if (this.delta)
+            return this.delta;
+        return JSON.stringify([serializedAttrs, this.char]);
+    }
     // skip: boolean;
     static getDelimited(attributes, charset) {
         return Object.assign(Object.assign({}, (charset !== 1 ? { bg: attributes.bg } : {})), { underline: attributes.underline, charset: attributes.charset });
