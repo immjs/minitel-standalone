@@ -58,7 +58,7 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
         result.height += pad[0] + pad[2];
         result.width += pad[1] + pad[3];
 
-        if (result.height !== this.previousDimensions?.[0] || result.height !== this.previousDimensions?.[1]) {
+        if (result.height !== this.previousDimensions?.[0] || result.width !== this.previousDimensions?.[1]) {
             attributes.onResize([result.height, result.width], this.previousDimensions);
             this.previousDimensions = [result.height, result.width];
         }
@@ -133,6 +133,11 @@ export class MinitelObject<T extends MinitelObjectAttributes = MinitelObjectAttr
         // Future you: Yes. Yes it is.
         // Future you 5 minutes later: Actually you know what
         if (this.keepElmDesc) result.locationDescriptors.add(this, new LocationDescriptor(0, 0, result.width, result.height));
+
+        if (result.height !== this.previousDimensions?.[0] || result.width !== this.previousDimensions?.[1]) {
+            attributes.onResize([result.height, result.width], this.previousDimensions);
+            this.previousDimensions = [result.height, result.width];
+        }
 
         return result;
     }

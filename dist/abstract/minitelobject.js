@@ -25,7 +25,7 @@ export class MinitelObject extends EventEmitter {
             result.height = attributes.height;
         result.height += pad[0] + pad[2];
         result.width += pad[1] + pad[3];
-        if (result.height !== ((_a = this.previousDimensions) === null || _a === void 0 ? void 0 : _a[0]) || result.height !== ((_b = this.previousDimensions) === null || _b === void 0 ? void 0 : _b[1])) {
+        if (result.height !== ((_a = this.previousDimensions) === null || _a === void 0 ? void 0 : _a[0]) || result.width !== ((_b = this.previousDimensions) === null || _b === void 0 ? void 0 : _b[1])) {
             attributes.onResize([result.height, result.width], this.previousDimensions);
             this.previousDimensions = [result.height, result.width];
         }
@@ -69,6 +69,7 @@ export class MinitelObject extends EventEmitter {
         throw new Error('MinitelObject has no render');
     }
     renderWrapper(inheritedAttributes, forcedAttributes) {
+        var _a, _b;
         const attributes = Object.assign(Object.assign(Object.assign(Object.assign({}, this.defaultAttributes), inheritedAttributes), this.attributes), forcedAttributes);
         const pad = padding.normalise(attributes.pad);
         attributes.width = attributes.width != null ? padding.exludeX(attributes.width, pad) : null;
@@ -91,6 +92,10 @@ export class MinitelObject extends EventEmitter {
         // Future you 5 minutes later: Actually you know what
         if (this.keepElmDesc)
             result.locationDescriptors.add(this, new LocationDescriptor(0, 0, result.width, result.height));
+        if (result.height !== ((_a = this.previousDimensions) === null || _a === void 0 ? void 0 : _a[0]) || result.width !== ((_b = this.previousDimensions) === null || _b === void 0 ? void 0 : _b[1])) {
+            attributes.onResize([result.height, result.width], this.previousDimensions);
+            this.previousDimensions = [result.height, result.width];
+        }
         return result;
     }
     focusables() {
